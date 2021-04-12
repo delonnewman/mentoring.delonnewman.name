@@ -1,0 +1,13 @@
+#!/bin/sh
+
+stripe products create \
+  --name="Ongoing Mentoring" \
+  --description="Mentoring on a monthly basis, up to 2 hours of synchronous time (by video or phone) unlimited asynchronous time (by chat or email)."
+
+stripe products create \
+  --name="Instant Help" \
+  --description="Remote programming help when the mentor is available (by video conference) paid out by the minute, first 5 minutes are free."
+
+stripe products create \
+  --name="Instant Conversation" \
+  --description="Remote programming help when the mentor is available (by video conference) paid out by the hour, first 5 minutes are free."
