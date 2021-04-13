@@ -1,14 +1,22 @@
 module Drn
   module Mentoring
-    # A Dry::Container that represents the application, and provides dependency injection.
-    class Application < Dry::System::Container
-      configure do |config|
-        config.root = Pathname("#{__dir__}/../../..")
+    # Represents the application
+    class Application < El::Application
+      root_path File.join(__dir__, '..', '..', '..')
 
-        config.auto_register = 'lib/drn/mentoring'
+      # Components
+      class StripeClient < El::Record
+        require :key
+
+        def start
+          Stripe.api_key = key
+        end
+
+        def stop
+        end
       end
 
-      load_paths!('lib/drn/mentoring')
+      system stripe: StripeClient[key: ENV.fetch('STRIPE_KEY')]
     end
   end
 end
