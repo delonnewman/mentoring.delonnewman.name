@@ -21,8 +21,8 @@ module Rack
       def add!(method, path, action, headers = EMPTY_HASH)
         # TODO: Add Symbol#name for older versions of Ruby
         method = method.name.upcase
-        table[method] ||= []
-        table[method] << [parse_path(path), action]
+        @table[method] ||= []
+        @table[method] << [parse_path(path), action]
         self
       end
   

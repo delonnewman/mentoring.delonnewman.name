@@ -56,6 +56,12 @@ module Rack
 
     private_constant :EMPTY_HASH, :EMPTY_ARRAY
 
+    def self.included(base)
+      base.extend(DSL)
+      base.include(InstanceMethods)
+    end
+
+
     module DSL
       # A "macro" method to specify paths that should be used to serve static files.
       # They will be served from the "public" directory within the applications root_path.
@@ -124,20 +130,20 @@ module Rack
     module InstanceMethods
       def call(env)
         req   = Request.new(env)
-        match = router.match(env)
+        match = self.class.routes.match(env)
 
-        return Response[404, EMPTY_HASH, 'Not Found'] unless match
+        return [404, EMPTY_HASH, 'Not Found'] unless match
         params = req.params.merge(match[:params])
         res    = match[:action].call(params, req)
 
         if res.is_a?(Response)
           res
         elsif res.is_a?(Hash) && res.key?(:status)
-          Response[res[:status], res.fetch(:headers) { EMPTY_HASH }, res[:body]]
+          [res[:status], res.fetch(:headers) { EMPTY_HASH }, res[:body]]
         elsif res.nil? || res.respond_to?(:each) || res.respond_to?(:to_str)
-          Response[200, EMPTY_HASH, res]
+          [200, EMPTY_HASH, res]
         else
-          Response[200, EMPTY_HASH, [res.to_s]]
+          [200, EMPTY_HASH, [res.to_s]]
         end
       end
     end
