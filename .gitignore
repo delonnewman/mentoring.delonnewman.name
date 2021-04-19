@@ -1,3 +1,5 @@
 vendor/bundle/
 .bundle/
 .env
+.yardoc/
+doc/

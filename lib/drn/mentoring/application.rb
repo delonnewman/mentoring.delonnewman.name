@@ -1,3 +1,5 @@
+require 'rack/contrib/try_static'
+
 module Drn
   module Mentoring
     # Represents the application

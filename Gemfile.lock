@@ -1,21 +1,3 @@
-PATH
-  remote: ../el
-  specs:
-    el (0.1.0)
-      rack
-      rack-contrib
-      zeitwerk
-
-PATH
-  remote: ../hash_delegator
-  specs:
-    hash_delegator (0.1.0)
-
-PATH
-  remote: ../predicate_string
-  specs:
-    predicate_string (0.1.0)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -39,19 +21,21 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
     stripe (5.32.1)
-    zeitwerk (2.4.2)
+    webrick (1.7.0)
+    yard (0.9.26)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   dotenv
-  el!
-  hash_delegator!
-  predicate_string!
+  rack
+  rack-contrib
   rake
   rspec
   stripe
+  webrick
+  yard
 
 BUNDLED WITH
-   2.1.4
+   2.2.16
