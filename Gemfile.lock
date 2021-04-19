@@ -1,3 +1,15 @@
+GIT
+  remote: https://github.com/delonnewman/hash_delegator.git
+  revision: b0661844c851c979966b90b849d75519c72f14fe
+  specs:
+    hash_delegator (0.1.0)
+
+PATH
+  remote: vendor/rack-routable
+  specs:
+    rack-routable (0.1.0)
+      rack
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -20,6 +32,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    sequel (5.43.0)
+    sqlite3 (1.4.2)
     stripe (5.32.1)
     webrick (1.7.0)
     yard (0.9.26)
@@ -29,10 +43,14 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  hash_delegator!
   rack
   rack-contrib
+  rack-routable!
   rake
   rspec
+  sequel
+  sqlite3
   stripe
   webrick
   yard

@@ -2,23 +2,23 @@ require 'rack/contrib/try_static'
 
 module Drn
   module Mentoring
-    # Represents the application
-    class Application < El::Application
-      root_path File.join(__dir__, '..', '..', '..')
+    # Represents the application state
+    class Application
+      include Rack::Routable
 
-      # Components
-      class StripeClient < El::Record
-        require :key
+      attr_reader :env, :logger, :root, :db
 
-        def start
-          Stripe.api_key = key
-        end
-
-        def stop
-        end
+      def initialize
+        @env    = ENV.fetch('RACK_ENV') { :development }.to_sym
+        @logger = Logger.new($stdout)
+        @root   = Pathname.new(File.join(__dir__, '..', '..', '..')).expand_path
+        @db     = Sequel.connect(ENV.fetch('DATABASE_URL'))
       end
 
-      system stripe: StripeClient[key: ENV.fetch('STRIPE_KEY')]
+      def init!
+        Stripe.api_key = ENV.fetch('STRIPE_KEY')
+        self
+      end
     end
   end
 end
