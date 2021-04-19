@@ -123,19 +123,21 @@ module Rack
 
     module InstanceMethods
       def call(env)
-        req   = request(env)
-        match = router.match(req[:method], req[:path])
+        req   = Request.new(env)
+        match = router.match(env)
 
-        return Response.new(404, EMPTY_HASH, ['Not Found']) unless match
-        params = req[:params].merge(match[:params])
+        return Response[404, EMPTY_HASH, 'Not Found'] unless match
+        params = req.params.merge(match[:params])
         res    = match[:action].call(params, req)
 
-        if res.is_a?(Hash) && res.key?(:status)
-          Response.new(res[:status], res.fetch(:headers) { EMPTY_HASH }, res.fetch(:body) { EMPTY_ARRAY })
-        elsif res.respond_to?(:each)
-          Response.new(200, EMPTY_HASH, res)
+        if res.is_a?(Response)
+          res
+        elsif res.is_a?(Hash) && res.key?(:status)
+          Response[res[:status], res.fetch(:headers) { EMPTY_HASH }, res[:body]]
+        elsif res.nil? || res.respond_to?(:each) || res.respond_to?(:to_str)
+          Response[200, EMPTY_HASH, res]
         else
-          Response.new(200, EMPTY_HASH, [res.to_s])
+          Response[200, EMPTY_HASH, [res.to_s]]
         end
       end
     end
