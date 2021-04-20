@@ -15,9 +15,16 @@ GEM
   specs:
     diff-lcs (1.4.4)
     dotenv (2.7.6)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
+    nio4r (2.5.7)
+    puma (5.2.2)
+      nio4r (~> 2.0)
     rack (2.2.3)
     rack-contrib (2.3.0)
       rack (~> 2.0)
+    rack-protection (2.1.0)
+      rack
     rake (13.0.3)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -32,9 +39,18 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    ruby2_keywords (0.0.4)
     sequel (5.43.0)
+    shotgun (0.9.2)
+      rack (>= 1.0)
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
     sqlite3 (1.4.2)
     stripe (5.32.1)
+    tilt (2.0.10)
     webrick (1.7.0)
     yard (0.9.26)
 
@@ -44,12 +60,15 @@ PLATFORMS
 DEPENDENCIES
   dotenv
   hash_delegator!
+  puma
   rack
   rack-contrib
   rack-routable!
   rake
   rspec
   sequel
+  shotgun
+  sinatra
   sqlite3
   stripe
   webrick

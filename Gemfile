@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gem 'rack'
 gem 'rack-contrib'
 gem 'rack-routable', path: './vendor/rack-routable'
+gem 'sinatra'
+gem 'puma'
 
 gem 'dotenv'
 gem 'stripe'
@@ -15,5 +17,6 @@ group :development, :test do
   gem 'rake'
   gem 'rspec'
   gem 'yard'
-  gem 'webrick'
+  gem 'webrick' # for yard documentation server
+  gem 'shotgun'
 end

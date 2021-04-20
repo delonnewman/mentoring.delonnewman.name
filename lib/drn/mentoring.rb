@@ -1,4 +1,6 @@
 require 'pp'
+require 'set'
+require 'json'
 require 'logger'
 require 'pathname'
 
@@ -11,6 +13,8 @@ module Drn
   module Mentoring
     # Application state
     require_relative 'mentoring/application'
-    M = Application.new.init!
+    App = Application.new.init!
+
+    require_relative 'mentoring/application/checkout'
   end
 end

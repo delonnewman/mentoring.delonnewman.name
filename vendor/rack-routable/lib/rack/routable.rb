@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+require 'stringio'
+
 module Rack
   # Provides a light-weight DSL for routing over Rack.
   #
@@ -51,6 +53,8 @@ module Rack
   #     mount '/admin', AdminApp
   #   end
   module Routable
+    require_relative 'routable/routes'
+
     EMPTY_ARRAY = [].freeze
     EMPTY_HASH  = {}.freeze
 
@@ -100,11 +104,11 @@ module Rack
         @root_path || '.'
       end
 
-      # Return the raw route data for the application.
+      # Return the routing table for the class.
       # 
-      # @return [Array<Array<[Symbol, String, Hash, Proc]>>]
+      # @return [Routes]
       def routes
-        @routes || EMPTY_ARRAY
+        @routes ||= Routes.new
       end
 
       # Valid methods for routes
@@ -116,8 +120,7 @@ module Rack
       def route(method, path, **options, &block)
         raise "Invalid method: #{method.inspect}" unless METHODS.include?(method)
 
-        @routes ||= Routes.new
-        @routes.add!(method, path, block, options)
+        routes.add!(method, path, block, options)
       end
 
       METHODS.each do |method|
@@ -132,7 +135,7 @@ module Rack
         req   = Request.new(env)
         match = self.class.routes.match(env)
 
-        return [404, EMPTY_HASH, 'Not Found'] unless match
+        return [404, EMPTY_HASH, StringIO.new('Not Found')] unless match
         params = req.params.merge(match[:params])
         res    = match[:action].call(params, req)
 
@@ -140,10 +143,10 @@ module Rack
           res
         elsif res.is_a?(Hash) && res.key?(:status)
           [res[:status], res.fetch(:headers) { EMPTY_HASH }, res[:body]]
-        elsif res.nil? || res.respond_to?(:each) || res.respond_to?(:to_str)
+        elsif res.respond_to?(:each)
           [200, EMPTY_HASH, res]
         else
-          [200, EMPTY_HASH, [res.to_s]]
+          [200, EMPTY_HASH, StringIO.new(res.to_s)]
         end
       end
     end
