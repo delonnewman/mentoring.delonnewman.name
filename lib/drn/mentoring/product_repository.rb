@@ -5,8 +5,8 @@ module Drn
         super(App.db[:products], Product)
       end
 
-      def by_id(product_id)
-        @dataset.first { id == product_id }
+      def by_id(id)
+        @dataset.first { product_id == id }
       end
     end
   end

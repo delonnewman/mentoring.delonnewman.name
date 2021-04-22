@@ -2,13 +2,12 @@
 module Drn
   module Mentoring
     class Application
-      class Checkout
-        include Rack::Routable
-
+      class Checkout < Controller
         static '/' => App.root.join('public')
 
         get '/' do
-          File.read App.root.join('public', 'index.html')
+          #File.read App.root.join('public', 'index.html')
+          render :index
         end
 
         get '/setup' do

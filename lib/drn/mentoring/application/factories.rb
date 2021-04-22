@@ -2,7 +2,7 @@ module Drn
   module Mentoring
     class Application
       def products
-        @products ||= ProductRepository.new
+        @products ||= Stripe::Product.list
       end
     end
   end
