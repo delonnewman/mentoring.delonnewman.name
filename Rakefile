@@ -8,6 +8,16 @@ task :server do
   sh "bundle exec shotgun"
 end
 
+desc "Setup application"
+task :setup => :'db:migrate'
+
+namespace :db do
+  desc "Run migrations"
+  task :migrate do
+    sh "bundle exec sequel #{ENV['DATABASE_URL']} -m db/migrations/"
+  end
+end
+
 namespace :gem do
   desc "Run documentation server for bundled gems"
   task :server do

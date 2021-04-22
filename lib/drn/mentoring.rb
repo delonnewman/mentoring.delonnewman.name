@@ -15,6 +15,18 @@ module Drn
     require_relative 'mentoring/application'
     App = Application.new.init!
 
+    # Applications
     require_relative 'mentoring/application/checkout'
+
+    # Factory Methods
+    require_relative 'mentoring/application/factories'
+
+    # Entities
+    require_relative 'mentoring/entity'
+    require_relative 'mentoring/product'
+
+    # Repositories
+    require_relative 'mentoring/repository'
+    require_relative 'mentoring/product_repository'
   end
 end

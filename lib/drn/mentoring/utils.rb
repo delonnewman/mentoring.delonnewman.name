@@ -3,7 +3,6 @@ module Drn
     module_function
   
     def env
-      ENV.fetch('RACK_ENV') { :development }.to_sym
     end
   
     def logger
