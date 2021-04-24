@@ -75,7 +75,7 @@ module Drn
           render json: { url: session.url }
         end
         
-        post '/webhook' do
+        post '/webhook' do |params, request|
           # You can use webhooks to receive information about asynchronous payment events.
           # For more about our webhook events check out https://stripe.com/docs/webhooks.
           webhook_secret = ENV['STRIPE_WEBHOOK_SECRET']
