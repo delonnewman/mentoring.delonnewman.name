@@ -6,16 +6,15 @@ module Drn
         static '/' => App.root.join('public')
 
         get '/' do
-          #File.read App.root.join('public', 'index.html')
           render :index
         end
 
         get '/setup' do
-          {
+          render json: {
             publishableKey: ENV['STRIPE_PUB_KEY'],
             basicPrice: ENV['BASIC_PRICE_ID'],
             proPrice: ENV['PRO_PRICE_ID']
-          }.to_json
+          }
         end
 
         # Fetch the Checkout Session to display the JSON result on the success page
@@ -24,7 +23,7 @@ module Drn
           session_id = params[:sessionId]
         
           session = Stripe::Checkout::Session.retrieve(session_id)
-          session.to_json
+          render json: session
         end
 
         post '/create-checkout-session' do |params, request|
@@ -48,7 +47,7 @@ module Drn
               }],
             )
         
-            { sessionId: session.id }.to_json
+            render json: { sessionId: session.id }
           rescue => e
             { status: 400,
               headers: { 'Content-Type' => 'application/json' },
@@ -73,9 +72,7 @@ module Drn
             return_url: return_url
           })
         
-          {
-            url: session.url
-          }.to_json
+          render json: { url: session.url }
         end
         
         post '/webhook' do
@@ -94,13 +91,11 @@ module Drn
               )
             rescue JSON::ParserError => e
               # Invalid payload
-              status 400
-              return
+              return { status: 400 }
             rescue Stripe::SignatureVerificationError => e
               # Invalid signature
               puts '⚠️  Webhook signature verification failed.'
-              status 400
-              return
+              return { status: 400 }
             end
           else
             data = JSON.parse(payload, symbolize_names: true)
@@ -113,10 +108,7 @@ module Drn
         
           puts '🔔  Payment succeeded!' if event_type == 'checkout.session.completed'
         
-          content_type 'application/json'
-          {
-            status: 'success'
-          }.to_json
+          render json: { status: 'success' }
         end
       end
     end

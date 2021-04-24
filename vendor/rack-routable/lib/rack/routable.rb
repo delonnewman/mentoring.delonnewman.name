@@ -2,7 +2,8 @@
 require 'stringio'
 
 module Rack
-  # Provides a light-weight DSL for routing over Rack.
+  # Provides a light-weight DSL for routing over Rack, and instances implement
+  # the Rack application interface.
   #
   # @example
   #   class MyApp
@@ -55,6 +56,11 @@ module Rack
   module Routable
     require_relative 'routable/routes'
 
+    # The default headers for responses
+    DEFAULT_HEADERS = {
+      'Content-Type' => 'text/html'
+    }.freeze
+
     EMPTY_ARRAY = [].freeze
     EMPTY_HASH  = {}.freeze
 
@@ -64,7 +70,6 @@ module Rack
       base.extend(DSL)
       base.include(InstanceMethods)
     end
-
 
     module DSL
       # A "macro" method to specify paths that should be used to serve static files.
@@ -128,25 +133,45 @@ module Rack
           route(method, path, **options, &block)
         end
       end
+
+      def response(body, status: 200, headers: nil)
+        headers = headers ? DEFAULT_HEADERS.merge(headers) : DEFAULT_HEADERS
+
+        Rack::Response.new(StringIO.new(body), status, headers)
+      end
+
+      def redirect_to(url)
+        Rack::Response.new.redirect(url)
+      end
     end
 
     module InstanceMethods
+      # TODO: add error and not_found to the DSL
       def call(env)
         req   = Request.new(env)
         match = self.class.routes.match(env)
 
-        return [404, EMPTY_HASH, StringIO.new('Not Found')] unless match
+        return [404, DEFAULT_HEADERS, StringIO.new('Not Found')] unless match
         params = req.params.merge(match[:params])
-        res    = match[:action].call(params, req)
 
-        if res.is_a?(Response)
+        res = begin
+                # NOTE: consider calling with instance_exec do some benchmarking
+                # to see how this would effect performance.
+                match[:action].call(params, req)
+              rescue => e
+                return [500, DEFAULT_HEADERS, StringIO.new(e.message)]
+              end
+
+        if res.is_a?(Array) && res.size == 3
           res
+        elsif res.is_a?(Response)
+          res.to_a
         elsif res.is_a?(Hash) && res.key?(:status)
-          [res[:status], res.fetch(:headers) { EMPTY_HASH }, res[:body]]
+          [res[:status], res.fetch(:headers) { DEFAULT_HEADERS }, res[:body]]
         elsif res.respond_to?(:each)
-          [200, EMPTY_HASH, res]
+          [200, DEFAULT_HEADERS, res]
         else
-          [200, EMPTY_HASH, StringIO.new(res.to_s)]
+          [200, DEFAULT_HEADERS, StringIO.new(res.to_s)]
         end
       end
     end
