@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 require 'pp'
+require 'cgi'
 require 'set'
 require 'json'
 require 'logger'
 require 'pathname'
+require 'forwardable'
 
 require 'bundler/setup'
 Bundler.require
@@ -22,10 +24,12 @@ module Drn
     # Entities
     require_relative 'mentoring/entity'
     require_relative 'mentoring/product'
+    require_relative 'mentoring/session'
 
     # Repositories
     require_relative 'mentoring/repository'
     require_relative 'mentoring/product_repository'
+    require_relative 'mentoring/session_repository'
 
     # Factory Methods
     require_relative 'mentoring/application/factories'
