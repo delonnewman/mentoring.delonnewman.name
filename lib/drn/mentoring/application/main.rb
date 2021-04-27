@@ -3,6 +3,8 @@ module Drn
   module Mentoring
     class Application
       class Main < Controller
+        no_layout!
+
         mount '/checkout', Checkout.new
         mount '/session',  InstantSessions.new
 
