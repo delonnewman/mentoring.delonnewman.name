@@ -3,8 +3,44 @@ module Drn
     module Utils
       module_function
 
+      def html_escape(string)
+        CGI.escapeHTML(string)
+      end
+      alias h html_escape
+      
+      JS_ESCAPE_MAP = {
+        '\\'    => '\\\\',
+        "</"    => '<\/',
+        "\r\n"  => '\n',
+        "\n"    => '\n',
+        "\r"    => '\n',
+        '"'     => '\\"',
+        "'"     => "\\'",
+        "`"     => "\\`",
+        "$"     => "\\$"
+      }
+
+      private_constant :JS_ESCAPE_MAP
+
+      def javascript_escape(javascript)
+        javascript = javascript.to_s
+        if javascript.empty?
+          result = ""
+        else
+          result = javascript.gsub(/(\\|<\/|\r\n|\342\200\250|\342\200\251|[\n\r"']|[`]|[$])/u, JS_ESCAPE_MAP)
+        end
+      end
+      alias j javascript_escape
+
+      # Blantantly stolen from active-support
       def snakecase(string)
-        string
+        return string unless /[A-Z-]|::/ =~ string
+        word = string.to_s.gsub("::", "/")
+        word.gsub!(/([A-Z\d]+)([A-Z][a-z])/, '\1_\2')
+        word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+        word.tr!("-", "_")
+        word.downcase!
+        word
       end
   
       def camelcase(string)
