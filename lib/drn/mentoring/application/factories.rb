@@ -5,6 +5,10 @@ module Drn
       def products
         @products ||= ProductRepository.new
       end
+
+      def sessions
+        @sessions ||= SessionRepository.new
+      end
     end
   end
 end
