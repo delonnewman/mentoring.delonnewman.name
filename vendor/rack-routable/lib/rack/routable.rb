@@ -147,17 +147,52 @@ module Rack
       end
 
       def redirect_to(url)
-        Rack::Response.new.redirect(url)
+        Rack::Response.new.tap do |r|
+          r.redirect(url)
+        end
       end
     end
 
     module InstanceMethods
+      def not_found(env)
+        io = StringIO.new
+        io.puts "<h1>Not Found</h1>"
+
+        io.puts "<h2>Valid Routes</h2>"
+        io.puts "<table><tbody>"
+        self.class.routes.each do |method, path, app|
+          if method == :mount && app.is_a?(Rack::Routable)
+            app.class.routes.each do |method, app_path|
+              io.puts "<tr><td>#{method}</td><td>#{path + app_path} => #{app_path}</td>"
+            end
+          elsif method == :mount
+            io.puts "<tr><td>#{method}</td><td>#{path}</td>"
+          else
+            io.puts "<tr><td>#{method}</td><td>#{path}</td>"
+          end
+        end
+        io.puts "</tbody></table>"
+
+        io.puts "<h2>Environment</h2>"
+        io.puts "<table><tbody>"
+        env.each do |key, value|
+          io.puts "<tr><td>#{key}</td><td>#{value.inspect}</td>"
+        end
+        io.puts "</tbody></table>"
+        
+        [404, DEFAULT_HEADERS, [io.string]]
+      end
+
+      def error(env)
+        [500, DEFAULT_HEADERS, StringIO.new('Server Error')]
+      end
+
       # TODO: add error and not_found to the DSL
       def call(env)
         req   = Request.new(env)
         match = self.class.routes.match(env)
 
-        return [404, DEFAULT_HEADERS, StringIO.new('Not Found')] unless match
+        return not_found(env) unless match
 
         case match[:tag]
         when :app
@@ -171,13 +206,14 @@ module Rack
                   match[:value].call(params, req)
                 rescue => e
                   if (env = ENV.fetch('RACK_ENV') { :development }.to_sym) == :production
-                    return [500, DEFAULT_HEADERS, StringIO.new('Server Error')]
+                    env['rack.routable.error'] = e
+                    return error(env)
                   else
                     raise e
                   end
                 end
   
-          if res.is_a?(Array) && res.size == 3
+          if res.is_a?(Array) && res.size == 3 && res[0].is_a?(Integer) 
             res
           elsif res.is_a?(Response)
             res.to_a

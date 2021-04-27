@@ -6,8 +6,19 @@ module Rack
     # @api private
     # @todo Add header matching
     class Routes
+      include Enumerable
+
       def initialize
         @table = {}
+      end
+
+      def each(&block)
+        @table.each do |method, routes|
+          routes.each do |data|
+            block.call(method, data.last, data[1])
+          end
+        end
+        self
       end
   
       # Add a route to the table.
@@ -22,13 +33,13 @@ module Rack
         # TODO: Add Symbol#name for older versions of Ruby
         method = method.name.upcase
         @table[method] ||= []
-        @table[method] << [parse_path(path), action]
+        @table[method] << [parse_path(path), action, path]
         self
       end
 
       def mount!(prefix, app, options)
         @table[:mount] ||= []
-        @table[:mount] << [parse_path(prefix)[:path], app]
+        @table[:mount] << [parse_path(prefix)[:path], app, prefix]
         self
       end
   
@@ -57,7 +68,7 @@ module Rack
           mounted.each do |(prefix, app)|
             if path_start_with?(parts, prefix)
               app_path = "/#{parts[prefix.size, parts.size].join('/')}"
-              return { tag: :app, value: app, env: env.merge('PATH_INFO' => app_path) }
+              return { tag: :app, value: app, env: env.merge('PATH_INFO' => app_path, 'rack-routable.original-path' => path) }
             end
           end
         end
@@ -116,7 +127,7 @@ module Rack
         params
       end
   
-      NAME_PATTERN = /\A\w+\z/.freeze
+      NAME_PATTERN = /\A[\w\-]+\z/.freeze
       private_constant :NAME_PATTERN
     end
   end

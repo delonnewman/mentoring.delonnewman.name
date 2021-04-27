@@ -1,10 +1,19 @@
 require 'rack/routable'
 
 RSpec.describe Rack::Routable do
+  class Mounted
+    include Rack::Routable
+
+    post '/' do
+      'posted to /'
+    end
+  end
+
   class TestApp
     include Rack::Routable
 
     mount '/test', ->(env) { env['PATH_INFO'] }
+    mount '/mounted', Mounted.new
 
     get ?/ do
       'root dir'
@@ -28,10 +37,16 @@ RSpec.describe Rack::Routable do
     end
 
     it 'should mount other rack apps' do
-      %w{ /test /test/new }.each do |path|
-        env = Rack::MockRequest.env_for(path)
-        expect(app.call(env)).to eq path
+      { '/test' => '/', '/test/new' => '/new' }.each_pair do |prefixed, unprefixed|
+        env = Rack::MockRequest.env_for(prefixed)
+        expect(app.call(env)).to eq unprefixed
       end
+    end
+
+    it 'should pass post requests to mounted rack apps' do
+      env = Rack::MockRequest.env_for('/mounted')
+      env['REQUEST_METHOD'] = 'POST'
+      expect(app.call(env)[2].string).to eq 'posted to /'
     end
   end
 end
