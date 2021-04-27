@@ -21,7 +21,7 @@ task :setup => :'db:migrate'
 namespace :db do
   desc "Run migrations"
   task :migrate do
-    sh "bundle exec sequel #{ENV['DATABASE_URL']} -m db/migrations/"
+    sh "source .env && bundle exec sequel $DATABASE_URL -m db/migrations/"
   end
 end
 
