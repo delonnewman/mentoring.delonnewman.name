@@ -8,15 +8,21 @@ module Drn
         @factory = factory
       end
 
-      def logger
-        App.logger
-      end
-  
       def each(&block)
         @dataset.each do |row|
           block.call(@factory[row])
         end
         self
+      end
+
+      def find_by(attributes)
+        record = @dataset.where(attributes).first
+        return nil unless record
+        @factory[record]
+      end
+
+      def find_by!(attributes)
+        find_by(attributes) or raise "Could not find record with: #{attributes.inspect}" 
       end
 
       def store!(record)
@@ -29,9 +35,16 @@ module Drn
         self
       end
   
-      private
+      protected
 
       attr_reader :dataset, :factory
+
+      %i[logger db].each do |method|
+        define_method method do
+          App.send(method)
+        end
+        private method
+      end
 
       def run(query, *args, factory: nil, &block)
         results = []
