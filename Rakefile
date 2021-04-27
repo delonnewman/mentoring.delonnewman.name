@@ -36,3 +36,7 @@ namespace :gem do
     sh "bundle exec gem rdoc --all"
   end
 end
+
+namespace :assets do
+
+end

@@ -34,10 +34,11 @@ module Drn
           # the actual Session ID is returned in the query parameter when your customer
           # is redirected to the success page.
           begin
-            session = Stripe::Checkout::Session.create(product.session_data)
+            session = Stripe::Checkout::Session.create(session_data(product))
             logger.info "Session created: #{session.inspect}"
-            render json: product.success_data(session)
+            render json: success_data(product, session)
           rescue => e
+            logger.error e
             render json: { error: { message: e.message } }, status: 400
           end
         end

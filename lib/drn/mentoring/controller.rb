@@ -7,8 +7,8 @@ module Drn
       # delegate all immutable instance methods of Application to "App"
       Application.instance_methods(false).each do |method|
         next if Application::METHODS_NOT_SHARED.include?(method)
-        define_singleton_method method do
-          App.send(method)
+        define_singleton_method method do |*args|
+          App.send(method, *args)
         end
       end
 

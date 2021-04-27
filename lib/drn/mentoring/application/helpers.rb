@@ -14,13 +14,13 @@ module Drn
           success_url: success_url(product),
           cancel_url: 'http://localhost:9393',
           payment_method_types: ['card'],
-          mode: checkout_mode,
+          mode: product.checkout_mode,
         }
         
         if not product.recurring?
           data
         else
-          data.merge!(line_items: [{ quantity: 1, price: price_id }])
+          data.merge!(line_items: [{ quantity: 1, price: product.price_id }])
         end
       end
 

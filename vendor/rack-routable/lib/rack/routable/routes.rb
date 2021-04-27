@@ -56,7 +56,7 @@ module Rack
         if (mounted = @table[:mount])
           mounted.each do |(prefix, app)|
             if path_start_with?(parts, prefix)
-              app_path = "/#{parts[prefix.size - 1, parts.size].join('/')}"
+              app_path = "/#{parts[prefix.size, parts.size].join('/')}"
               return { tag: :app, value: app, env: env.merge('PATH_INFO' => app_path) }
             end
           end
