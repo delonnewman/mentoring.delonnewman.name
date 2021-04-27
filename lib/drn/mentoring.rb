@@ -12,6 +12,9 @@ Dotenv.load
 module Drn
   # A web application for managing mentoring services online.
   module Mentoring
+    # Simple utility methods
+    require_relative 'mentoring/utils'
+
     # Application state
     require_relative 'mentoring/application'
     App = Application.new.init!

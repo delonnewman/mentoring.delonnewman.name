@@ -29,7 +29,7 @@ module Drn
           # set ended_at timestamp for session
           # mentor should be able to update timestamp
           # calculate quantity from started_at and ended_at
-          # redirect to checkout
+          # mentor okays the checkout
         end
       end
     end

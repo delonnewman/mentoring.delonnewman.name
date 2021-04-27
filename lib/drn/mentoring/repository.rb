@@ -7,6 +7,10 @@ module Drn
         @dataset = dataset
         @factory = factory
       end
+
+      def logger
+        App.logger
+      end
   
       def each(&block)
         @dataset.each do |row|

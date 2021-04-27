@@ -13,6 +13,7 @@ gem 'sqlite3'
 gem 'sequel'
 gem 'hash_delegator', git: 'https://github.com/delonnewman/hash_delegator.git'
 gem 'erubi'
+gem 'inflection'
 
 group :development, :test do
   gem 'rake'

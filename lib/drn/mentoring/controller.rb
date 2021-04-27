@@ -3,6 +3,7 @@ module Drn
   module Mentoring
     class Controller
       include Rack::Routable
+      extend Utils
 
       # delegate all immutable instance methods of Application to "App"
       Application.instance_methods(false).each do |method|
@@ -14,7 +15,7 @@ module Drn
 
       class << self
         def template_path
-          @template_path ||= App.root.join('templates', name.split('::').last.downcase)
+          @template_path ||= App.root.join('templates', camelcase(name.split('::').last.downcase))
         end
   
         def render(view = nil, **options)

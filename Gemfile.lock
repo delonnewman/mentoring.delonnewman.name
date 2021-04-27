@@ -16,6 +16,7 @@ GEM
     diff-lcs (1.4.4)
     dotenv (2.7.6)
     erubi (1.10.0)
+    inflection (1.0.0)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.7)
@@ -62,6 +63,7 @@ DEPENDENCIES
   dotenv
   erubi
   hash_delegator!
+  inflection
   puma
   rack
   rack-contrib
