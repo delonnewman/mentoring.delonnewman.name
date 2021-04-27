@@ -28,7 +28,7 @@ module Rack
 
       def mount!(prefix, app, options)
         @table[:mount] ||= []
-        @table[:mount] << [prefix, app]
+        @table[:mount] << [parse_path(prefix)[:path], app]
         self
       end
   
@@ -55,8 +55,9 @@ module Rack
 
         if (mounted = @table[:mount])
           mounted.each do |(prefix, app)|
-            if path =~ /^#{prefix}/
-              return { tag: :app, value: app, env: env.merge('PATH_INFO' => path.gsub(prefix, '')) }
+            if path_start_with?(parts, prefix)
+              app_path = "/#{parts[prefix.size - 1, parts.size].join('/')}"
+              return { tag: :app, value: app, env: env.merge('PATH_INFO' => app_path) }
             end
           end
         end
@@ -82,6 +83,20 @@ module Rack
         end
   
         { names: names, path: route }
+      end
+
+      def path_start_with?(path, prefix)
+        return true  if path == prefix
+        return false if path.size < prefix.size
+
+        res = false
+        path.each_with_index do |part, i|
+          res = true   if prefix[i] == part
+          break        if prefix[i].nil?
+          return false if prefix[i] != part
+        end
+
+        res
       end
 
       def match_path(path, route)

@@ -9,7 +9,7 @@ RSpec.describe Rack::Routable::Routes do
       match  = routes.match(Rack::MockRequest.env_for('/testing'))
       
       expect(match).not_to be false
-      match[:action].call
+      match[:value].call
 
       expect($test).to eq 3
     end
@@ -25,19 +25,19 @@ RSpec.describe Rack::Routable::Routes do
       match = routes.match(Rack::MockRequest.env_for('/user/1'))
       expect(match).not_to be false
 
-      match[:action].call
+      match[:value].call
       expect($test).to eq 4
 
       match = routes.match(Rack::MockRequest.env_for('/user/1/settings'))
       expect(match).not_to be false
 
-      match[:action].call
+      match[:value].call
       expect($test).to eq 5
 
       match = routes.match(Rack::MockRequest.env_for('/user/1/packages/abad564'))
       expect(match).not_to be false
 
-      match[:action].call
+      match[:value].call
       expect($test).to eq 6
     end
   end
