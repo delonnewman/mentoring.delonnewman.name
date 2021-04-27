@@ -6,6 +6,8 @@ Sequel.migration do
       Integer :status, null: false, index: true, default: 0
       Time    :started_at, null: false, index: true
       Time    :ended_at, index: true
+
+      primary_key :instant_session_id
     end
   end
 end
