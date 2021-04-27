@@ -14,14 +14,37 @@ module Drn
       end
 
       class << self
+        def call(env)
+          
+        end
+
         def template_path
-          @template_path ||= App.root.join('templates', camelcase(name.split('::').last.downcase))
+          @template_path ||= root.join('templates', cononical_name)
+        end
+
+        def layout_path
+          @layout_path ||= root.join('templates', 'layouts', "#{layout}.html.erb")
+        end
+
+        def cononical_name
+          snakecase(name.split('::').last)
+        end
+
+        def path_name
+          "lib/#{snakecase(name)}.rb"
+        end
+
+        def layout(value = nil)
+          @layout = value unless value.nil?
+          @layout.nil? ? cononical_name : @layout
+        end
+
+        def no_layout!
+          layout false
         end
   
-        def render(view = nil, **options)
-          if view.respond_to?(:call)
-            response view.call, **options
-          elsif view.nil?
+        def render(name = nil, **options)
+          if name.nil?
             if (content = options.delete(:json))
               opts = options.merge(headers: { 'Content-Type' => 'application/json' })
               response content.to_json, **opts
@@ -32,7 +55,8 @@ module Drn
               raise "No content to render has been specified"
             end
           else
-            response render_erb(view), **options
+            view = options.delete(:with)
+            response render_erb(name, view), **options
           end
         end
 
@@ -41,11 +65,35 @@ module Drn
         def template_cache
           @template_cache ||= {}
         end
-  
-        def render_erb(view)
-          template_cache[view] ||= Erubi::Engine.new(File.read(template_path.join("#{view}.html.erb"))).src
 
-          eval template_cache[view]
+        def template_content(view, path)
+          if App.env == :production && (cached = template_cache[view])
+            cached
+          else
+            code = Erubi::Engine.new(File.read(path)).src
+            template_cache[view] = code if App.env == :production
+            code
+          end
+        end
+  
+        def render_erb(name, __view__)
+          __binding__ = binding
+
+          if __view__.is_a?(Hash)
+            __data__ = __view__
+            __data__.each_pair do |key, value|
+              __binding__.local_variable_set(key, value)
+            end
+          end
+
+          __path__ = template_path.join("#{name}.html.erb")
+
+          if layout
+            __content__ = eval(template_content(name, __path__), __binding__)
+            eval(template_content(:layout, layout_path), __binding__)
+          else
+            eval(template_content(name, __path__), __binding__)
+          end
         end
       end
     end
