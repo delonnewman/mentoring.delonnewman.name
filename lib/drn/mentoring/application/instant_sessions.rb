@@ -3,14 +3,15 @@ module Drn
     class Application
       class InstantSessions < Controller
         get '/new' do |params|
-          session_id = params['session_id']
+          # start / cancel buttons with some instructions
+          render :new, with: { checkout_session_id: params['session_id'] }
         end
 
         # create session
         post '/' do
           # create database record session_id:UUID, stripe_session_id:String, started_at:Time, ended_at:Time 
-          # session = sessions.create!(stripe_session_id: params['session_id'])
-          # redirect_to session_path(session.session_id)
+          session = sessions.create!(checkout_session_id: params['session_id'])
+          redirect_to "/session/#{session.session_id}"
         end
 
         # show session
@@ -18,6 +19,7 @@ module Drn
           # Display timer
           # Have a link to a Zoom Session
           # Display chat & shared code editor
+          render :show, with: { session: sessions.find_by!(instant_session_id: params[:id]) }
         end
 
         # update session
