@@ -15,7 +15,7 @@ var handleFetchResult = function(result) {
 
 // Create a Checkout Session with the selected plan ID
 var createCheckoutSession = function(priceId) {
-  return fetch("/create-checkout-session", {
+  return fetch("/checkout/session", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -39,40 +39,31 @@ var showErrorMessage = function(message) {
   errorEl.style.display = "block";
 };
 
+function initPrice(stripe) {
+    return function (price) {
+        if (price.price_key == null) throw new Error("Price key should not be null");
+        var elemId = "btn-" + price.price_key;
+        console.log('initializing ', elemId, ' with ', price);
+
+        // TODO: return price or create a Checkout class and return it's instance
+        return document
+          .getElementById(elemId)
+          .addEventListener("click", function(evt) {
+              console.log('Creating session for ', price);
+              createCheckoutSession(price.price_id).then(function(data) {
+                  stripe
+                    .redirectToCheckout({ sessionId: data.sessionId })
+                    .then(handleResult);
+            });
+          });
+    }
+}
+
 /* Get your Stripe publishable key to initialize Stripe.js */
-fetch("/setup")
+fetch("/checkout/setup")
   .then(handleFetchResult)
   .then(function(json) {
-    var publishableKey = json.publishableKey;
-    var basicPriceId = json.basicPrice;
-    var proPriceId = json.proPrice;
-
+    var publishableKey = json.pub_key;
     var stripe = Stripe(publishableKey);
-    // Setup event handler to create a Checkout Session when button is clicked
-    document
-      .getElementById("basic-plan-btn")
-      .addEventListener("click", function(evt) {
-        createCheckoutSession(basicPriceId).then(function(data) {
-          // Call Stripe.js method to redirect to the new Checkout page
-          stripe
-            .redirectToCheckout({
-              sessionId: data.sessionId
-            })
-            .then(handleResult);
-        });
-      });
-
-    // Setup event handler to create a Checkout Session when button is clicked
-    document
-      .getElementById("pro-plan-btn")
-      .addEventListener("click", function(evt) {
-        createCheckoutSession(proPriceId).then(function(data) {
-          // Call Stripe.js method to redirect to the new Checkout page
-          stripe
-            .redirectToCheckout({
-              sessionId: data.sessionId
-            })
-            .then(handleResult);
-        });
-      });
+    json.prices.forEach(initPrice(stripe));
   });

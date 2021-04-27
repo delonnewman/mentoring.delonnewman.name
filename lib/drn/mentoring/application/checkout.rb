@@ -3,55 +3,42 @@ module Drn
   module Mentoring
     class Application
       class Checkout < Controller
-        static '/' => App.root.join('public')
-
-        get '/' do
-          render :index
-        end
-
         get '/setup' do
-          render json: {
-            publishableKey: ENV['STRIPE_PUB_KEY'],
-            basicPrice: ENV['BASIC_PRICE_ID'],
-            proPrice: ENV['PRO_PRICE_ID']
-          }
+          settings = { pub_key: ENV.fetch('STRIPE_PUB_KEY') }
+
+          settings[:prices] = products.map do |product|
+            product.to_h.slice(:price_key, :price_id, :name, :recurring)
+          end
+
+          render json: settings
         end
 
         # Fetch the Checkout Session to display the JSON result on the success page
-        get '/checkout-session' do |params|
-          #content_type 'application/json'
-          session_id = params[:sessionId]
+        # TODO: Remove
+        get '/session/:session_id' do |params|
+          logger.info "Checkout Session params: #{params.inspect}"
         
-          session = Stripe::Checkout::Session.retrieve(session_id)
-          render json: session
+          render json: Stripe::Checkout::Session.retrieve(params[:session_id])
         end
 
-        post '/create-checkout-session' do |params, request|
+        post '/session' do |params, request|
           data = JSON.parse(request.body.read)
-        
+          product = products.by_price_id!(data['priceId'])
+
+          logger.info "From Price ID: #{data['priceId'].inspect}"
+          logger.info "Creating session with #{product.inspect}"
+
           # See https://stripe.com/docs/api/checkout/sessions/create
           # for additional parameters to pass.
           # {CHECKOUT_SESSION_ID} is a string literal; do not change it!
           # the actual Session ID is returned in the query parameter when your customer
           # is redirected to the success page.
           begin
-            session = Stripe::Checkout::Session.create(
-              success_url: 'http://localhost:9393/success.html?session_id={CHECKOUT_SESSION_ID}',
-              cancel_url: 'http://localhost:9393/canceled.html',
-              payment_method_types: ['card'],
-              mode: 'subscription',
-              line_items: [{
-                # For metered billing, do not pass quantity
-                quantity: 1,
-                price: data['priceId'],
-              }],
-            )
-        
-            render json: { sessionId: session.id }
+            session = Stripe::Checkout::Session.create(product.session_data)
+            logger.info "Session created: #{session.inspect}"
+            render json: product.success_data(session)
           rescue => e
-            { status: 400,
-              headers: { 'Content-Type' => 'application/json' },
-              body: StringIO.new({ 'error': { message: e.error.message } }.to_json) }
+            render json: { error: { message: e.message } }, status: 400
           end
         end
 

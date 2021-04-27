@@ -4,6 +4,14 @@ module Drn
     class Controller
       include Rack::Routable
 
+      # delegate all immutable instance methods of Application to "App"
+      Application.instance_methods(false).each do |method|
+        next if Application::METHODS_NOT_SHARED.include?(method)
+        define_singleton_method method do
+          App.send(method)
+        end
+      end
+
       class << self
         def template_path
           @template_path ||= App.root.join('templates', name.split('::').last.downcase)
@@ -28,10 +36,15 @@ module Drn
         end
 
         private
+
+        def template_cache
+          @template_cache ||= {}
+        end
   
         def render_erb(view)
-          # TODO: add caching
-          eval Erubi::Engine.new(File.read(template_path.join("#{view}.html.erb"))).src
+          template_cache[view] ||= Erubi::Engine.new(File.read(template_path.join("#{view}.html.erb"))).src
+
+          eval template_cache[view]
         end
       end
     end

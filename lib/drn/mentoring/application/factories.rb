@@ -1,8 +1,9 @@
+# frozen_string_literal: true
 module Drn
   module Mentoring
     class Application
       def products
-        @products ||= Stripe::Product.list
+        @products ||= ProductRepository.new
       end
     end
   end

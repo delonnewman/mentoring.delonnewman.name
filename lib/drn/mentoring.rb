@@ -16,13 +16,6 @@ module Drn
     require_relative 'mentoring/application'
     App = Application.new.init!
 
-    # Controllers
-    require_relative 'mentoring/controller'
-    require_relative 'mentoring/application/checkout'
-
-    # Factory Methods
-    require_relative 'mentoring/application/factories'
-
     # Entities
     require_relative 'mentoring/entity'
     require_relative 'mentoring/product'
@@ -30,5 +23,17 @@ module Drn
     # Repositories
     require_relative 'mentoring/repository'
     require_relative 'mentoring/product_repository'
+
+    # Factory Methods
+    require_relative 'mentoring/application/factories'
+
+    # Simple utility methods for controller / view code
+    require_relative 'mentoring/application/helpers'
+
+    # Controllers
+    require_relative 'mentoring/controller'
+    require_relative 'mentoring/application/checkout'
+    require_relative 'mentoring/application/instant_sessions'
+    require_relative 'mentoring/application/main'
   end
 end

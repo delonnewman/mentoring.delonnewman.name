@@ -1,3 +1,10 @@
+task :default => :spec
+
+desc "Run spec"
+task :spec do
+  sh "bundle exec rspec"
+end
+
 desc "Open project console"
 task :console do
   sh "irb -r ./lib/drn/mentoring.rb"

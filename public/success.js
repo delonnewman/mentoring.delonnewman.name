@@ -3,7 +3,7 @@ const sessionId = urlParams.get("session_id")
 let customerId;
 
 if (sessionId) {
-  fetch("/checkout-session?sessionId=" + sessionId)
+  fetch("/checkout/session/" + sessionId)
     .then(function(result){
       return result.json()
     })

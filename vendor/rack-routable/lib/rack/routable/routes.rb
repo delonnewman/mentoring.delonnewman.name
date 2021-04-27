@@ -25,6 +25,12 @@ module Rack
         @table[method] << [parse_path(path), action]
         self
       end
+
+      def mount!(prefix, app, options)
+        @table[:mount] ||= []
+        @table[:mount] << [prefix, app]
+        self
+      end
   
       # Match a route in the table to the given Rack environment.
       #
@@ -39,12 +45,19 @@ module Rack
         parts  = path.split(/\/+/)
 
   
-        routes = @table[method]
-        return if routes.nil?
-  
-        routes.each do |(route, action)|
-          if (params = match_path(parts, route))
-            return { action: action, params: params }
+        if (routes = @table[method])
+          routes.each do |(route, action)|
+            if (params = match_path(parts, route))
+              return { tag: :action, value: action, params: params }
+            end
+          end
+        end
+
+        if (mounted = @table[:mount])
+          mounted.each do |(prefix, app)|
+            if path =~ /^#{prefix}/
+              return { tag: :app, value: app, env: env.merge('PATH_INFO' => path.gsub(prefix, '')) }
+            end
           end
         end
   

@@ -71,6 +71,8 @@ module Rack
       base.include(InstanceMethods)
     end
 
+    # TODO: implement custom query parser
+
     module DSL
       # A "macro" method to specify paths that should be used to serve static files.
       # They will be served from the "public" directory within the applications root_path.
@@ -134,6 +136,10 @@ module Rack
         end
       end
 
+      def mount(prefix, app, **options)
+        routes.mount!(prefix, app, options)
+      end
+
       def response(body, status: 200, headers: nil)
         headers = headers ? DEFAULT_HEADERS.merge(headers) : DEFAULT_HEADERS
 
@@ -152,26 +158,36 @@ module Rack
         match = self.class.routes.match(env)
 
         return [404, DEFAULT_HEADERS, StringIO.new('Not Found')] unless match
-        params = req.params.merge(match[:params])
 
-        res = begin
-                # NOTE: consider calling with instance_exec do some benchmarking
-                # to see how this would effect performance.
-                match[:action].call(params, req)
-              rescue => e
-                return [500, DEFAULT_HEADERS, StringIO.new(e.message)]
-              end
-
-        if res.is_a?(Array) && res.size == 3
-          res
-        elsif res.is_a?(Response)
-          res.to_a
-        elsif res.is_a?(Hash) && res.key?(:status)
-          [res[:status], res.fetch(:headers) { DEFAULT_HEADERS }, res[:body]]
-        elsif res.respond_to?(:each)
-          [200, DEFAULT_HEADERS, res]
-        else
-          [200, DEFAULT_HEADERS, StringIO.new(res.to_s)]
+        case match[:tag]
+        when :app
+          match[:value].call(match[:env])
+        when :action
+          params = req.params.merge(match[:params])
+  
+          res = begin
+                  # NOTE: consider calling with instance_exec do some benchmarking
+                  # to see how this would effect performance.
+                  match[:value].call(params, req)
+                rescue => e
+                  if (env = ENV.fetch('RACK_ENV') { :development }.to_sym) == :production
+                    return [500, DEFAULT_HEADERS, StringIO.new('Server Error')]
+                  else
+                    raise e
+                  end
+                end
+  
+          if res.is_a?(Array) && res.size == 3
+            res
+          elsif res.is_a?(Response)
+            res.to_a
+          elsif res.is_a?(Hash) && res.key?(:status)
+            [res[:status], res.fetch(:headers) { DEFAULT_HEADERS }, res[:body]]
+          elsif res.respond_to?(:each)
+            [200, DEFAULT_HEADERS, res]
+          else
+            [200, DEFAULT_HEADERS, StringIO.new(res.to_s)]
+          end
         end
       end
     end
