@@ -1,0 +1,12 @@
+<div class="jumbotron bg-white">
+  <h1 class="display-4">You're ready to begin your session.</h1>
+  <p class="lead">If you've gotten here by mistake you can select the "Cancel" button below. Otherwise select "Start Session" and your mentor will be with you shortly.</p>
+  
+  <div class="d-flex mt-5">
+    <form action="/sessions" method="post">
+      <input type="hidden" value="<%= checkout_session_id %>" name="checkout_session_id">
+      <button class="btn btn-primary">Start Session</button>
+    </form>
+    <a href="/" class="btn btn-warning ml-2">Cancel</a>
+  </div>
+</div>
