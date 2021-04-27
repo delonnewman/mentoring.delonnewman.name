@@ -1,1 +1,9 @@
+<% unless session.ended? %>
+  <div class="d-flex mt-5">
+    <form action="<%= session_path(session) %>" method="DELETE">
+      <button class="btn btn-danger">End Session</button>
+    </form>
+  </div>
+<% end %>
+
 <pre><%=h session.inspect %></pre>

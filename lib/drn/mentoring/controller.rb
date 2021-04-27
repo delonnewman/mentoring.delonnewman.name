@@ -15,7 +15,7 @@ module Drn
 
       class << self
         def call(env)
-          
+          new(env).call
         end
 
         def template_path
@@ -50,7 +50,7 @@ module Drn
               response content.to_json, **opts
             elsif (content = options.delete(:plain))
               opts = options.merge(headers: { 'Content-Type' => 'text/plain' })
-              response content.to_s, **opts
+              response content, **opts
             else
               raise "No content to render has been specified"
             end

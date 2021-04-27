@@ -7,6 +7,7 @@ module Drn
       def complete?
         !incomplete?
       end
+      alias ended? complete?
 
       def incomplete?
         ended_at.nil?

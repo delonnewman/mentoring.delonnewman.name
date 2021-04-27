@@ -8,10 +8,10 @@ module Drn
         end
 
         # create session
-        post '/' do
+        post '/' do |params|
           # create database record session_id:UUID, stripe_session_id:String, started_at:Time, ended_at:Time 
-          session = sessions.create!(checkout_session_id: params['session_id'])
-          redirect_to "/session/#{session.session_id}"
+          session = sessions.create!(checkout_session_id: params['checkout_session_id'])
+          redirect_to session_path(session)
         end
 
         # show session
@@ -23,7 +23,9 @@ module Drn
         end
 
         # update session
-        post '/:id' do
+        post '/:id' do |params|
+          session = sessions.update!(params[:id], params['session'])
+          redirect_to session_path(session)
         end
 
         # end session
@@ -32,6 +34,14 @@ module Drn
           # mentor should be able to update timestamp
           # calculate quantity from started_at and ended_at
           # mentor okays the checkout
+          session = sessions.end!(params[:id])
+          redirect_to session_path(session)
+        end
+
+        class << self
+          def session_path(session)
+            "/session/#{session.instant_session_id}"
+          end
         end
       end
     end
