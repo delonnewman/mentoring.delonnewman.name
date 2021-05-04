@@ -1,10 +1,6 @@
 module Drn
   module Mentoring
     class ProductRepository < Repository
-      def initialize
-        super(db[:products], Product)
-      end
-
       def by_price_id(price_id)
         find { |product| product.price_id == price_id }
       end

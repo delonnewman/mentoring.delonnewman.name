@@ -21,8 +21,12 @@ module Drn
     require_relative 'mentoring/application'
     App = Application.new.init!
 
+    # Entity Roles
+    require_relative 'mentoring/recurrable'
+
     # Entities
     require_relative 'mentoring/entity'
+    require_relative 'mentoring/product_rate'
     require_relative 'mentoring/product'
     require_relative 'mentoring/session'
     require_relative 'mentoring/user'

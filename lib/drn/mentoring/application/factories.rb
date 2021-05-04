@@ -3,15 +3,15 @@ module Drn
   module Mentoring
     class Application
       def products
-        @products ||= ProductRepository.new
+        Product.repository
       end
 
       def sessions
-        @sessions ||= SessionRepository.new
+        Session.repository
       end
 
       def users
-        @users ||= UserRepository.new
+        User.repository
       end
     end
   end

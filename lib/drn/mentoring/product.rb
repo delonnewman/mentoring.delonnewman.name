@@ -1,15 +1,17 @@
 module Drn
   module Mentoring
     class Product < Entity
-      require :product_id, :name, :description, :image_url, :price_id, :unit_amount, :recurring
+      include Recurrable
+      has :product_id,  :uuid
+      has :name,        String
+      has :description, String
+      has :amount,      Integer
+      has :rate,        ProductRate
 
-      def recurring?
-        !recurring.nil? && recurring != false
-      end
-      alias subscription? recurring?
+      def_delegator :rate, :recurring?
 
       def price
-        unit_amount.to_f / 100
+        amount.to_f / 100
       end
 
       def checkout_mode
