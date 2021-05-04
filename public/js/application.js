@@ -41,8 +41,8 @@ var showErrorMessage = function(message) {
 
 function initPrice(stripe) {
     return function (price) {
-        if (price.product_id == null) throw new Error("Product ID should not be null");
-        var elemId = "btn-" + price.product_id;
+        if (price.price_id == null) throw new Error("Price ID should not be null");
+        var elemId = "btn-" + price.price_id;
         console.log('initializing ', elemId, ' with ', price);
 
         // TODO: return price or create a Checkout class and return it's instance
