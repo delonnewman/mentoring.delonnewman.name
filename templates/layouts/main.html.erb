@@ -6,6 +6,7 @@
     <meta name="description" content="Learn How to Code--Mentoring in Computer Programming">
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/fontawesome.min.css" />
 
     <title>Learn How to Code--Mentoring in Computer Programming</title>
   </head>
@@ -20,13 +21,18 @@
         <span class="navbar-text">
           <%= current_user %>
         </span>
+      <% else %>
+        <a class="btn btn-secondary btn-sm" href="/login">
+          <i class="fas fa-sign-in-alt"></i>
+          Log In
+        </a>
       <% end %>
     </nav>
     <main class="container">
       <%= __content__ %>
     </main>
 
-    <script src="/js/jquery.slim.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
   </body>
 </html>

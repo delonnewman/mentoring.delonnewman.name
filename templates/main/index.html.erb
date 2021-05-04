@@ -5,10 +5,12 @@
         class="card-img-top"
         src="<%= product.image_url %>">
       <div class="card-body">
-      <h5 class="card-title name"><%= product.name %></h5>
-      <div class="price">$<%= sprintf "%.2f", product.price %></div>
-      <div class="description"><%= product.description %></div>
-      <button id="btn-<%= product.product_id %>">Select</button>
+        <h5 class="card-title name"><%= product.name %></h5>
+        <div class="description"><%= product.description %></div>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <div class="price font-weight-bold" style="font-size: 1.5em"><%= money product.price %></div>
+        <button id="btn-<%= product.product_id %>" class="btn btn-primary">Select</button>
       </div>
     </section>
   <% end %>

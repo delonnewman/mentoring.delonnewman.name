@@ -3,6 +3,7 @@ module Drn
   module Mentoring
     class Controller
       include Rack::Routable
+      include Utils
       extend Utils
 
       # delegate all immutable instance methods of Application to "App"

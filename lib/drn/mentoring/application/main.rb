@@ -14,11 +14,7 @@ module Drn
         mount '/session',  InstantSessions
 
         get '/' do
-          if current_user
-            render :index
-          else
-            redirect_to '/login'
-          end
+          render :index
         end
 
         get '/login' do
@@ -56,7 +52,7 @@ module Drn
         end
 
         def logout!
-          request.sesion.delete(:current_user_id)
+          request.session.delete(:current_user_id)
           @current_user = nil
         end
       end

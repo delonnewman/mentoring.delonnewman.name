@@ -3,6 +3,10 @@ module Drn
     module Utils
       module_function
 
+      def money(amount, unit: '$')
+        "#{unit}#{sprintf "%.2f", amount}"
+      end
+
       def html_escape(string)
         CGI.escapeHTML(string)
       end
