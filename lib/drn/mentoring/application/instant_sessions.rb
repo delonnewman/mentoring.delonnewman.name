@@ -38,10 +38,8 @@ module Drn
           redirect_to session_path(session)
         end
 
-        class << self
-          def session_path(session)
-            "/session/#{session.instant_session_id}"
-          end
+        def session_path(session)
+          "/session/#{session.instant_session_id}"
         end
       end
     end
