@@ -67,3 +67,16 @@ fetch("/checkout/setup")
     var stripe = Stripe(publishableKey);
     json.prices.forEach(initPrice(stripe));
   });
+
+$('[data-method=post]').each(function() {
+    var $elem = $(this);
+    $elem.on('click', function() {
+        // TODO: collect other data attributes to pass as data
+        $.ajax({
+            url: $elem.attr('href'),
+            dataType: 'script',
+            type: "POST"
+        });
+        return false;
+    });
+});

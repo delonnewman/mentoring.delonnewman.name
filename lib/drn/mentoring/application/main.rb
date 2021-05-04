@@ -34,6 +34,7 @@ module Drn
         end
 
         post '/logout' do
+          logger.info request.content_type
           logout!
           redirect_to '/'
         end
