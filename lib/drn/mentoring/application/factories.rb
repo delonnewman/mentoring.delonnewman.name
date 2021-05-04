@@ -9,6 +9,10 @@ module Drn
       def sessions
         @sessions ||= SessionRepository.new
       end
+
+      def users
+        @users ||= UserRepository.new
+      end
     end
   end
 end

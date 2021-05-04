@@ -25,11 +25,13 @@ module Drn
     require_relative 'mentoring/entity'
     require_relative 'mentoring/product'
     require_relative 'mentoring/session'
+    require_relative 'mentoring/user'
 
     # Repositories
     require_relative 'mentoring/repository'
     require_relative 'mentoring/product_repository'
     require_relative 'mentoring/session_repository'
+    require_relative 'mentoring/user_repository'
 
     # Factory Methods
     require_relative 'mentoring/application/factories'

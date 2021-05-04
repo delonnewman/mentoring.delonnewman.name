@@ -1,34 +1,21 @@
 #!/usr/bin/env ruby
 require_relative '../lib/drn/mentoring'
 
-# TODO: load from Stripe
-#pp products = Stripe::Product.list.map(&:to_hash).map do |p|
-#  p.transform_keys do |key|
-#    case key
-#    when :id
-#      :product_id
-#    else
-#      key
-#    end
-#  end.slice(:product_id, :name, :description)
-#end
-#
-#Drn::Mentoring::App.products.store_all!(product_list.map { |p| })
-
 include Drn::Mentoring
 
-products = [
+products = Stripe::Price.list.map do |price|
+  product = Stripe::Product.retrieve(price.product)
   Product[
-    product_id: 'prod_JIAjE0urGokndj',
-    name: 'Ongoing Mentoring',
-    description: 'Mentoring on a monthly basis, up to 2 hours of synchronous time (by video or phone) unlimited asynchronous time (by chat or email).',
-    image: '',
-    price: 14990,
-    recurring: 1],
-  Product[
-    product_id: 'prod_JIASFqTwHKM39y',
-    name: 'Instant Conversation',
-    description: 'Remote programming help when the mentor is available (by video conference) paid out by the hour, first 5 minutes are free.',
-    image: '',
-    price: 9990]
-]
+    product_id:  product.id,
+    name:        product.name,
+    description: product.description,
+    image_url:   product.images.first,
+    price_id:    price.id,
+    unit_amount: price.unit_amount,
+    recurring:  !price.recurring.nil?
+  ]
+end
+
+pp products
+
+App.products.store_all!(products)

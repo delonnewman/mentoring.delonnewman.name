@@ -1,35 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Learn How to Code--Mentoring in Computer Programming">
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-
-    <title>Learn How to Code--Mentoring in Computer Programming</title>
-  </head>
-  <body>
-    <main class="container">
-      <div class="d-flex mt-5">
-        <% products.each do |product| %>
-          <section class="card mr-3" style="width: 350px">
-            <img
-              class="card-img-top"
-              src="<%= product.image_url %>">
-            <div class="card-body">
-            <h5 class="card-title name"><%= product.name %></h5>
-            <div class="price">$<%= sprintf "%.2f", product.price %></div>
-            <div class="description"><%= product.description %></div>
-            <button id="btn-<%= product.price_key %>">Select</button>
-            </div>
-          </section>
-        <% end %>
+<div class="d-flex mt-5">
+  <% products.each do |product| %>
+    <section class="card mr-3" style="width: 350px">
+      <img
+        class="card-img-top"
+        src="<%= product.image_url %>">
+      <div class="card-body">
+      <h5 class="card-title name"><%= product.name %></h5>
+      <div class="price">$<%= sprintf "%.2f", product.price %></div>
+      <div class="description"><%= product.description %></div>
+      <button id="btn-<%= product.product_id %>">Select</button>
       </div>
-      <div id="error-message" class="error-message"></div>
-    </main>
-
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="./script.js" defer></script>
-  </body>
-</html>
+    </section>
+  <% end %>
+</div>
+<div id="error-message" class="error-message"></div>

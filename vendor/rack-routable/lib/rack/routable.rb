@@ -67,13 +67,13 @@ module Rack
     private_constant :EMPTY_HASH, :EMPTY_ARRAY
 
     def self.included(base)
-      base.extend(DSL)
+      base.extend(ClassMethods)
       base.include(InstanceMethods)
     end
 
     # TODO: implement custom query parser
 
-    module DSL
+    module ClassMethods
       # A "macro" method to specify paths that should be used to serve static files.
       # They will be served from the "public" directory within the applications root_path.
       # 
@@ -111,16 +111,30 @@ module Rack
         @root_path || '.'
       end
 
+      # Rack interface
+      #
+      # @param env [Hash]
+      # @returns Array<Integer, Hash, #each>
+      def call(env)
+        new(env).call
+      end
+
+      # Rack application
+      def rack
+        middleware.reduce(self) do |app, (klass, args)|
+          klass.new(app, *args)
+        end
+      end
+
+      # Valid methods for routes
+      METHODS = %i[get post delete put head link unlink].to_set.freeze
+
       # Return the routing table for the class.
       # 
       # @return [Routes]
       def routes
         @routes ||= Routes.new
       end
-
-      # Valid methods for routes
-      METHODS = %i[get post delete put head link unlink].to_set.freeze
-
       # A "macro" method for defining a route for the application.
       #
       # @param method [:get, :post, :delete :put, :head, :link :unlink]
@@ -139,22 +153,18 @@ module Rack
       def mount(prefix, app, **options)
         routes.mount!(prefix, app, options)
       end
-
-      def response(body, status: 200, headers: nil)
-        headers = headers ? DEFAULT_HEADERS.merge(headers) : DEFAULT_HEADERS
-
-        Rack::Response.new(StringIO.new(body), status, headers)
-      end
-
-      def redirect_to(url)
-        Rack::Response.new.tap do |r|
-          r.redirect(url)
-        end
-      end
     end
 
     module InstanceMethods
-      def not_found(env)
+      attr_reader :env, :request, :response
+
+      def initialize(env)
+        @env      = env
+        @request  = Rack::Request.new(env)
+        @response = Rack::Response.new
+      end
+
+      def not_found
         io = StringIO.new
         io.puts "<h1>Not Found</h1>"
 
@@ -183,16 +193,22 @@ module Rack
         [404, DEFAULT_HEADERS, [io.string]]
       end
 
-      def error(env)
+      def error
         [500, DEFAULT_HEADERS, StringIO.new('Server Error')]
       end
 
+      def redirect_to(url)
+        Rack::Response.new.tap do |r|
+          r.redirect(url)
+        end
+      end
+
       # TODO: add error and not_found to the DSL
-      def call(env)
+      def call
         req   = Request.new(env)
         match = self.class.routes.match(env)
 
-        return not_found(env) unless match
+        return not_found unless match
 
         case match[:tag]
         when :app
@@ -203,11 +219,11 @@ module Rack
           res = begin
                   # NOTE: consider calling with instance_exec do some benchmarking
                   # to see how this would effect performance.
-                  match[:value].call(params, req)
+                  instance_exec(params, req, &match[:value])
                 rescue => e
-                  if (env = ENV.fetch('RACK_ENV') { :development }.to_sym) == :production
+                  if ENV.fetch('RACK_ENV') { :development }.to_sym == :production
                     env['rack.routable.error'] = e
-                    return error(env)
+                    return error
                   else
                     raise e
                   end

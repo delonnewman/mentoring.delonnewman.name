@@ -1,7 +1,7 @@
 module Drn
   module Mentoring
     class Product < Entity
-      require :product_id, :name, :description, :image_url, :price_id, :price_key, :unit_amount, :recurring
+      require :product_id, :name, :description, :image_url, :price_id, :unit_amount, :recurring
 
       def recurring?
         !recurring.nil? && recurring != false

@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+require_relative '../lib/drn/mentoring'
+include Drn::Mentoring
+
+users = [
+  User[
+    username: 'delon',
+    displayname: 'Delon',
+    email: 'contact@delonnewman.name',
+    created_at: Time.now,
+    updated_at: Time.now,
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO']
+]
+
+pp users
+
+App.users.store_all!(users)

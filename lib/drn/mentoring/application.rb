@@ -16,13 +16,9 @@ module Drn
         @db     = Sequel.connect(ENV.fetch('DATABASE_URL'))
       end
 
-      def main
-        @main ||= Main.new
-      end
-
       # Rack interface
       def call(env)
-        main.call(env)
+        Main.rack.call(env)
       end
 
       def init!

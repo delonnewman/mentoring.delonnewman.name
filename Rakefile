@@ -2,7 +2,7 @@ task :default => :spec
 
 desc "Run spec"
 task :spec do
-  sh "bundle exec rspec"
+  sh "source .env && bundle exec rspec"
 end
 
 desc "Open project console"
