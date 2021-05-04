@@ -30,6 +30,10 @@ module Drn
       def customer?
         self[:customer] == true
       end
+
+      def to_s
+        displayname || username
+      end
     end
   end
 end

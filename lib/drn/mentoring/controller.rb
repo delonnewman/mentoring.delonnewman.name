@@ -39,6 +39,12 @@ module Drn
           layout false
         end
       end
+
+      def status(status)
+        response.tap do |r|
+          r.status = status
+        end
+      end
   
       def render(name = nil, **options)
         if name.nil?
@@ -62,6 +68,10 @@ module Drn
             res.set_header 'Content-Type', 'text/html'
           end
         end
+      end
+
+      def params
+        request.params
       end
 
       private

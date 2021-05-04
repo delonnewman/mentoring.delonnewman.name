@@ -232,7 +232,7 @@ module Rack
           if res.is_a?(Array) && res.size == 3 && res[0].is_a?(Integer) 
             res
           elsif res.is_a?(Response)
-            res.to_a
+            res.finish
           elsif res.is_a?(Hash) && res.key?(:status)
             [res[:status], res.fetch(:headers) { DEFAULT_HEADERS }, res[:body]]
           elsif res.respond_to?(:each)
