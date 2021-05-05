@@ -21,11 +21,18 @@ module Drn
       # Represents an attribute of a domain entity. Drives dynamic checks and provides
       # meta objects for reflection.
       class Attribute < HashDelegator
-        include Comparable
-        require :name, :required, :type
+        require :entity, :name, :required, :type
 
         def required?
           self[:required] == true
+        end
+
+        def optional?
+          !required?
+        end
+
+        def default
+          self[:default]
         end
 
         def type
@@ -33,7 +40,7 @@ module Drn
 
           return t                 if t.respond_to?(:call)
           return CLASSICAL_TYPE[t] if t.is_a?(Class)
-          return REGEXP_TYPE[t]    if t.is_a?(RegExp)
+          return REGEXP_TYPE[t]    if t.is_a?(Regexp)
 
           SPECIAL_TYPES[t]
         end
@@ -46,14 +53,22 @@ module Drn
           self[:mutable] == true
         end
 
-        def <=>(other)
-          name <=> other.name
+        def has_resolver?
+          key?(:resolve_with)
+        end
+
+        def resolver
+          self[:resolve_with]
+        end
+
+        def valid_value?(value)
+          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (self[:type] < Entity && value.is_a?(Hash))
         end
       end
 
       class << self
         def has(name, type = Object, **options)
-          attribute = Attribute.new({ name: name, type: type, required: true }.merge(options))
+          attribute = Attribute.new({ entity: self, name: name, type: type, required: true }.merge(options))
           @required_attributes ||= []
           @required_attributes << name if attribute.required?
 
@@ -73,17 +88,51 @@ module Drn
             end
           end
 
-          if attribute.respond_to?(:default)
-            default = attribute.default
-            if default.respond_to?(:to_proc)
-              define_method name do
-                fetch(name, &default)
-              end
-            else
-              define_method name do
-                fetch(name) { default }
+          if attribute.has_resolver? && (mapping = attribute.resolver).is_a?(Hash)
+            # type check the attribute name and mapping for security (see class_eval below)
+            unless name.is_a?(Symbol) && name.name =~ /\A\w+\z/
+              raise TypeError, "Attribute names should be symbols without special characters: #{name.inspect}:#{name.class}"
+            end
+
+            mapping.each do |key, value|
+              raise TypeError, "Keys in value mappings should be class objects: #{key.inspect}:#{key.class}" unless key.is_a?(Class)
+              unless value.is_a?(Symbol) && value.name =~ /\A\w+\z/
+                raise TypeError, "Values in value mappings should symbols without special characters: #{value.inspect}:#{value.class}"
               end
             end
+
+            code = <<~CODE
+              def #{name}
+                value = @hash[#{name.inspect}]
+                type  = self.class.attribute(#{name.inspect})[:type]
+                if value.is_a?(type)
+                  value
+                else
+                  @hash[#{name.inspect}] = type.ensure!(value)
+                end
+              end
+            CODE
+
+            class_eval code
+
+            case_body = mapping
+              .map { |(k, v)|
+                "when #{k.name}\n  repository.find_by!(#{v.inspect} => value)" }
+              .join("\n")
+
+            attribute[:type].class_eval <<~CODE
+              def self.ensure!(value)
+                case value
+                #{case_body}\n
+                when self
+                  value
+                when Hash
+                  new(value)
+                else
+                  raise TypeError, \"\#{value.inspect}:\#{value.class} cannot be coerced into \#{self}"
+                end
+              end
+            CODE
           end
 
           @attributes ||= {}
@@ -91,10 +140,11 @@ module Drn
         end
 
         def attributes(regular = true)
+          attrs = @attributes && @attributes.values || EMPTY_ARRAY
           if regular && superclass.respond_to?(:attributes)
-            (superclass.attributes + @attributes.values).sort_by(&:name)
+            (superclass.attributes + attrs).sort_by(&:name)
           else
-            @attributes.values
+            attrs
           end
         end
 
@@ -104,6 +154,10 @@ module Drn
 
         def [](attributes = EMPTY_HASH)
           new(attributes)
+        end
+
+        def ensure!(value)
+          new(value)
         end
 
         def repository_class_name(class_name = nil)
@@ -121,7 +175,7 @@ module Drn
         end
 
         def repository_table_name
-          "#{Inflection.plural(self.name.split('::').last.downcase)}"
+          "#{Inflection.plural(Utils.snakecase(self.name.split('::').last))}"
         end
 
         # When no arguments are given it will return a repository instance. When the class argument
@@ -199,14 +253,28 @@ module Drn
       end
 
       def initialize(attributes = EMPTY_HASH)
-        super(attributes)
-
+        h = {}
         self.class.attributes.each do |attribute|
-          value   = attributes[attribute.name]
-          if attribute.type.call(value)
-            raise TypeError, "#{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+          default = attribute.default
+          name    = attribute.name
+
+          value =
+            if default.respond_to?(:call)
+              attributes.fetch(name) { default.call }
+            else
+              attributes.fetch(name) { default }
+            end
+
+          next if attribute.optional? && value.nil?
+
+          h[attribute.name] = value
+
+          unless attribute.valid_value?(value)
+            raise TypeError, "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
           end
         end
+
+        super(h.freeze)
       end
     end
   end
