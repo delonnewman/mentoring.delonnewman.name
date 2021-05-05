@@ -1,7 +1,7 @@
 module Drn
   module Mentoring
     class Product < Entity
-      has :id,          :uuid,       required: false
+      has :id,          :uuid,      default: ->{ SecureRandom.uuid }
       has :name,        String
       has :description, String
       has :image_path,  String
@@ -16,14 +16,11 @@ module Drn
       end
 
       def to_h
-        if key?(:rate_id)
-          super
-            .merge(id: SecureRandom.uuid)
-            .except(:rate)
+        h = super.except(:rate)
+        if !key?(:rate_id)
+          h.merge!(rate_id: rate.id)
         else
-          super
-            .merge(id: SecureRandom.uuid, rate_id: rate.id)
-            .except(:rate)
+          h
         end
       end
 
