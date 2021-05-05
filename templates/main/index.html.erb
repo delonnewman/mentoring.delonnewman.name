@@ -1,16 +1,16 @@
 <div class="d-flex mt-5">
-  <% products.each do |product| %>
+  <% products.all.each do |product| %>
     <section class="card mr-3" style="width: 350px">
       <img
         class="card-img-top"
-        src="<%= product.image_url %>">
+        src="<%= product.image_path %>">
       <div class="card-body">
         <h5 class="card-title name"><%= product.name %></h5>
         <div class="description"><%= product.description %></div>
       </div>
       <div class="card-footer d-flex justify-content-between">
         <div class="price font-weight-bold" style="font-size: 1.5em"><%= money product.price %></div>
-        <button id="btn-<%= product.price_id %>" class="btn btn-primary">Select</button>
+        <button id="btn-<%= product.id %>" class="btn btn-primary">Select</button>
       </div>
     </section>
   <% end %>
