@@ -4,11 +4,6 @@ module Drn
     class Application
       class Main < Controller
         use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
-        #use Rack::MiniProfiler
-
-        #use OmniAuth::Builder do
-        #  provider :developer unless env == :production
-        #end
 
         mount '/checkout', Checkout
         mount '/session',  InstantSessions
