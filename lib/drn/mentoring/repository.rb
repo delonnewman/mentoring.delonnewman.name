@@ -8,6 +8,10 @@ module Drn
         @factory = factory
       end
 
+      def empty?
+        first.nil?
+      end
+
       def each(&block)
         @dataset.each do |row|
           block.call(@factory[row])
@@ -16,7 +20,7 @@ module Drn
       end
 
       def find_by(attributes)
-        record = @dataset.where(attributes).first
+        record = @dataset.first(attributes)
         return nil unless record
         @factory[record]
       end
