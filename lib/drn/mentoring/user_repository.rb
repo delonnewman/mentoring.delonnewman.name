@@ -1,10 +1,6 @@
 module Drn
   module Mentoring
     class UserRepository < Repository
-      def initialize
-        super(db[:users], User)
-      end
-
       def find_or_create_from_auth(auth)
         logger.info "User auth: #{auth.inspect}"
       end

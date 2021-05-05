@@ -26,10 +26,11 @@ module Drn
 
     # Entities
     require_relative 'mentoring/entity'
+    require_relative 'mentoring/user_role'
+    require_relative 'mentoring/user'
     require_relative 'mentoring/product_rate'
     require_relative 'mentoring/product'
     require_relative 'mentoring/session'
-    require_relative 'mentoring/user'
 
     # Repositories
     require_relative 'mentoring/repository'
@@ -48,5 +49,7 @@ module Drn
     require_relative 'mentoring/application/checkout'
     require_relative 'mentoring/application/instant_sessions'
     require_relative 'mentoring/application/main'
+
+    EMPTY_ARRAY = [].freeze
   end
 end

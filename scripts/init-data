@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+require_relative '../lib/drn/mentoring'
+include Drn::Mentoring
+
+rates = [
+  ProductRate[
+    name: 'per-month',
+    description: 'per month',
+    subscription: true],
+  ProductRate[
+    name: 'per-hour',
+    description: 'per hour'],
+  ProductRate[
+    name: 'per-minute',
+    description: 'per minute']]
+
+pp rates
+
+ProductRate.repository.store_all!(rates) if ProductRate.repository.empty?
+
+products = [
+  Product[
+    name: "Ongoing Mentoring",
+    description: "Mentoring on a monthly basis, " \
+                 "up to 2 hours of synchronous time " \
+                 "(by video or phone) unlimited asynchronous " \
+                 "time (by chat or email).",
+    image_path: '/img/mentoring.jpg',
+    amount: 15000,
+    rate: 'per-month'
+  ],
+  Product[
+    name: "Instant Help",
+    description: "Remote programming help when the mentor is " \
+                 "available (by video conference) paid out by the " \
+                 "minute, first 5 minutes are free.",
+    image_path: '/img/help.jpg',
+    amount: 200,
+    rate: 'per-minute'
+  ],
+  Product[
+    name: "Instant Conversation",
+    description: "Remote programming help when the mentor is " \
+                 "available (by video conference) paid out by the " \
+                 "hour, first 5 minutes are free.",
+    image_path: '/img/conversation.jpg',
+    amount: 10000,
+    rate: 'per-hour'
+  ]
+]
+
+pp products
+
+Product.repository.store_all!(products) if Product.repository.empty?
+
+roles = [
+  UserRole[name: 'admin'],
+  UserRole[name: 'mentor'],
+  UserRole[name: 'customer']
+]
+
+UserRole.repository.store_all!(roles) if UserRole.repository.empty?
+
+users = [
+  User[
+    username: 'delon',
+    displayname: 'Delon Newman',
+    email: 'contact@delonnewman.name',
+    role: 'admin',
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO']
+]
+
+pp users
+
+App.users.store_all!(users)
+#product_list = Stripe::Product.list
+#existing = product_list.map(&:name).to_set
+#
+#
+#products.each do |data|
+#  product =
+#    if existing.include?(data[:name])
+#      product_list.find { |p| p.name == data[:name] }
+#    else
+#      print "Creating product #{data[:name]}..."
+#      Stripe::Product.create(data.except(:price)).tap do
+#        puts "Done."
+#      end
+#    end
+#
+#  if Stripe::Price.list(product: product.id).empty?
+#    print "Creating price for #{product.name}..."
+#    begin
+#      Stripe::Price.create(data[:price].merge(product: product.id))
+#    rescue => e
+#      print "Error: #{e.message}, rolling back..."
+#      Stripe::Product.delete(product.id)
+#    end
+#    puts "Done."
+#  end
+#end
