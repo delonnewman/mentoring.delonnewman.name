@@ -9,7 +9,10 @@
         <div class="description"><%= product.description %></div>
       </div>
       <div class="card-footer d-flex justify-content-between">
-        <div class="price font-weight-bold" style="font-size: 1.5em"><%= money product.price %></div>
+        <div class="price">
+          <span class="font-weight-bold" style="font-size: 1.5em"><%= money product.price %></span>
+          <span style="font-size: 1.1em"><%= product.rate.description %></span>
+        </div>
         <button id="btn-<%= product.id %>" class="btn btn-primary">Select</button>
       </div>
     </section>
