@@ -34,7 +34,9 @@ module Drn
               end
               h
             end
-            Product[attrs].tap(&block)
+            Product[attrs].tap do |product|
+              block.call(product) if block
+            end
           end
         end
       end
