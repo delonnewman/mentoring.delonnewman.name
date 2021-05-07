@@ -27,7 +27,8 @@ products = [
                  "time (by chat or email).",
     image_path: '/img/mentoring.jpg',
     amount: 15000,
-    rate: 'per-month'
+    rate: 'per-month',
+    sort_order: 3
   ],
   Product[
     name: "Instant Help",
@@ -36,7 +37,8 @@ products = [
                  "minute, first 5 minutes are free.",
     image_path: '/img/help.jpg',
     amount: 200,
-    rate: 'per-minute'
+    rate: 'per-minute',
+    sort_order: 1,
   ],
   Product[
     name: "Instant Conversation",
@@ -45,7 +47,8 @@ products = [
                  "hour, first 5 minutes are free.",
     image_path: '/img/conversation.jpg',
     amount: 10000,
-    rate: 'per-hour'
+    rate: 'per-hour',
+    sort_order: 2,
   ]
 ]
 

@@ -8,6 +8,7 @@ module Drn
       has :amount,      Integer
       has :rate,        ProductRate, resolve_with: { Integer => :id, String => :name }
       has :meta,        Hash,        required: false, serialize: true
+      has :sort_order,  Integer
 
       def_delegator :rate, :subscription?
 

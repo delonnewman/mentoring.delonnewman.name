@@ -30,6 +30,7 @@ Sequel.migration do
       String  :image_path,  null: false
       Integer :amount,      null: false
       Integer :rate_id,     null: false
+      Integer :sort_order,  null: false, default: 0
       String  :meta
 
       foreign_key [:rate_id], :product_rates

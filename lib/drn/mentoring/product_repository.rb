@@ -18,7 +18,7 @@ module Drn
                  r.name as rate_name,
                  r.description as rate_description,
                  r.subscription as rate_subscription
-            from products p inner join product_rates r on p.rate_id = r.id
+            from products p inner join product_rates r on p.rate_id = r.id order by sort_order
       SQL
 
       def all(&block)
