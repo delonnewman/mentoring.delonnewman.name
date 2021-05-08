@@ -21,21 +21,19 @@ module Drn
     require_relative 'mentoring/application'
     App = Application.new.init!
 
-    # Entity Roles
-    require_relative 'mentoring/recurrable'
-
     # Entities
     require_relative 'mentoring/entity'
     require_relative 'mentoring/user_role'
     require_relative 'mentoring/user'
     require_relative 'mentoring/product_rate'
     require_relative 'mentoring/product'
-    require_relative 'mentoring/session'
+    require_relative 'mentoring/mentoring_session_status'
+    require_relative 'mentoring/mentoring_session'
 
     # Repositories
     require_relative 'mentoring/repository'
     require_relative 'mentoring/product_repository'
-    require_relative 'mentoring/session_repository'
+    require_relative 'mentoring/mentoring_session_repository'
     require_relative 'mentoring/user_repository'
 
     # Factory Methods
@@ -47,7 +45,7 @@ module Drn
     # Controllers
     require_relative 'mentoring/controller'
     require_relative 'mentoring/application/checkout'
-    require_relative 'mentoring/application/instant_sessions'
+    require_relative 'mentoring/application/mentoring_sessions'
     require_relative 'mentoring/application/main'
 
     EMPTY_ARRAY = [].freeze

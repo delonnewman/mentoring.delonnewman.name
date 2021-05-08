@@ -27,7 +27,7 @@ module Drn
       def all(&block)
         run ALL_QUERY do |records|
           records.map do |record|
-            factory[nest_role(record)].tap do |entity|
+            factory[nest_component_attributes(record, 'role')].tap do |entity|
               block.call(entity) if block
             end
           end
@@ -46,50 +46,11 @@ module Drn
 
       def find_by(predicates)
         preds       = predicates.transform_keys(&ATTRIBUTE_MAP)
-        pp preds
         qstr, binds = sql_where(preds)
         query       = ONE_QUERY.sub('/* where */', qstr)
         records     = run(query, *binds)
         return nil if records.empty?
-        factory[nest_role(records.first)]
-      end
-
-      private
-
-      def nest_role(record)
-        record.reduce({}) do |h, (key, value)|
-          if key.start_with?('role')
-            h[:role] ||= {}
-            k = key.name.sub('role_', '').to_sym
-            h[:role][k] = value
-          else
-            h[key] = value
-          end
-          h
-        end
-      end
-
-      def sql_where(predicates)
-        preds = predicates.map do |(key, value)|
-          kstr = Symbol ? key.name : key.to_s
-
-          k = 
-            if not kstr.include?('.')
-              Sequel.identifier(kstr)
-            else
-              kstr.split('.').reduce do |a, b|
-                if a.respond_to?(:qualify)
-                  a.qualify(b)
-                else
-                  Sequel.qualify(a, b)
-                end
-              end
-            end
-
-          "#{db.literal(k)} = ?"
-        end
-
-        ["where #{preds.join(' and ')}", predicates.values]
+        factory[nest_component_attributes(records.first, 'role')]
       end
     end
   end

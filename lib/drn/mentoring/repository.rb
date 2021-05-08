@@ -50,6 +50,42 @@ module Drn
         private method
       end
 
+      def sql_where(predicates)
+        preds = predicates.map do |(key, value)|
+          kstr = Symbol ? key.name : key.to_s
+
+          k = 
+            if not kstr.include?('.')
+              Sequel.identifier(kstr)
+            else
+              kstr.split('.').reduce do |a, b|
+                if a.respond_to?(:qualify)
+                  a.qualify(b)
+                else
+                  Sequel.qualify(a, b)
+                end
+              end
+            end
+
+          "#{db.literal(k)} = ?"
+        end
+
+        ["where #{preds.join(' and ')}", predicates.values]
+      end
+
+      def nest_component_attributes(record, component_name)
+        record.reduce({}) do |h, (key, value)|
+          if key.start_with?(component_name)
+            h[:role] ||= {}
+            k = key.name.sub("#{component_name}_", '').to_sym
+            h[:role][k] = value
+          else
+            h[key] = value
+          end
+          h
+        end
+      end
+
       def run(query, *args, factory: nil, &block)
         logger.info "SQL: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
 

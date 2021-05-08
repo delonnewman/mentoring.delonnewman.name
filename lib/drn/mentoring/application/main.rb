@@ -6,7 +6,7 @@ module Drn
         use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
 
         mount '/checkout', Checkout
-        mount '/session',  InstantSessions
+        mount '/session',  MentoringSessions
 
         get '/' do
           render :index

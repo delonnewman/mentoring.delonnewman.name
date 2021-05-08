@@ -6,8 +6,8 @@ module Drn
         Product.repository
       end
 
-      def sessions
-        Session.repository
+      def mentoring_sessions
+        MentoringSession.repository
       end
 
       def users
