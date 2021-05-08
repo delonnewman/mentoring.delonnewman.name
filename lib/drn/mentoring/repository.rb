@@ -14,7 +14,7 @@ module Drn
 
       def each(&block)
         @dataset.each do |row|
-          block.call(@factory[row])
+          block.call(@factory[reconstitute_record(row)])
         end
         self
       end
@@ -22,7 +22,7 @@ module Drn
       def find_by(attributes)
         record = @dataset.first(attributes)
         return nil unless record
-        @factory[record]
+        @factory[reconstitute_record(record)]
       end
 
       def find_by!(attributes)
@@ -30,12 +30,12 @@ module Drn
       end
 
       def store!(record)
-        @dataset.insert(record.to_h)
+        @dataset.insert(process_record(record))
         self
       end
 
       def store_all!(records)
-        @dataset.multi_insert(records.map(&:to_h))
+        @dataset.multi_insert(records.map(&method(:process_record)))
         self
       end
   
@@ -76,9 +76,9 @@ module Drn
       def nest_component_attributes(record, component_name)
         record.reduce({}) do |h, (key, value)|
           if key.start_with?(component_name)
-            h[:role] ||= {}
+            h[component_name.to_sym] ||= {}
             k = key.name.sub("#{component_name}_", '').to_sym
-            h[:role][k] = value
+            h[component_name.to_sym][k] = value
           else
             h[key] = value
           end
@@ -106,6 +106,33 @@ module Drn
         else
           results
         end
+      end
+
+      # TODO: for performance this would be better for opt-in
+      def process_record(record)
+        h = record.to_h.dup
+        record.class.attributes.select(&:serialize?).each do |attr|
+          h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name]
+        end
+
+        record.class.attributes.select(&:component?).each do |attr|
+          id_key = :"#{attr.name}_id"
+          if !record.key?(id_key) && (id_val = record.send(attr.name).id)
+            h[id_key] = id_val
+          else
+            raise "#{id_key.inspect} is required for storage but is missing" if attr.required?
+          end
+          h.delete(attr.name)
+        end
+
+        h
+      end
+
+      def reconstitute_record(h)
+        factory.attributes.select(&:serialize?).each do |attr|
+          h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name]
+        end
+        h
       end
     end
   end

@@ -49,6 +49,14 @@ module Drn
           self[:type] == :boolean || self[:type] == FalseClass || self[:type] == TrueClass
         end
 
+        def serialize?
+          self[:serialize] == true
+        end
+
+        def component?
+          self[:component] == true
+        end
+
         def mutable?
           self[:mutable] == true
         end
@@ -57,8 +65,10 @@ module Drn
           key?(:resolve_with)
         end
 
+        DEFAULT_RESOLUTION_MAP = { Integer => :id }.freeze
+
         def resolver
-          self[:resolve_with]
+          fetch(:resolve_with) { DEFAULT_RESOLUTION_MAP }
         end
 
         def valid_value?(value)
@@ -88,7 +98,7 @@ module Drn
             end
           end
 
-          if attribute.has_resolver? && (mapping = attribute.resolver).is_a?(Hash)
+          if attribute.component? && (mapping = attribute.resolver).is_a?(Hash)
             # type check the attribute name and mapping for security (see class_eval below)
             unless name.is_a?(Symbol) && name.name =~ /\A\w+\z/
               raise TypeError, "Attribute names should be symbols without special characters: #{name.inspect}:#{name.class}"
@@ -133,6 +143,10 @@ module Drn
                 end
               end
             CODE
+          else
+            define_method name do
+              self[name]
+            end
           end
 
           @attributes ||= {}
