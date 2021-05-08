@@ -51,6 +51,8 @@ module Drn
       end
 
       def run(query, *args, factory: nil, &block)
+        logger.info "SQL: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
+
         results = []
         @dataset.db.fetch(query, *args) do |row|
           row = row.transform_keys(&:to_sym)

@@ -6,8 +6,14 @@ module Drn
       has :username,    String
       has :email,       String
       has :role,        UserRole, resolve_with: { Integer => :id, String => :name }
-      has :created_at,  Time, default: ->{ Time.now }
-      has :updated_at,  Time, default: ->{ Time.now }
+
+      # timestamps
+      has :created_at, Time, default: ->{ Time.now }
+      has :updated_at, Time, default: ->{ Time.now }
+
+      # password
+      has :encrypted_password, required: false
+      has :password,           required: false
 
       def to_h
         if key?(:role_id)
@@ -49,6 +55,10 @@ module Drn
 
       def to_s
         displayname || username
+      end
+
+      def first_name
+        displayname.split(/\s+/).first || username
       end
     end
   end
