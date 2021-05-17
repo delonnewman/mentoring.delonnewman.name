@@ -29,15 +29,15 @@
     
     // Handle any errors returned from Checkout
     function handleResult(result) {
-      if (result.error) {
-        showErrorMessage(result.error.message);
-      }
+        if (result.error) {
+            showErrorMessage(result.error.message);
+        }
     }
     
     function showErrorMessage(message) {
-      var errorEl = document.getElementById("error-message")
-      errorEl.textContent = message;
-      errorEl.style.display = "block";
+        var errorEl = document.getElementById("error-message")
+        errorEl.textContent = message;
+        errorEl.style.display = "block";
     }
     
     function initPrice(stripe) {

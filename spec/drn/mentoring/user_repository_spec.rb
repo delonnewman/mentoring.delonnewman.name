@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe Drn::Mentoring::UserRepository do
-  let(:db) { Drn::Mentoring::App.db }
+  let(:db) { Drn::Mentoring.app.db }
   let(:users) { described_class.new(db[:users], Drn::Mentoring::User) }
 
   describe "#find_by" do

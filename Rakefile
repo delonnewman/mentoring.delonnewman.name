@@ -1,8 +1,10 @@
+require_relative 'lib/drn/mentoring/boot'
+
 task :default => :spec
 
 desc "Run spec"
 task :spec do
-  sh "source .env && bundle exec rspec"
+  sh "bundle exec rspec"
 end
 
 desc "Open project console"
@@ -15,25 +17,38 @@ task :server do
   sh "bundle exec shotgun"
 end
 
-desc "Setup application"
-task :setup => :'db:migrate' do
-  sh "./scripts/init-data"
-end
-
 namespace :db do
+  desc "Setup database (i.e. create, migrate and seed)"
+  task :setup => [:'db:create', :'db:migrate', :'db:seed']
+
+  desc "Seed Database"
+  task :seed do
+    sh "./scripts/init-data"
+  end
+
   desc "Run migrations"
   task :migrate do
-    sh "source .env && bundle exec sequel $DATABASE_URL -m db/migrations/"
+    sh "bundle exec sequel #{ENV['DATABASE_URL']} -m db/migrations/"
   end
 
   desc "Drop tables"
   task :drop_tables do
-    sh "source .env && bundle exec sequel $DATABASE_URL -c 'DB.tables.each { |t| DB.drop_table?(t, cascade: true) }'"
+    sh "source .env && bundle exec sequel #{ENV['DATABASE_URL']} -c 'DB.tables.each { |t| DB.drop_table?(t, cascade: true) }'"
+  end
+
+  desc "Drop database"
+  task :drop do
+    sh "psql -c 'DROP DATABASE #{ENV['DATABASE_NAME']}'"
+  end
+
+  desc "Create database"
+  task :create do
+    sh "createdb #{ENV['DATABASE_NAME']}"
   end
 
   desc "Dump schema do db/schema.sql"
   task :dump do
-    sh "source .env && bundle exec sequel $DATABASE_URL --dump-schema db/schema.sql"
+    sh "bundle exec sequel #{ENV['DATABASE_URL']} --dump-schema db/schema.sql"
   end
 end
 

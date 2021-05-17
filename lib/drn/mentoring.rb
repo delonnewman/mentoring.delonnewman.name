@@ -1,26 +1,10 @@
 # frozen_string_literal: true
-require 'pp'
-require 'cgi'
-require 'set'
-require 'json'
-require 'yaml'
-require 'logger'
-require 'pathname'
-require 'forwardable'
-
-require 'bundler/setup'
-Bundler.require
-Dotenv.load
 
 module Drn
   # A web application for managing mentoring services online.
   module Mentoring
-    # Simple utility methods
-    require_relative 'mentoring/utils'
-
-    # Application state
-    require_relative 'mentoring/application'
-    App = Application.new.init!
+    # Load dependencies, environment variables, etc.
+    require_relative 'mentoring/environment'
 
     # Entities
     require_relative 'mentoring/entity'

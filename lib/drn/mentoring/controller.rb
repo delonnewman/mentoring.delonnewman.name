@@ -10,17 +10,17 @@ module Drn
       Application.instance_methods(false).each do |method|
         next if Application::METHODS_NOT_SHARED.include?(method)
         define_method method do |*args|
-          App.send(method, *args)
+          Drn::Mentoring.app.send(method, *args)
         end
       end
 
       class << self
         def template_path
-          @template_path ||= App.root.join('templates', cononical_name)
+          @template_path ||= Drn::Mentoring.app.root.join('templates', cononical_name)
         end
 
         def layout_path
-          @layout_path ||= App.root.join('templates', 'layouts', "#{layout}.html.erb")
+          @layout_path ||= Drn::Mentoring.app.root.join('templates', 'layouts', "#{layout}.html.erb")
         end
 
         def cononical_name

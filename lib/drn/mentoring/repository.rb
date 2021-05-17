@@ -45,7 +45,7 @@ module Drn
 
       %i[logger db].each do |method|
         define_method method do
-          App.send(method)
+          Drn::Mentoring.app.send(method)
         end
         private method
       end

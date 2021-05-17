@@ -43,7 +43,12 @@ gem 'inflection'
 group :development, :test do
   gem 'rake'
   gem 'rspec'
+
   gem 'yard'
   gem 'webrick' # for yard documentation server
+
   gem 'shotgun', github: 'shotgun'
+
+  gem 'guard'
+  gem 'guard-rspec'
 end

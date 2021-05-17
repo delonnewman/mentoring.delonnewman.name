@@ -258,7 +258,7 @@ module Drn
             repository_class.class_eval(&block)
           end
 
-          @repository ||= repository_class.new(App.db[repository_table_name.to_sym], self)
+          @repository ||= repository_class.new(Drn::Mentoring.app.db[repository_table_name.to_sym], self)
         end
 
         def valid?(attributes)
