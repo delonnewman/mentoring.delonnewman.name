@@ -28,7 +28,8 @@ products = [
     image_path: '/img/mentoring.jpg',
     amount: 15000,
     rate: 'per-month',
-    sort_order: 3
+    sort_order: 3,
+    meta: { stripe_price_id: 'price_1IfaNbJeITBgtWkksywHmJ2G' }
   ],
   Product[
     name: "Instant Help",
@@ -39,6 +40,7 @@ products = [
     amount: 200,
     rate: 'per-minute',
     sort_order: 1,
+    meta: { stripe_price_id: 'price_1IfaKNJeITBgtWkk53ie4flD' }
   ],
   Product[
     name: "Instant Conversation",
@@ -49,6 +51,7 @@ products = [
     amount: 10000,
     rate: 'per-hour',
     sort_order: 2,
+    meta: { stripe_price_id: 'price_1IfaKRJeITBgtWkkiRidT1tN' }
   ]
 ]
 
