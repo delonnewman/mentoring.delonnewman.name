@@ -42,6 +42,11 @@ namespace :db do
     sh "psql -c 'DROP DATABASE #{ENV['DATABASE_NAME']}'"
   end
 
+  desc "Open database console"
+  task :console do
+    sh "psql #{ENV['DATABASE_NAME']}"
+  end
+
   desc "Create database"
   task :create do
     sh "createdb #{ENV['DATABASE_NAME']}"
