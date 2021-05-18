@@ -7,12 +7,17 @@ module Drn
       ENV.fetch('RACK_ENV') { env }.to_sym
     end
 
-    def self.init!(env = :development)
+    def self.current_env
+      @current_env || :development
+    end
+
+    def self.init!(env = current_env)
       app(env).init!
     end
 
-    def self.app(env = :development)
+    def self.app(env = current_env)
       env = resolved_env(env)
+      @current_env = env
       @apps ||= {}
       @apps[env] ||= Application.new(env)
     end
@@ -22,11 +27,11 @@ module Drn
       # Methods that should not be shared in other contexts (see Drn::Mentoring::Controller)
       METHODS_NOT_SHARED = Set[:env, :call, :init!, :main].freeze
 
-      attr_reader :env, :logger, :root, :db
+      attr_reader :env, :logger, :root, :db, :session_secret
 
       def initialize(env)
         @env    = env
-        @logger = Logger.new($stdout)
+        @logger = Logger.new($sterr)
         @root   = Pathname.new(File.join(__dir__, '..', '..', '..')).expand_path
       end
 
@@ -37,6 +42,11 @@ module Drn
         else
           '.env'
         end
+      end
+
+      def load_env!
+        Dotenv.load!(dotenv_path)
+        self
       end
 
       # Rack interface
@@ -53,9 +63,11 @@ module Drn
           raise "An application can only be initialized once"
         else
           logger.info "Initializing application in #{env} environment from #{dotenv_path}"
-          Dotenv.load!(dotenv_path)
+          # TODO: componentize these
+          load_env!
           @db = Sequel.connect(ENV.fetch('DATABASE_URL'))
           Stripe.api_key = ENV.fetch('STRIPE_KEY')
+          @session_secret = ENV.fetch('MENTORING_SESSION_SECRET')
           @initialized = true
         end
         self

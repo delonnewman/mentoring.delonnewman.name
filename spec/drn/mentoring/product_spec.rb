@@ -19,8 +19,8 @@ RSpec.describe Product do
       expect(product.meta).to be_a Hash
       expect(product.meta[:testing]).to be 123
       
-      App.products.store!(product)
-      pro = App.products.find_by!(name: 'Test')
+      Drn::Mentoring.app.products.store!(product)
+      pro = Drn::Mentoring.app.products.find_by!(name: 'Test')
       expect(pro.meta).to be_a Hash
       expect(pro.meta[:testing]).to be 123
     end

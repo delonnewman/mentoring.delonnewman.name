@@ -82,11 +82,11 @@ module Drn
       end
 
       def template_content(view, path)
-        if App.env == :production && (cached = template_cache[view])
+        if Drn::Mentoring.app.env == :production && (cached = template_cache[view])
           cached
         else
           code = Erubi::Engine.new(File.read(path)).src
-          template_cache[view] = code if App.env == :production
+          template_cache[view] = code if Drn::Mentoring.app.env == :production
           code
         end
       end

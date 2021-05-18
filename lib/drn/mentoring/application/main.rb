@@ -3,7 +3,7 @@ module Drn
   module Mentoring
     class Application
       class Main < Controller
-        use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
+        use Rack::Session::Cookie, secret: Mentoring.app.session_secret
 
         mount '/checkout', Checkout
         mount '/session',  MentoringSessions

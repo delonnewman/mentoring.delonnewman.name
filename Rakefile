@@ -1,4 +1,5 @@
-require_relative 'lib/drn/mentoring/boot'
+require_relative 'lib/drn/mentoring/environment'
+Drn::Mentoring.app.load_env!
 
 task :default => :spec
 
@@ -14,7 +15,7 @@ end
 
 desc "Run development server"
 task :server do
-  sh "bundle exec shotgun"
+  sh "bundle exec shotgun -p 3000"
 end
 
 namespace :db do
