@@ -24,10 +24,6 @@ gem 'puma'
 gem 'bcrypt'
 gem 'rack_csrf'
 
-gem 'omniauth'
-gem 'omniauth-google'
-gem 'omniauth-apple'
-
 # performance
 gem 'rack-mini-profiler'
 gem 'memory_profiler'
