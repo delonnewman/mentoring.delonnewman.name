@@ -7,7 +7,7 @@ module Drn
           settings = { pub_key: ENV.fetch('STRIPE_PUB_KEY') }
 
           settings[:prices] = products.map do |product|
-            product.to_h.slice(:price_id, :name, :subscription)
+            { price_id: product.meta[:stripe_price_id], name: product.name }
           end
 
           render json: settings

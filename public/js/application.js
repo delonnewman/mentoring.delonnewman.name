@@ -42,9 +42,10 @@
     
     function initPrice(stripe) {
         return function (price) {
+            console.log('Initializing price', price);
             if (price.price_id == null) throw new Error("Price ID should not be null");
             var $elem = $("#btn-" + price.price_id);
-    
+
             // TODO: return price or create a Checkout class and return it's instance
             $elem.on('click', function() {
                 console.log('Creating session for ', price);
@@ -59,9 +60,9 @@
     fetch("/checkout/setup")
       .then(handleFetchResult)
       .then(function(json) {
-        var publishableKey = json.pub_key;
-        var stripe = Stripe(publishableKey);
-        json.prices.forEach(initPrice(stripe));
+            var publishableKey = json.pub_key;
+            var stripe = Stripe(publishableKey);
+            json.prices.forEach(initPrice(stripe));
       });
     
     // Initialize unobtrusive posts
