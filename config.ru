@@ -1,3 +1,3 @@
 require_relative 'lib/drn/mentoring'
 
-run Drn::Mentoring.init!
+run Drn::Mentoring.app

@@ -5,6 +5,7 @@ module Drn
   module Mentoring
     # Load dependencies, environment variables, etc.
     require_relative 'mentoring/environment'
+    init!
 
     # Entities
     require_relative 'mentoring/entity'
