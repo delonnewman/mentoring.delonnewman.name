@@ -49,10 +49,10 @@ module Drn
 
       def dotenv_path
         case env
-        when :test
-          '.env.test'
-        else
+        when :development
           '.env'
+        else
+          ".env.#{env}"
         end
       end
 
