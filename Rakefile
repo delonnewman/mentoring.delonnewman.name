@@ -71,5 +71,8 @@ namespace :gem do
 end
 
 namespace :assets do
-  
+  desc "Pull asset dependencies"
+  task :deps do
+    sh "npm install"
+  end
 end
