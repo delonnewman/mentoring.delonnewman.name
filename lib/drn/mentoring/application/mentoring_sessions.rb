@@ -1,7 +1,7 @@
 module Drn
   module Mentoring
     class Application
-      class MentoringSessions < Controller
+      class MentoringSessions < AuthenticatedController
         get '/new' do |params|
           # start / cancel buttons with some instructions
           render :new, with: { checkout_session_id: params['session_id'] }

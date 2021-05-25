@@ -1,17 +1,17 @@
 (function($) {
     // If a fetch error occurs, log it to the console and show it in the UI.
     function handleFetchResult(result) {
-      if (!result.ok) {
-        return result.json().then(function(json) {
-          if (json.error && json.error.message) {
-            throw new Error(result.url + ' ' + result.status + ' ' + json.error.message);
-          }
-        }).catch(function(err) {
-          showErrorMessage(err);
-          throw err;
-        });
-      }
-      return result.json();
+	if (!result.ok) {
+            return result.json().then(function(json) {
+		if (json.error && json.error.message) {
+		    throw new Error(result.url + ' ' + result.status + ' ' + json.error.message);
+		}
+            }).catch(function(err) {
+		showErrorMessage(err);
+		throw err;
+            });
+	}
+	return result.json();
     }
     
     // Create a Checkout Session with the selected plan ID
@@ -63,15 +63,21 @@
             });
         }
     }
-    
-    /* Get your Stripe publishable key to initialize Stripe.js */
-    fetch("/checkout/setup")
-      .then(handleFetchResult)
-      .then(function(json) {
-            var publishableKey = json.pub_key;
-            var stripe = Stripe(publishableKey);
-            json.prices.forEach(initPrice(stripe));
-      });
+
+    if (Mentoring.state.authenticated === true) {
+	fetch("/checkout/setup")
+	    .then(handleFetchResult)
+	    .then(function(json) {
+		var publishableKey = json.pub_key;
+		var stripe = Stripe(publishableKey);
+		json.prices.forEach(initPrice(stripe));
+	    });
+    }
+    else {
+	$('.btn-select-product').click(function() {
+	    window.location = '/login?ref=%2F';
+	});
+    }
     
     // Initialize unobtrusive posts
     $('[data-method=post]').each(function() {
@@ -81,8 +87,14 @@
             // TODO: collect other data attributes to pass as data
             $.ajax({
                 url: $elem.attr('href'),
-                dataType: 'script',
-                type: "POST"
+                method: "POST",
+		contentType: 'application/javascript',
+		dataType: 'json',
+		success: function(response) {
+		    if (response.redirect != null) {
+			window.location = response.redirect;
+		    }
+		}
             });
             return false;
         });

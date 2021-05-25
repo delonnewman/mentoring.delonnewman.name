@@ -2,16 +2,23 @@
 module Drn
   module Mentoring
     class Application
-      class Main < Controller
+      class Main < AuthenticatedController
         use Rack::Session::Cookie, secret: Mentoring.app.session_secret
 
         static '/' => 'public'
         
         mount '/checkout', Checkout
         mount '/session',  MentoringSessions
+        mount '/users',    Users
 
-        get '/' do
+        get '/', authenticate: false do
           render :index
+        end
+
+        get '/state.js', authenticate: false do
+          state = { authenticated: authenticated? }
+          
+          render js: "Mentoring = {}; Mentoring.state = #{state.to_json}"
         end
 
         get '/login' do
@@ -20,10 +27,11 @@ module Drn
 
         post '/login' do
           user = users.find_user_and_authenticate(username: params['username'], password: params['password'])
-
+          ref  = params['ref'].empty? ? '/' : params['ref']
+          
           if user
             current_user! user
-            redirect_to '/'
+            redirect_to ref
           else
             status 401
             render :login
@@ -31,27 +39,13 @@ module Drn
         end
 
         post '/logout' do
-          logger.info request.content_type
           logout!
-          redirect_to '/'
-        end
 
-        def current_user
-          user_id = request.session[:current_user_id]
-          return nil           unless user_id
-          return @current_user if     @current_user
-
-          @current_user = users.find_by(id: user_id)
-        end
-
-        def current_user!(user)
-          request.session[:current_user_id] = user.id
-          @current_user = user
-        end
-
-        def logout!
-          request.session.delete(:current_user_id)
-          @current_user = nil
+          if request.content_type == 'application/javascript'
+            render json: { redirect: '/' }
+          else
+            redirect_to '/'
+          end
         end
       end
     end

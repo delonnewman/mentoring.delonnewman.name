@@ -30,8 +30,10 @@ module Drn
 
     # Controllers
     require_relative 'mentoring/controller'
+    require_relative 'mentoring/application/authenticated_controller'
     require_relative 'mentoring/application/checkout'
     require_relative 'mentoring/application/mentoring_sessions'
+    require_relative 'mentoring/application/users'
     require_relative 'mentoring/application/main'
 
     EMPTY_ARRAY = [].freeze

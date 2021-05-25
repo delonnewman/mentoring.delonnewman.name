@@ -22,12 +22,12 @@
             <i class="fas fa-home"></i>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- li class="nav-item">
           <a class="nav-link" href="/help">
             <i class="fas fa-question"></i>
             Help
           </a>
-        </li>
+        </li -->
       </ul>
       <% if current_user %>
         <span class="navbar-text mr-3">
@@ -48,9 +48,12 @@
       <%= __content__ %>
     </main>
 
+    <script src="/state.js"></script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>
+    <% if authenticated? %>
+      <script src="https://js.stripe.com/v3/"></script>
+    <% end %>
     <script src="/js/application.js"></script>
   </body>
 </html>

@@ -172,7 +172,11 @@ module Rack
       attr_reader :match, :response
 
       def options
-        match.options
+        match[:options]
+      end
+
+      def session
+        request.session
       end
       
       def not_found

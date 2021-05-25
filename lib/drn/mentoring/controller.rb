@@ -59,6 +59,11 @@ module Drn
               res.write content
               res.set_header 'Content-Type', 'text/plain'
             end
+          elsif (content = options.delete(:js))
+            response.tap do |res|
+              res.write content
+              res.set_header 'Content-Type', 'application/javascript'
+            end
           else
             raise "No content to render has been specified"
           end
