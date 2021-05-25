@@ -5,7 +5,7 @@ module Drn
     class Application
       class Checkout < Controller
         get '/setup' do
-          settings = { pub_key: ENV.fetch('STRIPE_PUB_KEY') }
+          settings = { pub_key: Drn::Mentoring.app.settings['STRIPE_PUB_KEY'] }
 
           settings[:prices] = products.map do |product|
             { product_id: product.id, price_id: product.price_id, name: product.name }
@@ -55,7 +55,7 @@ module Drn
         
           # This is the URL to which users will be redirected after they are done
           # managing their billing.
-          return_url = ENV['DOMAIN']
+          return_url = Drn::Mentoring.app.settings['DOMAIN']
         
           session = Stripe::BillingPortal::Session.create({
             customer: checkout_session['customer'],
@@ -68,7 +68,7 @@ module Drn
         post '/webhook' do |params, request|
           # You can use webhooks to receive information about asynchronous payment events.
           # For more about our webhook events check out https://stripe.com/docs/webhooks.
-          webhook_secret = ENV['STRIPE_WEBHOOK_SECRET']
+          webhook_secret = Drn::Mentoring.app.settings['STRIPE_WEBHOOK_SECRET']
           payload = request.body.read
           if !webhook_secret.empty?
             # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
@@ -105,16 +105,16 @@ module Drn
         
         def success_url(product)
           if product.subscription?
-            "http://#{ENV['DOMAIN']}/success.html?session_id={CHECKOUT_SESSION_ID}"
+            "http://#{Drn::Mentoring.app.settings['DOMAIN']}/success.html?session_id={CHECKOUT_SESSION_ID}"
           else
-            "http://#{ENV['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
+            "http://#{Drn::Mentoring.app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
           end
         end
   
         def session_data(product)
           data = {
             success_url: success_url(product),
-            cancel_url: "http://#{ENV['DOMAIN']}",
+            cancel_url: "http://#{Drn::Mentoring.app.settings['DOMAIN']}",
             payment_method_types: ['card'],
             mode: product.checkout_mode,
           }

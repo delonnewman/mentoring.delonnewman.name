@@ -13,6 +13,13 @@ module Drn
         find { |product| product.product_id == id }
       end
 
+      def delete_where!(predicates)
+        qstr, binds = sql_where(predicates)
+        query       = "delete from products #{qstr}"
+        run(query, *binds)
+        self
+      end
+
       ALL_QUERY = <<~SQL
           select p.*,
                  r.name as rate_name,

@@ -26,13 +26,25 @@ module Drn
     class Application
       # Methods that should not be shared in other contexts (see Drn::Mentoring::Controller)
       METHODS_NOT_SHARED = Set[:env, :call, :init!, :main].freeze
+      SETTINGS = %w[DATABASE_NAME DATABASE_URL DOMAIN STRIPE_KEY STRIPE_PUB_KEY MENTORING_SESSION_SECRET].freeze
 
-      attr_reader :env, :logger, :root, :db, :session_secret
+      attr_reader :env, :logger, :root, :db, :session_secret, :settings
 
       def initialize(env)
         @env    = env
-        @logger = Logger.new($sterr)
+        @logger = Logger.new($stdout, level: log_level)
         @root   = Pathname.new(File.join(__dir__, '..', '..', '..')).expand_path
+      end
+
+      def log_level
+        case env
+        when :test
+          :warn
+        when :production
+          :error
+        else
+          :info
+        end
       end
 
       def dotenv_path
@@ -45,7 +57,14 @@ module Drn
       end
 
       def load_env!
-        Dotenv.load!(dotenv_path)
+        case env
+        when :production
+          @settings = SETTINGS.reduce({}) do |h, key|
+            ENV.fetch(key)
+          end.freeze
+        else
+          @settings = Dotenv.load(dotenv_path).freeze
+        end
         self
       end
 
@@ -62,12 +81,12 @@ module Drn
         if initialized?
           raise "An application can only be initialized once"
         else
-          logger.info "Initializing application in #{env} environment from #{dotenv_path}"
+          puts "Initializing application in #{env} environment from #{dotenv_path}"
           # TODO: componentize these
           load_env!
-          @db = Sequel.connect(ENV.fetch('DATABASE_URL'))
-          Stripe.api_key = ENV.fetch('STRIPE_KEY')
-          @session_secret = ENV.fetch('MENTORING_SESSION_SECRET')
+          @db = Sequel.connect(settings.fetch('DATABASE_URL'))
+          Stripe.api_key = settings.fetch('STRIPE_KEY')
+          @session_secret = settings.fetch('MENTORING_SESSION_SECRET')
           @initialized = true
         end
         self
