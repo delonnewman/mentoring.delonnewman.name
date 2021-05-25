@@ -26,7 +26,7 @@ module Drn
     class Application
       # Methods that should not be shared in other contexts (see Drn::Mentoring::Controller)
       METHODS_NOT_SHARED = Set[:env, :call, :init!, :main].freeze
-      SETTINGS = %w[DATABASE_NAME DATABASE_URL DOMAIN STRIPE_KEY STRIPE_PUB_KEY MENTORING_SESSION_SECRET].freeze
+      SETTINGS = %w[DATABASE_URL DOMAIN STRIPE_KEY STRIPE_PUB_KEY MENTORING_SESSION_SECRET].freeze
 
       attr_reader :env, :logger, :root, :db, :session_secret, :settings
 
