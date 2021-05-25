@@ -5,6 +5,8 @@ module Drn
       class Main < Controller
         use Rack::Session::Cookie, secret: Mentoring.app.session_secret
 
+        static '/' => 'public'
+        
         mount '/checkout', Checkout
         mount '/session',  MentoringSessions
 
