@@ -29,17 +29,17 @@ module Rack
       # @param headers [Hash]
       #
       # @return [Routes]
-      def add!(method, path, action, headers = EMPTY_HASH)
+      def add!(method, path, action, options = EMPTY_HASH)
         # TODO: Add Symbol#name for older versions of Ruby
         method = method.name.upcase
         @table[method] ||= []
-        @table[method] << [parse_path(path), action, path]
+        @table[method] << [parse_path(path), action, path, options]
         self
       end
 
       def mount!(prefix, app, options)
         @table[:mount] ||= []
-        @table[:mount] << [parse_path(prefix)[:path], app, prefix]
+        @table[:mount] << [parse_path(prefix)[:path], app, prefix, options]
         self
       end
   
@@ -57,18 +57,18 @@ module Rack
 
   
         if (routes = @table[method])
-          routes.each do |(route, action)|
+          routes.each do |(route, action, _, options)|
             if (params = match_path(parts, route))
-              return { tag: :action, value: action, params: params }
+              return { tag: :action, value: action, params: params, options: options }
             end
           end
         end
 
         if (mounted = @table[:mount])
-          mounted.each do |(prefix, app)|
+          mounted.each do |(prefix, app, _, options)|
             if path_start_with?(parts, prefix)
               app_path = "/#{parts[prefix.size, parts.size].join('/')}"
-              return { tag: :app, value: app, env: env.merge('PATH_INFO' => app_path, 'rack-routable.original-path' => path) }
+              return { tag: :app, value: app, env: env.merge('PATH_INFO' => app_path, 'rack-routable.original-path' => path), options: options }
             end
           end
         end

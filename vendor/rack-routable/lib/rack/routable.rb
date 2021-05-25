@@ -156,14 +156,25 @@ module Rack
     end
 
     module InstanceMethods
-      attr_reader :env, :request, :response
+      attr_reader :env, :request
 
       def initialize(env)
         @env      = env
         @request  = Rack::Request.new(env)
+        @match    = self.class.routes.match(env)
         @response = Rack::Response.new
       end
 
+      protected
+
+      # These methods must be used or overridden by the subclass
+
+      attr_reader :match, :response
+
+      def options
+        match.options
+      end
+      
       def not_found
         io = StringIO.new
         io.puts "<h1>Not Found</h1>"
@@ -202,26 +213,25 @@ module Rack
       def redirect_to(url)
         Rack::Response.new.tap do |r|
           r.redirect(url)
-        end
+        end.finish
       end
 
+      public
+      
       # TODO: add error and not_found to the DSL
       def call
-        req   = Request.new(env)
-        match = self.class.routes.match(env)
+        return not_found unless @match
 
-        return not_found unless match
-
-        case match[:tag]
+        case @match[:tag]
         when :app
-          match[:value].call(match[:env])
+          @match[:value].call(@match[:env])
         when :action
-          params = req.params.merge(match[:params])
+          params = @request.params.merge(@match[:params])
   
           res = begin
                   # NOTE: consider calling with instance_exec do some benchmarking
                   # to see how this would effect performance.
-                  instance_exec(params, req, &match[:value])
+                  instance_exec(params, @request, &@match[:value])
                 rescue => e
                   if ENV.fetch('RACK_ENV') { :development }.to_sym == :production
                     env['rack.routable.error'] = e
