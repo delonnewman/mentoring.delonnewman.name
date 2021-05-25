@@ -60,7 +60,7 @@ module Drn
         case env
         when :production
           @settings = SETTINGS.reduce({}) do |h, key|
-            ENV.fetch(key)
+            h.merge!(key => ENV.fetch(key))
           end.freeze
         else
           @settings = Dotenv.load(dotenv_path).freeze
