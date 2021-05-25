@@ -168,27 +168,29 @@ module Rack
         io = StringIO.new
         io.puts "<h1>Not Found</h1>"
 
-        io.puts "<h2>Valid Routes</h2>"
-        io.puts "<table><tbody>"
-        self.class.routes.each do |method, path, app|
-          if method == :mount && app.is_a?(Rack::Routable)
-            app.class.routes.each do |method, app_path|
-              io.puts "<tr><td>#{method}</td><td>#{path + app_path} => #{app_path}</td>"
+        unless ENV['RACK_ENV'] == 'production'
+          io.puts "<h2>Valid Routes</h2>"
+          io.puts "<table><tbody>"
+          self.class.routes.each do |method, path, app|
+            if method == :mount && app.is_a?(Rack::Routable)
+              app.class.routes.each do |method, app_path|
+                io.puts "<tr><td>#{method}</td><td>#{path + app_path} => #{app_path}</td>"
+              end
+            elsif method == :mount
+              io.puts "<tr><td>#{method}</td><td>#{path}</td>"
+            else
+              io.puts "<tr><td>#{method}</td><td>#{path}</td>"
             end
-          elsif method == :mount
-            io.puts "<tr><td>#{method}</td><td>#{path}</td>"
-          else
-            io.puts "<tr><td>#{method}</td><td>#{path}</td>"
           end
+          io.puts "</tbody></table>"
+  
+          io.puts "<h2>Environment</h2>"
+          io.puts "<table><tbody>"
+          env.each do |key, value|
+            io.puts "<tr><td>#{key}</td><td>#{value.inspect}</td>"
+          end
+          io.puts "</tbody></table>"
         end
-        io.puts "</tbody></table>"
-
-        io.puts "<h2>Environment</h2>"
-        io.puts "<table><tbody>"
-        env.each do |key, value|
-          io.puts "<tr><td>#{key}</td><td>#{value.inspect}</td>"
-        end
-        io.puts "</tbody></table>"
         
         [404, DEFAULT_HEADERS, [io.string]]
       end
