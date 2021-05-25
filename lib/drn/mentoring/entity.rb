@@ -153,6 +153,41 @@ module Drn
           @attributes[name] = attribute
         end
 
+        def primary_key(name = :id, type: Integer)
+          has name, type, required: false
+        end
+        alias reference_id primary_key
+
+        def belongs_to(name, entity_class, referenced_by: EMPTY_HASH)
+          has name, entity_class, resolved_with: referenced_by, component: true
+        end
+
+        def timestamps
+          has :created_at, Time, default: ->{ Time.now }
+          has :updated_at, Time, default: ->{ Time.now }
+        end
+
+        def encrypted_password
+          has :encrypted_password, required: false
+          has :password,           required: false
+
+          define_method :encrypted_password do
+            if (password = self[:password])
+              BCrypt::Password.create(password)
+            else
+              self[:encrypted_password]
+            end
+          end
+
+          define_method :password do
+            if (crypted = self[:encrypted_password])
+              BCrypt::Password.new(crypted)
+            else
+              self[:password]
+            end
+          end
+        end
+
         def attributes(regular = true)
           attrs = @attributes && @attributes.values || EMPTY_ARRAY
           if regular && superclass.respond_to?(:attributes)
