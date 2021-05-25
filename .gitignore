@@ -6,3 +6,4 @@ doc/
 db/*.sqlite3
 .DS_Store
 node_modules/
+*~
