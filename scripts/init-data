@@ -78,7 +78,7 @@ users = [
 
 pp users
 
-App.users.store_all!(users)
+User.repository.store_all!(users)
 #product_list = Stripe::Product.list
 #existing = product_list.map(&:name).to_set
 #

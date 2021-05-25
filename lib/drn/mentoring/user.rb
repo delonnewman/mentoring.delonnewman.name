@@ -5,7 +5,7 @@ module Drn
       has :displayname, String,  required: false
       has :username,    String
       has :email,       String
-      has :role,        UserRole, resolve_with: { Integer => :id, String => :name }
+      has :role,        UserRole, resolve_with: { Integer => :id, String => :name }, component: true
 
       # timestamps
       has :created_at, Time, default: ->{ Time.now }
