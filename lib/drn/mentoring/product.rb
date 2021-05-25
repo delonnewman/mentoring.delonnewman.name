@@ -16,8 +16,12 @@ module Drn
         amount.to_f / 100
       end
 
+      def price_id
+        meta.fetch(:stripe_price_id)
+      end
+
       def checkout_mode
-        recurring? ? 'subscription' : 'setup'
+        subscription? ? 'subscription' : 'setup'
       end
     end
   end

@@ -1,3 +1,4 @@
+# coding: utf-8
 # frozen_string_literal: true
 module Drn
   module Mentoring
@@ -7,7 +8,7 @@ module Drn
           settings = { pub_key: ENV.fetch('STRIPE_PUB_KEY') }
 
           settings[:prices] = products.map do |product|
-            { price_id: product.meta[:stripe_price_id], name: product.name }
+            { product_id: product.id, price_id: product.price_id, name: product.name }
           end
 
           render json: settings
@@ -22,10 +23,10 @@ module Drn
         end
 
         post '/session' do |params, request|
-          data = JSON.parse(request.body.read)
-          product = products.by_price_id!(data['priceId'])
+          data = JSON.parse(request.body.read, symbolize_names: true)
+          product = products.find_by!(id: data[:product_id])
 
-          logger.info "From Price ID: #{data['priceId'].inspect}"
+          logger.info "From Product ID: #{data[:product_id].inspect}"
           logger.info "Creating session with #{product.inspect}"
 
           # See https://stripe.com/docs/api/checkout/sessions/create
@@ -34,12 +35,13 @@ module Drn
           # the actual Session ID is returned in the query parameter when your customer
           # is redirected to the success page.
           begin
+            logger.info "#{self}"
             session = Stripe::Checkout::Session.create(session_data(product))
             logger.info "Session created: #{session.inspect}"
             render json: success_data(product, session)
           rescue => e
             logger.error e
-            render json: { error: { message: e.message } }, status: 400
+            render json: { status: 'error', message: e.message }, status: 400
           end
         end
 
@@ -97,6 +99,39 @@ module Drn
           puts '🔔  Payment succeeded!' if event_type == 'checkout.session.completed'
         
           render json: { status: 'success' }
+        end
+
+        # Helpers
+        
+        def success_url(product)
+          if product.subscription?
+            "http://#{ENV['DOMAIN']}/success.html?session_id={CHECKOUT_SESSION_ID}"
+          else
+            "http://#{ENV['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
+          end
+        end
+  
+        def session_data(product)
+          data = {
+            success_url: success_url(product),
+            cancel_url: "http://#{ENV['DOMAIN']}",
+            payment_method_types: ['card'],
+            mode: product.checkout_mode,
+          }
+          
+          if not product.subscription?
+            data
+          else
+            data.merge!(line_items: [{ quantity: 1, price: product.price_id }])
+          end
+        end
+  
+        def success_data(product, session)
+          if product.subscription?
+            { type: 'complete', sessionId: session.id }
+          else
+            { type: 'setup', sessionId: session.id, setupIntent: session.setup_intent }
+          end
         end
       end
     end

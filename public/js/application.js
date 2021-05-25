@@ -15,14 +15,14 @@
     }
     
     // Create a Checkout Session with the selected plan ID
-    function createCheckoutSession(priceId) {
+    function createCheckoutSession(product_id) {
       return fetch("/checkout/session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          priceId: priceId
+          product_id: product_id
         })
       }).then(handleFetchResult);
     }
@@ -42,15 +42,23 @@
     
     function initPrice(stripe) {
         return function (price) {
-            console.log('Initializing price', price);
+	    console.log('Initializing price', price);
             if (price.price_id == null) throw new Error("Price ID should not be null");
-            var $elem = $("#btn-" + price.price_id);
+            if (price.product_id == null) throw new Error("Product ID should not be null");
+            var $elem = $("#btn-" + price.product_id);
+
+	    if ($elem.length === 0) throw new Error('Could not find button for product:' + price.product_id);
 
             // TODO: return price or create a Checkout class and return it's instance
             $elem.on('click', function() {
                 console.log('Creating session for ', price);
-                createCheckoutSession(price.price_id).then(function(data) {
-                    stripe.redirectToCheckout({ sessionId: data.sessionId }).then(handleResult);
+                createCheckoutSession(price.product_id).then(function(data) {
+		    if (data.status === 'error') {
+			throw new Error(data.message);
+		    }
+		    else {
+			stripe.redirectToCheckout({ sessionId: data.sessionId }).then(handleResult);
+		    }
                 });
             });
         }
