@@ -35,6 +35,7 @@ gem 'rack-routable', path: './vendor/rack-routable'
 gem 'rack-flash3'
 gem 'erubi'
 gem 'inflection'
+gem 'dry-validation'
 
 group :development, :test do
   gem 'rake'

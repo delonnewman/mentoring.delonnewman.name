@@ -21,6 +21,14 @@ module Drn
           render js: "Mentoring = {}; Mentoring.state = #{state.to_json}"
         end
 
+        get '/signup', authenticate: false do
+          render :signup
+        end
+
+        post '/signup', authenticate: false do
+          
+        end
+
         get '/login' do
           render :login
         end
