@@ -12,16 +12,6 @@ module Drn
       timestamps
       encrypted_password
 
-      def to_h
-        if key?(:role_id)
-          super.except(:role)
-        else
-          super
-            .merge(role_id: role.id)
-            .except(:role)
-        end
-      end
-
       def to_s
         displayname || username
       end

@@ -1,7 +1,7 @@
 module Drn
   module Mentoring
     class UserRole < Entity
-      has :id,   Integer, required: false
+      reference_id
       has :name, String
 
       alias to_s name

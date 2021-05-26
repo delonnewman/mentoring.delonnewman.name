@@ -49,6 +49,10 @@ module Drn
           self[:type] == :boolean || self[:type] == FalseClass || self[:type] == TrueClass
         end
 
+        def reference_key
+          :"#{name}_id"
+        end
+
         def serialize?
           self[:serialize] == true
         end
@@ -324,6 +328,22 @@ module Drn
         end
 
         super(h.freeze)
+      end
+
+      def to_h
+        if (comps = self.class.attributes.select(&:component?)).empty?
+          super
+        else
+          comps.reduce({}) do |h, comp|
+            if key?(comp.reference_key)
+              h.merge!(super.except(comp.name))
+            else
+              h.merge!(
+                super.merge(comp.reference_key => send(comp.name).id)
+                  .except(comp.name))
+            end
+          end
+        end
       end
     end
   end
