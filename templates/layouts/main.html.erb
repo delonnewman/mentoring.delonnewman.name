@@ -33,14 +33,16 @@
         <span class="navbar-text mr-3">
           Hello <%= current_user.first_name %>
         </span>
-        <a class="btn btn-secondary btn-sm" data-method="post" href="/logout">
+        <a class="btn btn-outline-secondary btn-sm" data-method="post" href="/logout">
           <i class="fas fa-sign-out-alt"></i>
-          Log Out
+          Sign out
         </a>
       <% else %>
-        <a class="btn btn-secondary btn-sm" href="/login">
-          <i class="fas fa-sign-in-alt"></i>
-          Log In
+        <a class="btn btn-link btn-sm mr-2" href="/login">
+          Sign in
+        </a>
+        <a class="btn btn-outline-secondary btn-sm" href="/signup">
+          Sign up
         </a>
       <% end %>
     </nav>
