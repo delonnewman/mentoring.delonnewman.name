@@ -163,7 +163,7 @@ module Drn
         alias reference_id primary_key
 
         def belongs_to(name, entity_class, referenced_by: EMPTY_HASH)
-          has name, entity_class, resolved_with: referenced_by, component: true
+          has name, entity_class, resolve_with: referenced_by, component: true
         end
 
         def timestamps

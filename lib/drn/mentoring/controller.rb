@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Drn
   module Mentoring
-    class Controller
+    class Controller < Templated
       include Rack::Routable
       include Utils
       extend Utils
@@ -11,33 +11,6 @@ module Drn
         next if Application::METHODS_NOT_SHARED.include?(method)
         define_method method do |*args|
           Drn::Mentoring.app.send(method, *args)
-        end
-      end
-
-      class << self
-        def template_path
-          @template_path ||= Drn::Mentoring.app.root.join('templates', cononical_name)
-        end
-
-        def layout_path
-          @layout_path ||= Drn::Mentoring.app.root.join('templates', 'layouts', "#{layout}.html.erb")
-        end
-
-        def cononical_name
-          snakecase(name.split('::').last)
-        end
-
-        def path_name
-          "lib/#{snakecase(name)}.rb"
-        end
-
-        def layout(value = nil)
-          @layout = value unless value.nil?
-          @layout.nil? ? cononical_name : @layout
-        end
-
-        def no_layout!
-          layout false
         end
       end
 

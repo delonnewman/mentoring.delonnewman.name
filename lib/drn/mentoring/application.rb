@@ -84,9 +84,18 @@ module Drn
           puts "Initializing application in #{env} environment from #{dotenv_path}"
           # TODO: componentize these
           load_env!
+
           @db = Sequel.connect(settings.fetch('DATABASE_URL'))
           Stripe.api_key = settings.fetch('STRIPE_KEY')
           @session_secret = settings.fetch('MENTORING_SESSION_SECRET')
+
+          Mailjet.configure do |config|
+            config.api_key = settings.fetch('MAILJET_API_KEY')
+            config.secret_key = settings.fetch('MAILJET_SECRET_KEY')
+            config.default_from = 'noreply@delonnewman.name'
+            config.api_version = 'v3.1'
+          end
+
           @initialized = true
         end
         self

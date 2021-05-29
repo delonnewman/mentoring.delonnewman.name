@@ -3,7 +3,7 @@ module Drn
     class User < Entity
       reference_id
 
-      has :displayname, String,  required: false
+      has :displayname, String, required: false
       has :username,    String
       has :email,       String
 

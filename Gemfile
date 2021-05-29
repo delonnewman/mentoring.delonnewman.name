@@ -7,10 +7,6 @@ end
 
 ruby '3.0.1'
 
-# vendor / env
-gem 'dotenv'
-gem 'stripe'
-
 # db
 gem 'pg'
 gem 'sequel'
@@ -30,12 +26,18 @@ gem 'memory_profiler'
 gem 'stackprof'
 
 # framework stuff
+gem 'dotenv'
 gem 'hash_delegator', github: 'hash_delegator'
 gem 'rack-routable', path: './vendor/rack-routable'
 gem 'rack-flash3'
 gem 'erubi'
 gem 'inflection'
 gem 'dry-validation'
+gem 'invokable'
+
+# vendor
+gem 'stripe'
+gem 'mailjet'
 
 group :development, :test do
   gem 'rake'

@@ -7,6 +7,9 @@ module Drn
     require_relative 'mentoring/environment'
     init!
 
+    # Abstract classes
+    require_relative 'mentoring/templated'
+    
     # Entities
     require_relative 'mentoring/entity'
     require_relative 'mentoring/user_role'
@@ -36,6 +39,11 @@ module Drn
     require_relative 'mentoring/application/users'
     require_relative 'mentoring/application/main'
 
+    # Mailers
+    require_relative 'mentoring/mailer'
+    require_relative 'mentoring/account_messenger'
+
     EMPTY_ARRAY = [].freeze
+    EMPTY_HASH  = {}.freeze
   end
 end
