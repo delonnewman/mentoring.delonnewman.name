@@ -205,11 +205,21 @@ module Drn
           @attributes.fetch(name)
         end
 
+        def valid?(attributes)
+          return false if attributes.empty?
+          
+          self.attributes.reduce(true) do |is_valid, attr|
+            is_valid && attr.required? && (value = attributes[attr.name]) && attr.valid_value?(value)
+          end
+        end
+
         def [](attributes = EMPTY_HASH)
           new(attributes)
         end
 
         def ensure!(value)
+          return value if value.is_a?(self)
+
           new(value)
         end
 
@@ -298,10 +308,6 @@ module Drn
           end
 
           @repository ||= repository_class.new(Drn::Mentoring.app.db[repository_table_name.to_sym], self)
-        end
-
-        def valid?(attributes)
-          true
         end
       end
 
