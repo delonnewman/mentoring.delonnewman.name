@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Drn
   module Mentoring
     class Mailer < Templated
@@ -7,7 +8,19 @@ module Drn
         @app = app
       end
 
-      def render(name, __view__ = EMPTY_HASH)
+      protected
+      
+      def mail(name, view = EMPTY_HASH, to:, from: 'noreply@delonnewman.name', subject:)
+        content = render_erb(name, view)
+        msg     = [{ 'From' => from, 'To' => [to], 'Subject' => subject, 'HTMLPart' => content }]
+        Concurrent::Promises.future do
+          Mailjet::Send.create(messages: msg)
+        end
+      end
+      
+      private
+
+      def render_erb(name, __view__)
         __binding__ = binding
 
         if __view__.is_a?(Hash)
@@ -26,8 +39,6 @@ module Drn
           eval(template_content(name, __path__), __binding__)
         end
       end
-
-      private
 
       def template_cache
         @template_cache ||= {}

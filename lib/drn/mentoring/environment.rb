@@ -10,6 +10,8 @@ require 'forwardable'
 require 'bundler/setup'
 Bundler.require
 
+# Monkey patches
+require_relative 'core_ext'
 
 # Simple utility methods
 require_relative 'utils'

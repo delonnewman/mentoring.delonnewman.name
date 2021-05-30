@@ -41,7 +41,7 @@ module Drn
             raise "No content to render has been specified"
           end
         else
-          view = options.delete(:with)
+          view = options.delete(:with) || EMPTY_HASH
           response.tap do |res|
             res.write render_erb(name, view)
             res.set_header 'Content-Type', 'text/html'
@@ -69,7 +69,7 @@ module Drn
         end
       end
 
-      def render_erb(name, __view__)
+      def render_erb(name, __view__ = EMPTY_HASH)
         __binding__ = binding
 
         if __view__.is_a?(Hash)

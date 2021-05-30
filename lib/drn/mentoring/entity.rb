@@ -205,11 +205,28 @@ module Drn
           @attributes.fetch(name)
         end
 
-        def valid?(attributes)
-          return false if attributes.empty?
+        def valid?(entity)
+          return false if entity.empty?
           
-          self.attributes.reduce(true) do |is_valid, attr|
-            is_valid && attr.required? && (value = attributes[attr.name]) && attr.valid_value?(value)
+          attributes.reduce(true) do |is_valid, attr|
+            is_valid && attr.required? && !!(value = entity[attr.name]) && attr.valid_value?(value) && !attr.default
+          end
+        end
+
+        def errors(entity)
+          attributes.reduce({}) do |errors, attr|
+            key  = attr.name
+            name = key.to_s.tr('_', ' ').capitalize
+
+            a = []
+            a << "#{name} is required"  if attr.required? && (value = entity[key]).blank? && !attr.default
+            a << "#{name} is not valid" if value && !attr.valid_value?(value)
+
+            if a.empty?
+              errors
+            else
+              errors.merge!(key => a)
+            end
           end
         end
 

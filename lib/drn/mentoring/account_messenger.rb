@@ -3,8 +3,8 @@ module Drn
     class AccountMessenger < Mailer
       layout :mailer
       
-      def signup
-        render :signup
+      def signup(user)
+        mail :signup, to: user.email, subject: 'Thank you for giving us a try! Please complete your registration.'
       end
     end
   end

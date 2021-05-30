@@ -26,7 +26,15 @@ module Drn
         end
 
         post '/signup', authenticate: false do
-          
+          user = User[username: params['username'], email: params['email'], role: 'customer']
+
+          if (errors = User.errors(user)).empty?
+            users.store!(user)
+            account_messenger.signup(user)
+            redirect_to '/'
+          else
+            render :signup, with: { errors: errors }
+          end
         end
 
         get '/login' do

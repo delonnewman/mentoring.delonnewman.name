@@ -32,7 +32,7 @@ gem 'rack-routable', path: './vendor/rack-routable'
 gem 'rack-flash3'
 gem 'erubi'
 gem 'inflection'
-gem 'dry-validation'
+gem 'concurrent-ruby'
 gem 'invokable'
 
 # vendor
@@ -47,7 +47,4 @@ group :development, :test do
   gem 'webrick' # for yard documentation server
 
   gem 'shotgun', github: 'shotgun'
-
-  gem 'guard'
-  gem 'guard-rspec'
 end
