@@ -26,14 +26,46 @@ module Drn
         end
 
         post '/signup', authenticate: false do
-          user = User[username: params['username'], email: params['email'], role: 'customer']
+          logger.info "PARAMS: #{params.inspect}"
+          
+          data = params.slice('username', 'email').transform_keys(&:to_sym)
 
-          if (errors = User.errors(user)).empty?
-            users.store!(user)
-            account_messenger.signup(user)
+          if (errors = UserRegistration.errors(data)).empty?
+            UserRegistration[data].tap do |user|
+              logger.info "Storing user: #{user.inspect}"
+              user_registrations.store!(user)
+              account_messenger.signup(user).wait!
+            end
             redirect_to '/'
           else
             render :signup, with: { errors: errors }
+          end
+        end
+
+        get '/activate/:id', authenticate: false do
+          if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key']))
+            render :account_activated, with: { registration: reg }
+          else
+            render :activation_invalid
+          end
+        end
+
+        post '/activate/:id', authenticate: false do
+          data = params.slice('displayname', 'username', 'email', 'password').merge(role: 'customer').transform_keys(&:to_sym)
+
+          logger.info "Form data: #{data.inspect}"
+          
+          if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key'])).nil?
+            render :activation_invalid
+          elsif (errors = User.errors(data)).empty?
+            User[data].tap do |user|
+              logger.info "Storing user: #{user.inspect}"
+              users.store!(user)
+              current_user!(user)
+            end
+            redirect_to '/login'
+          else
+            render :account_activated, { registration: reg }
           end
         end
 

@@ -3,15 +3,14 @@
     Sign Up
     <small class="text-muted">Learn How to Code</small>
   </h1>
-  <pre><%= __view__[:errors].inspect %></pre>
   <form action="/signup" method="post">
     <div class="form-group">
       <label for="username">Username</label>
-      <input type="text" class="form-control" id="username" name="username">
+      <%= text_field :username %>
     </div>
     <div class="form-group">
       <label for="email">Email</label>
-      <input type="text" class="form-control" id="email" name="email">
+      <%= text_field :email %>
     </div>
     <div class="float-right">
       <button class="btn btn-primary">Sign up</button>

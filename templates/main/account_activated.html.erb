@@ -1,0 +1,31 @@
+<div class="mx-auto" style="width: 40rem">
+  <h1>Create Your Account</h1>
+  
+  <form action="/activate/<%= params[:id] %>" method="POST">
+    <input type="hidden" name="key" value="<%= params['key'] %>">
+
+    <div class="form-group">
+      <label for="displayname">Name</label>
+      <%= text_field :displayname %>
+    </div>
+  
+    <div class="form-group">
+      <label for="username">Username</label>
+      <%= text_field :username, registration.username %>
+    </div>
+  
+    <div class="form-group">
+      <label for="email">Email</label>
+      <%= text_field :email, registration.email %>
+    </div>
+  
+    <div class="form-group">
+      <label for="email">Password</label>
+      <%= password_field :password %>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-primary">Create</button>
+    </div>
+  </form>
+<div>

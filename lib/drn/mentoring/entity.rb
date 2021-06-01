@@ -10,12 +10,14 @@ module Drn
       DEFAULT_TYPE   = CLASSICAL_TYPE[Object]
       REGEXP_TYPE    = ->(regex) { ->(v) { v.is_a?(String) && !!(regex =~ v) } }
       UUID_REGEXP    = /\A[0-9A-Fa-f]{8,8}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{12,12}\z/.freeze
+      EMAIL_REGEXP   = /\A[a-zA-Z0-9!#\$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#\$%&'\*+\/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$\z/.freeze
 
       SPECIAL_TYPES = {
         boolean: ->(v) { v.is_a?(FalseClass) || v.is_a?(TrueClass) },
         string:  CLASSICAL_TYPE[String],
         any:     CLASSICAL_TYPE[BasicObject],
-        uuid:    REGEXP_TYPE[UUID_REGEXP]
+        uuid:    REGEXP_TYPE[UUID_REGEXP],
+        email:   REGEXP_TYPE[EMAIL_REGEXP]
       }
 
       # Represents an attribute of a domain entity. Drives dynamic checks and provides
@@ -75,8 +77,12 @@ module Drn
           fetch(:resolve_with) { DEFAULT_RESOLUTION_MAP }
         end
 
+        def type_entity?
+          self[:type].is_a?(Class) && self[:type] < Entity
+        end
+
         def valid_value?(value)
-          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (self[:type] < Entity && value.is_a?(Hash))
+          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (type_entity? && value.is_a?(Hash))
         end
       end
 
@@ -147,6 +153,10 @@ module Drn
                 end
               end
             CODE
+          elsif attribute.default
+            define_method name do
+              value_for(name)
+            end
           else
             define_method name do
               self[name]
@@ -157,13 +167,28 @@ module Drn
           @attributes[name] = attribute
         end
 
-        def primary_key(name = :id, type: Integer)
-          has name, type, required: false
+        def primary_key(name = :id, type = Integer, **options)
+          opts = options.merge(required: false, unique: true, index: true, primary_key: true)
+          if type == :uuid
+            opts[:default] = ->{ SecureRandom.uuid }
+            opts[:required] = true
+          end
+          reference name, type, **opts
         end
-        alias reference_id primary_key
 
-        def belongs_to(name, entity_class, referenced_by: EMPTY_HASH)
-          has name, entity_class, resolve_with: referenced_by, component: true
+        def reference(name, type, **options)
+          has name, type, **options.merge(reference: true)
+        end
+
+        def reference_mapping
+          attributes
+            .select { |a| a[:reference] }
+            .reduce({}) { |h, a| h.merge(a[:type] => a.name) }
+        end
+
+        def belongs_to(name, entity_class, **options)
+          has name, entity_class, **options.merge(resolve_with: entity_class.reference_mapping, component: true)
+          exclude_for_storage << name
         end
 
         def timestamps
@@ -171,25 +196,18 @@ module Drn
           has :updated_at, Time, default: ->{ Time.now }
         end
 
-        def encrypted_password
-          has :encrypted_password, required: false
-          has :password,           required: false
+        def exclude_for_storage
+          @exclude_for_storage ||= []
+        end
 
-          define_method :encrypted_password do
-            if (password = self[:password])
-              BCrypt::Password.create(password)
-            else
-              self[:encrypted_password]
-            end
-          end
+        def password
+          has :encrypted_password, required: false, default: ->{ BCrypt::Password.create(password) }
+          has :password,           required: false, default: ->{ BCrypt::Password.new(encrypted_password) }
+          exclude_for_storage << :password
+        end
 
-          define_method :password do
-            if (crypted = self[:encrypted_password])
-              BCrypt::Password.new(crypted)
-            else
-              self[:password]
-            end
-          end
+        def email(name = :email, **options)
+          has name, :email, **options
         end
 
         def attributes(regular = true)
@@ -213,15 +231,35 @@ module Drn
           end
         end
 
+        # TODO: move this to a validator or form object similar in function to repository
         def errors(entity)
           attributes.reduce({}) do |errors, attr|
             key  = attr.name
             name = key.to_s.tr('_', ' ').capitalize
 
             a = []
-            a << "#{name} is required"  if attr.required? && (value = entity[key]).blank? && !attr.default
-            a << "#{name} is not valid" if value && !attr.valid_value?(value)
 
+            if attr.required? && (value = entity[key]).blank? && !attr.default
+              a << attr.fetch(:message) { "#{name} is required" }
+            end
+
+            if value && !attr.valid_value?(value)
+              a << attr.fetch(:message) { "#{name} is not valid" }
+            end
+
+            unique = attr[:unique]
+            repo   = if unique.is_a?(Class) && unique < Entity
+                       unique.repository
+                     elsif unique.is_a?(Repository)
+                       unique
+                     else
+                       repository
+                     end
+
+            if unique && repo.find_by(attr.name => value)
+              a << attr.fetch(:message) { "#{name} is not unique" }
+            end
+            
             if a.empty?
               errors
             else
@@ -331,19 +369,12 @@ module Drn
       def initialize(attributes = EMPTY_HASH)
         h = {}
         self.class.attributes.each do |attribute|
-          default = attribute.default
           name    = attribute.name
-
-          value =
-            if default.respond_to?(:call)
-              attributes.fetch(name) { default.call }
-            else
-              attributes.fetch(name) { default }
-            end
-
-          next if attribute.optional? && value.nil?
+          value   = attributes[name]
 
           h[attribute.name] = value
+
+          next if (attribute.optional? && value.nil?) || attribute.default
 
           unless attribute.valid_value?(value)
             raise TypeError, "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
@@ -353,18 +384,37 @@ module Drn
         super(h.freeze)
       end
 
-      def to_h
-        if (comps = self.class.attributes.select(&:component?)).empty?
-          super
+      def value_for(name)
+        return self[name] if self[name]
+
+        default = self.class.attribute(name).default
+        if default.respond_to?(:to_proc)
+          @hash[name] ||= instance_exec(&default)
         else
-          comps.reduce({}) do |h, comp|
-            if key?(comp.reference_key)
-              h.merge!(super.except(comp.name))
-            else
-              h.merge!(
-                super.merge(comp.reference_key => send(comp.name).id)
-                  .except(comp.name))
-            end
+          @hash[name] ||= default
+        end
+      end
+
+      def to_h
+        data = super
+
+        self.class.attributes.select(&:default).each do |attr|
+          data[attr.name] = value_for(attr.name)
+        end
+        
+        data = data.except(*self.class.exclude_for_storage)
+
+        self.class.attributes.select(&:optional?).each do |attr|
+          if (val = value_for(attr.name)).nil?
+            data.delete(attr.name)
+          end
+        end
+
+        if (comps = self.class.attributes.select(&:component?)).empty?
+          data
+        else
+          comps.reduce(data) do |h, comp|
+            h.merge!(comp.reference_key => send(comp.name).id)
           end
         end
       end

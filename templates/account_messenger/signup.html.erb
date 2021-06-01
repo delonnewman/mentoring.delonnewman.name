@@ -1,3 +1,6 @@
-<h1>Welcome!</h1>
+<h1>Hello!</h1>
 
-<a href="#">Activate</a>
+<p>You've signed up for mentoring at mentoring.delonnewman.name with the username: <em><%= user.username %></em>.</p>
+<p>Click the link below to activate your account.</p>
+
+<a href="<%= activation_url(user) %>">Activate</a>

@@ -1,20 +1,22 @@
 module Drn
   module Mentoring
     class User < Entity
-      reference_id
+      primary_key :id
 
       has :displayname, String, required: false
-      has :username,    String
-      has :email,       String
+      has :username,    String, unique: true
 
-      belongs_to :role, UserRole, referenced_by: { Integer => :id, String => :name }
+      belongs_to :role, UserRole
+
+      email
+      password
 
       timestamps
-      encrypted_password
 
-      def to_s
+      def name
         displayname || username
       end
+      alias to_s name
 
       def first_name
         displayname.split(/\s+/).first || username

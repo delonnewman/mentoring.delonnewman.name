@@ -70,6 +70,7 @@ module Drn
 
       # Rack interface
       def call(env)
+        env['mentoring.app'] = self
         Main.rack.call(env)
       end
 

@@ -46,12 +46,23 @@ Sequel.migration do
       String      :username,           null: false, index: true, unique: true
       String      :displayname
       String      :encrypted_password
-      String      :email,              null: false, index: true, unique: true
+      String      :email,              null: false, index: true
       Integer     :role_id,            null: false, index: true
       Time        :created_at,                      index: true
       Time        :updated_at,                      index: true
 
       foreign_key [:role_id], :user_roles
+    end
+
+    create_table :user_registrations do
+      uuid   :id,             null: false, index: true, primary_key: true
+      String :username,       null: false, index: true
+      String :email,          null: false, index: true
+      String :activation_key, null: false
+
+      Time   :expires_at,              index: true
+      Time   :created_at,              index: true
+      Time   :updated_at,              index: true
     end
   end
 end

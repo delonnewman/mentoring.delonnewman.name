@@ -28,6 +28,22 @@ module Drn
           layout false
         end
       end
+
+      def app
+        raise ":app method is not implemented for #{self.class}"
+      end
+
+      def template_cache
+        @template_cache ||= {}
+      end
+
+      def template(name)
+        template_cache[name] ||= Template[self, name]
+      end
+
+      def render_template(name, view = EMPTY_HASH)
+        template(name).call(view)
+      end
     end
   end
 end

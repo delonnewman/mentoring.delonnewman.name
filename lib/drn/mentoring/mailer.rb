@@ -4,53 +4,32 @@ module Drn
     class Mailer < Templated
       include Invokable
 
+      attr_reader :app
+      
       def initialize(app)
         @app = app
       end
 
+      def logger
+        app.logger
+      end
+      
       protected
       
-      def mail(name, view = EMPTY_HASH, to:, from: 'noreply@delonnewman.name', subject:)
-        content = render_erb(name, view)
-        msg     = [{ 'From' => from, 'To' => [to], 'Subject' => subject, 'HTMLPart' => content }]
+      def mail(name, view = EMPTY_HASH, to:, from: 'contact@delonnewman.name', subject:)
+        content = render_template(name, view)
+
+        msg     = [{ 'From'     =>  { 'Email' => from, 'Name' => "Delon Newman's Email Bot" },
+                     'To'       => [{ 'Email' => to.email, 'Name' => to.username }],
+                     'Subject'  => subject,
+                     'HTMLPart' => content }]
+
+        logger.info "Sending message: #{msg.inspect}"
+        
         Concurrent::Promises.future do
-          Mailjet::Send.create(messages: msg)
-        end
-      end
-      
-      private
-
-      def render_erb(name, __view__)
-        __binding__ = binding
-
-        if __view__.is_a?(Hash)
-          __data__ = __view__
-          __data__.each_pair do |key, value|
-            __binding__.local_variable_set(key, value)
-          end
-        end
-
-        __path__ = self.class.template_path.join("#{name}.html.erb")
-
-        if self.class.layout
-          __content__ = eval(template_content(name, __path__), __binding__)
-          eval(template_content(:layout, self.class.layout_path), __binding__)
-        else
-          eval(template_content(name, __path__), __binding__)
-        end
-      end
-
-      def template_cache
-        @template_cache ||= {}
-      end
-
-      def template_content(view, path)
-        if Drn::Mentoring.app.env == :production && (cached = template_cache[view])
-          cached
-        else
-          code = Erubi::Engine.new(File.read(path)).src
-          template_cache[view] = code if Drn::Mentoring.app.env == :production
-          code
+          res = Mailjet::Send.create(messages: msg)
+          logger.info "Mailjet response: #{res.inspect}"
+          res
         end
       end
     end

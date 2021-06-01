@@ -1,8 +1,8 @@
 module Drn
   module Mentoring
     class UserRole < Entity
-      reference_id
-      has :name, String
+      primary_key :id
+      reference :name, String
 
       alias to_s name
     end

@@ -14,6 +14,10 @@ module Drn
         User.repository
       end
 
+      def user_registrations
+        UserRegistration.repository
+      end
+
       def account_messenger
         @account_messenger ||= AccountMessenger.new(Drn::Mentoring.app)
       end

@@ -15,6 +15,7 @@ PATH
   remote: vendor/rack-routable
   specs:
     rack-routable (0.1.0)
+      invokable
       rack
 
 GEM

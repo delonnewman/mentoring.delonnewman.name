@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'stringio'
+require 'invokable'
 
 module Rack
   # Provides a light-weight DSL for routing over Rack, and instances implement
@@ -69,6 +70,7 @@ module Rack
     def self.included(base)
       base.extend(ClassMethods)
       base.include(InstanceMethods)
+      base.include(Invokable)
     end
 
     # TODO: implement custom query parser
@@ -156,12 +158,13 @@ module Rack
     end
 
     module InstanceMethods
-      attr_reader :env, :request
+      attr_reader :env, :request, :params
 
       def initialize(env)
         @env      = env
         @request  = Rack::Request.new(env)
         @match    = self.class.routes.match(env)
+        @params   = @request.params.merge(@match[:params]) if @match && @match[:params]
         @response = Rack::Response.new
       end
 
@@ -230,8 +233,6 @@ module Rack
         when :app
           @match[:value].call(@match[:env])
         when :action
-          params = @request.params.merge(@match[:params])
-  
           res = begin
                   # NOTE: consider calling with instance_exec do some benchmarking
                   # to see how this would effect performance.

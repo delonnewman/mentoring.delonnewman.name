@@ -4,8 +4,14 @@ module Drn
       layout :mailer
       
       def signup(user)
-        mail :signup, to: user.email, subject: 'Thank you for giving us a try! Please complete your registration.'
+        mail :signup, { user: user }, to: user, subject: 'Thank you for giving us a try! Please complete your registration.'
       end
+
+      private
+
+        def activation_url(user)
+          "#{app.settings['DOMAIN']}/activate/#{user.id}?key=#{user.activation_key}"
+        end
     end
   end
 end

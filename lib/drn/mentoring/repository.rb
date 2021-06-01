@@ -125,6 +125,10 @@ module Drn
           h.delete(attr.name)
         end
 
+        if h.key?(:updated_at)
+          h[:updated_at] = Time.now
+        end
+
         h
       end
 
