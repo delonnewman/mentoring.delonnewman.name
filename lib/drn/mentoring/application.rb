@@ -26,7 +26,7 @@ module Drn
     class Application
       # Methods that should not be shared in other contexts (see Drn::Mentoring::Controller)
       METHODS_NOT_SHARED = Set[:env, :call, :init!, :main].freeze
-      SETTINGS = %w[DATABASE_URL DOMAIN STRIPE_KEY STRIPE_PUB_KEY MENTORING_SESSION_SECRET].freeze
+      SETTINGS = %w[DATABASE_URL DOMAIN STRIPE_KEY STRIPE_PUB_KEY MENTORING_SESSION_SECRET MAILJET_API_KEY MAILJET_SECRET_KEY].freeze
 
       attr_reader :env, :logger, :root, :db, :session_secret, :settings
 
@@ -51,6 +51,8 @@ module Drn
         case env
         when :development
           '.env'
+        when :production
+          nil
         else
           ".env.#{env}"
         end
@@ -82,7 +84,12 @@ module Drn
         if initialized?
           raise "An application can only be initialized once"
         else
-          puts "Initializing application in #{env} environment from #{dotenv_path}"
+          if env == :production
+            puts "Initializing application in #{env} environment"
+          else
+            puts "Initializing application in #{env} environment from #{dotenv_path}"
+          end
+
           # TODO: componentize these
           load_env!
 
@@ -93,7 +100,7 @@ module Drn
           Mailjet.configure do |config|
             config.api_key = settings.fetch('MAILJET_API_KEY')
             config.secret_key = settings.fetch('MAILJET_SECRET_KEY')
-            config.default_from = 'noreply@delonnewman.name'
+            config.default_from = 'contact@delonnewman.name'
             config.api_version = 'v3.1'
           end
 
