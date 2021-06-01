@@ -34,13 +34,13 @@ gem 'erubi'
 gem 'inflection'
 gem 'concurrent-ruby'
 gem 'invokable'
+gem 'rake'
 
 # vendor
 gem 'stripe'
 gem 'mailjet'
 
 group :development, :test do
-  gem 'rake'
   gem 'rspec'
 
   gem 'yard'
