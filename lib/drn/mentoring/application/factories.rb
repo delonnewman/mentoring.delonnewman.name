@@ -19,7 +19,7 @@ module Drn
       end
 
       def account_messenger
-        @account_messenger ||= AccountMessenger.new(Drn::Mentoring.app)
+        @account_messenger ||= AccountMessenger.new(self)
       end
     end
   end

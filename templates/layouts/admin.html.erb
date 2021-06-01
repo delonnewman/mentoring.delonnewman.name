@@ -22,11 +22,13 @@
             <i class="fas fa-home"></i>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" title="Admin" href="/admin">
-            Admin
-          </a>
-        </li>
+	<% if current_user.admin? %>
+          <li class="nav-item">
+            <a class="nav-link" title="Admin" href="/admin">
+              Admin
+            </a>
+          </li>
+	<% end %>
         <!-- li class="nav-item">
           <a class="nav-link" href="/help">
             <i class="fas fa-question"></i>
@@ -55,10 +57,8 @@
       <%= __content__ %>
     </main>
 
-    <script src="/state.js"></script>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <% if authenticated? %><script src="https://js.stripe.com/v3/"></script><% end %>
     <script src="/js/application.js"></script>
     <script async type="text/javascript" id="mini-profiler" src="/mini-profiler-resources/includes.js?v=12b4b45a3c42e6e15503d7a03810ff33" data-version="12b4b45a3c42e6e15503d7a03810ff33" data-path="/mini-profiler-resources/" data-current-id="redo66j4g1077kto8uh3" data-ids="redo66j4g1077kto8uh3" data-horizontal-position="left" data-vertical-position="top" data-trivial="false" data-children="false" data-max-traces="10" data-controls="false" data-authorized="true" data-toggle-shortcut="Alt+P" data-start-hidden="false" data-collapse-results="true"></script>
   </body>

@@ -73,6 +73,18 @@ users = [
     displayname: 'Delon Newman',
     email: 'contact@delonnewman.name',
     role: 'admin',
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO'],
+  User[
+    username: 'luna',
+    displayname: 'Jackie Newman',
+    email: 'roadrunner.jackie@gmail.com',
+    role: 'admin',
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO'],
+  User[
+    username: 'the-man-in-black',
+    displayname: 'Johnny Cash',
+    email: 'delon.newman+jcash@gmail.com',
+    role: 'customer',
     encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO']
 ]
 

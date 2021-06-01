@@ -21,6 +21,10 @@ module Drn
       def first_name
         displayname.split(/\s+/).first || username
       end
+
+      def admin?
+        role.name == 'admin'
+      end
     end
   end
 end

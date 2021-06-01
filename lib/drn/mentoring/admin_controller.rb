@@ -59,6 +59,12 @@ module Drn
         end
 
         @request = Rack::Request.new(env)
+
+        unless current_user.admin?
+          res = Rack::Response.new
+          res.redirect('/') # TODO: add message to user
+          return res.finish
+        end
         
         env['PATH_INFO'] = env['PATH_INFO'].sub(prefix, '')
         
