@@ -13,6 +13,8 @@ Bundler.require
 # Monkey patches
 require_relative 'core_ext'
 
+require_relative 'trait'
+
 # Simple utility methods
 require_relative 'utils'
 

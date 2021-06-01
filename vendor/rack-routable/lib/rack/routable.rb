@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'cgi'
 require 'stringio'
 require 'invokable'
 
@@ -181,12 +182,21 @@ module Rack
       def session
         request.session
       end
+
+      def escape_html(*args)
+        CGI.escapeHTML(*args)
+      end
+      alias h escape_html
       
       def not_found
         io = StringIO.new
         io.puts "<h1>Not Found</h1>"
 
         unless ENV['RACK_ENV'] == 'production'
+          io.puts "<pre>#{h @match.inspect}</pre>"
+          io.puts "<pre>#{h self.class.inspect}</pre>"
+          io.puts "<pre>#{h self.class.canonical_name}</pre>"
+          io.puts "<pre>#{h self.class.routes.inspect}</pre>"
           io.puts "<h2>Valid Routes</h2>"
           io.puts "<table><tbody>"
           self.class.routes.each do |method, path, app|
@@ -210,11 +220,11 @@ module Rack
           io.puts "</tbody></table>"
         end
         
-        [404, DEFAULT_HEADERS, [io.string]]
+        [404, DEFAULT_HEADERS.dup, [io.string]]
       end
 
       def error(e)
-        [500, DEFAULT_HEADERS, StringIO.new('Server Error')]
+        [500, DEFAULT_HEADERS.dup, StringIO.new('Server Error')]
       end
 
       def redirect_to(url)
@@ -251,11 +261,11 @@ module Rack
           elsif res.is_a?(Response)
             res.finish
           elsif res.is_a?(Hash) && res.key?(:status)
-            [res[:status], res.fetch(:headers) { DEFAULT_HEADERS }, res[:body]]
+            [res[:status], res.fetch(:headers) { DEFAULT_HEADERS.dup }, res[:body]]
           elsif res.respond_to?(:each)
-            [200, DEFAULT_HEADERS, res]
+            [200, DEFAULT_HEADERS.dup, res]
           else
-            [200, DEFAULT_HEADERS, StringIO.new(res.to_s)]
+            [200, DEFAULT_HEADERS.dup, StringIO.new(res.to_s)]
           end
         end
       end

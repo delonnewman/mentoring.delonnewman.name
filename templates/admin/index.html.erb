@@ -1,0 +1,9 @@
+<h1>Admin Console</h1>
+
+<ul>
+<% controllers.each do |(name, controller)| %>
+  <li>
+    <%= link_to "/admin/#{name}", name.to_s.capitalize %>
+  </li>
+<% end %>
+</ul>

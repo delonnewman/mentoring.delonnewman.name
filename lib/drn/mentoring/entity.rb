@@ -17,7 +17,9 @@ module Drn
         string:  CLASSICAL_TYPE[String],
         any:     CLASSICAL_TYPE[BasicObject],
         uuid:    REGEXP_TYPE[UUID_REGEXP],
-        email:   REGEXP_TYPE[EMAIL_REGEXP]
+        email:   REGEXP_TYPE[EMAIL_REGEXP],
+        # TODO: add more checks here
+        password: ->(v) { v.is_a?(String) && v.length > 10 || v.is_a?(BCrypt::Password) }
       }
 
       # Represents an attribute of a domain entity. Drives dynamic checks and provides
@@ -27,6 +29,33 @@ module Drn
 
         def required?
           self[:required] == true
+        end
+
+        def display_order
+          alt = 99
+          d = self[:display]
+          return alt unless d
+
+          d.fetch(:order) { alt }
+        end
+
+        def display_name
+          d = self[:display]
+          return Utils.titlecase(name) unless d
+
+          d.fetch(:name) { Utils.titlecase(name.capitalize) }
+        end
+
+        def time?
+          self[:type].is_a?(Class) && (self[:type] == Time || self[:type] < Time)
+        end
+
+        def password?
+          self[:type] == :password
+        end
+
+        def email?
+          self[:type] == :email
         end
 
         def optional?
@@ -77,12 +106,12 @@ module Drn
           fetch(:resolve_with) { DEFAULT_RESOLUTION_MAP }
         end
 
-        def type_entity?
+        def entity?
           self[:type].is_a?(Class) && self[:type] < Entity
         end
 
         def valid_value?(value)
-          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (type_entity? && value.is_a?(Hash))
+          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (entity? && value.is_a?(Hash))
         end
       end
 
@@ -168,7 +197,15 @@ module Drn
         end
 
         def primary_key(name = :id, type = Integer, **options)
-          opts = options.merge(required: false, unique: true, index: true, primary_key: true)
+          opts = options.merge(
+            required:    false,
+            unique:      true,
+            index:       true,
+            primary_key: true,
+            display:     false,
+            edit:        false
+          )
+
           if type == :uuid
             opts[:default] = ->{ SecureRandom.uuid }
             opts[:required] = true
@@ -192,8 +229,8 @@ module Drn
         end
 
         def timestamps
-          has :created_at, Time, default: ->{ Time.now }
-          has :updated_at, Time, default: ->{ Time.now }
+          has :created_at, Time, edit: false, default: ->{ Time.now }
+          has :updated_at, Time, edit: false, default: ->{ Time.now }
         end
 
         def exclude_for_storage
@@ -201,8 +238,17 @@ module Drn
         end
 
         def password
-          has :encrypted_password, required: false, default: ->{ BCrypt::Password.create(password) }
-          has :password,           required: false, default: ->{ BCrypt::Password.new(encrypted_password) }
+          has :encrypted_password, String,
+              required: false,
+              display:  false,
+              edit:     false,
+              default:  ->{ BCrypt::Password.create(password) }
+
+          has :password, :password,
+              required: false,
+              display:  false,
+              default:  ->{ BCrypt::Password.new(encrypted_password) }
+
           exclude_for_storage << :password
         end
 
@@ -363,6 +409,10 @@ module Drn
           end
 
           @repository ||= repository_class.new(Drn::Mentoring.app.db[repository_table_name.to_sym], self)
+        end
+
+        def canonical_name
+          Utils.snakecase(name.split('::').last)
         end
       end
 

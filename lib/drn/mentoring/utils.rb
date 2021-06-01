@@ -3,6 +3,12 @@ module Drn
     module Utils
       module_function
 
+      def mock_request(path, **options)
+        Rack::MockRequest.env_for(path, **options).merge(
+          'mentoring.app' => Drn::Mentoring.app
+        )
+      end
+
       def money(amount, unit: '$')
         "#{unit}#{sprintf "%.2f", amount}"
       end
@@ -45,6 +51,15 @@ module Drn
         word.tr!("-", "_")
         word.downcase!
         word
+      end
+
+      def humanize(string)
+        return string unless /[\W_]/ =~ string
+        string.to_s.gsub(/[\W_]/, ' ')
+      end
+
+      def titlecase(string)
+        humanize(string).capitalize
       end
   
       def camelcase(string)

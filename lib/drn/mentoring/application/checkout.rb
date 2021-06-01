@@ -3,7 +3,9 @@
 module Drn
   module Mentoring
     class Application
-      class Checkout < AuthenticatedController
+      class Checkout < Controller
+        include Authenticable
+        
         get '/setup' do
           settings = { pub_key: Drn::Mentoring.app.settings['STRIPE_PUB_KEY'] }
 

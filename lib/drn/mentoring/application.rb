@@ -70,6 +70,23 @@ module Drn
         self
       end
 
+      def url_scheme
+        case env
+        when :test, :development
+          'http'
+        else
+          'https'
+        end
+      end
+
+      def template_path(*parts, ext: 'html.erb')
+        root.join('templates', "#{parts.join('/')}.#{ext}")
+      end
+
+      def layout_path(name)
+        template_path('layouts', name)
+      end
+
       # Rack interface
       def call(env)
         env['mentoring.app'] = self

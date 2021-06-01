@@ -11,11 +11,10 @@ module Drn
       attr_reader :path, :layout
 
       def self.[](templated, name)
-        tmpl = new(
-          templated,
-          templated.class.template_path.join("#{name}.html.erb"),
-          templated.class.layout && templated.class.layout_path
-        )
+        path   = templated.app.template_path(templated.canonical_name, name)
+        layout = templated.layout && templated.app.layout_path(templated.layout)
+        tmpl   = new(templated, path, layout)
+
         if templated.app.env == :production
           tmpl.memoize
         else
@@ -23,18 +22,19 @@ module Drn
         end
       end
       
-      def initialize(templated, path, layout = nil)
+      def initialize(templated, path, layout)
         @templated = templated
+        @app       = templated.app
         @path      = path
-        @layout    = Template.new(templated, layout) if layout
+        @layout    = Template.new(templated, layout, nil) if layout
       end
 
       def method_missing(method, *args, **kwargs)
         @templated.send(method, *args, **kwargs)
       end
 
-      def respond_to?(method)
-        super || @templated.respond_to?(method)
+      def respond_to?(method, include_all = false)
+        super || @templated.respond_to?(method, include_all)
       end
 
       def call(view)

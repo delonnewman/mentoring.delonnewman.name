@@ -11,6 +11,7 @@ module Drn
     init!
 
     # Templating
+    require_relative 'mentoring/templatable'
     require_relative 'mentoring/templated'
     require_relative 'mentoring/template_helpers'
     require_relative 'mentoring/template'
@@ -37,16 +38,19 @@ module Drn
     # Simple utility methods for controller / view code
     require_relative 'mentoring/application/helpers'
 
-    # Controllers
-    require_relative 'mentoring/controller'
-    require_relative 'mentoring/application/authenticated_controller'
-    require_relative 'mentoring/application/checkout'
-    require_relative 'mentoring/application/mentoring_sessions'
-    require_relative 'mentoring/application/users'
-    require_relative 'mentoring/application/main'
-
     # Mailers
     require_relative 'mentoring/mailer'
     require_relative 'mentoring/account_messenger'
+
+    # Controllers
+    require_relative 'mentoring/controller'
+    require_relative 'mentoring/authenticable'
+    require_relative 'mentoring/entity_controller'
+    require_relative 'mentoring/admin_controller'
+
+    # Main Application
+    require_relative 'mentoring/application/checkout'
+    require_relative 'mentoring/application/mentoring_sessions'
+    require_relative 'mentoring/application/main'
   end
 end

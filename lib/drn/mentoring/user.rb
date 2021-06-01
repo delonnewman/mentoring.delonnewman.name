@@ -3,12 +3,12 @@ module Drn
     class User < Entity
       primary_key :id
 
-      has :displayname, String, required: false
-      has :username,    String, unique: true
+      has :displayname, String, required: false, display: { name: 'Name', order: 0 }
+      has :username,    String, unique: true, display: { order: 1 }
 
-      belongs_to :role, UserRole
+      belongs_to :role, UserRole, display: { order: 3 }
 
-      email
+      email display: { order: 2 }
       password
 
       timestamps

@@ -1,0 +1,9 @@
+<%= link_to '/admin/users', '<<Back to users' %>
+<h1>User</h1>
+
+<dl>
+<% user.class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false }.each do |attr| %>
+  <dt><%= attr.display_name %></dt>
+  <dd><%= user.send(attr.name) %></dd>
+<% end %>
+</dl>

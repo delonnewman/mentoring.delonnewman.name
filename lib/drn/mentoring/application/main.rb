@@ -2,14 +2,17 @@
 module Drn
   module Mentoring
     class Application
-      class Main < AuthenticatedController
+      class Main < Controller
+        include Authenticable
+        
         use Rack::Session::Cookie, secret: Mentoring.app.session_secret
+        #use Rack::MiniProfiler
 
         static '/' => 'public'
         
         mount '/checkout', Checkout
         mount '/session',  MentoringSessions
-        mount '/users',    Users
+        mount '/admin',    AdminController.build(User, include: Authenticable)
 
         get '/', authenticate: false do
           render :index
@@ -51,7 +54,8 @@ module Drn
         end
 
         post '/activate/:id', authenticate: false do
-          data = params.slice('displayname', 'username', 'email', 'password').merge(role: 'customer').transform_keys(&:to_sym)
+          data = params.slice('displayname', 'username', 'email', 'password')
+                   .merge(role: 'customer').transform_keys(&:to_sym)
 
           logger.info "Form data: #{data.inspect}"
           
