@@ -10,7 +10,7 @@ module Drn
       private
 
         def activation_url(user)
-          "#{app.settings['DOMAIN']}/activate/#{user.id}?key=#{user.activation_key}"
+          "https://#{app.settings['DOMAIN']}/activate/#{user.id}?key=#{user.activation_key}"
         end
     end
   end
