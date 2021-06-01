@@ -95,6 +95,15 @@ module Drn
             redirect_to '/'
           end
         end
+
+        def error(e)
+          logger.error "#{e.message}"
+          e.backtrace.each do |trace|
+            logger.error "  #{trace}"
+          end
+          
+          render :error
+        end
       end
     end
   end

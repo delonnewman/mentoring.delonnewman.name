@@ -213,7 +213,7 @@ module Rack
         [404, DEFAULT_HEADERS, [io.string]]
       end
 
-      def error
+      def error(e)
         [500, DEFAULT_HEADERS, StringIO.new('Server Error')]
       end
 
@@ -240,7 +240,7 @@ module Rack
                 rescue => e
                   if ENV.fetch('RACK_ENV') { :development }.to_sym == :production
                     env['rack.routable.error'] = e
-                    return error
+                    return error(e)
                   else
                     raise e
                   end

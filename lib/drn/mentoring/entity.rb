@@ -374,7 +374,7 @@ module Drn
 
           h[attribute.name] = value
 
-          next if (attribute.optional? && value.nil?) || attribute.default
+          next if (attribute.optional? && value.nil?) || !attribute.default.nil?
 
           unless attribute.valid_value?(value)
             raise TypeError, "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
@@ -398,10 +398,10 @@ module Drn
       def to_h
         data = super
 
-        self.class.attributes.select(&:default).each do |attr|
+        self.class.attributes.select { |a| !a.default.nil? }.each do |attr|
           data[attr.name] = value_for(attr.name)
         end
-        
+
         data = data.except(*self.class.exclude_for_storage)
 
         self.class.attributes.select(&:optional?).each do |attr|
