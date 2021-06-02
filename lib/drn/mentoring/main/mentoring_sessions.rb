@@ -1,6 +1,6 @@
 module Drn
   module Mentoring
-    class Application
+    class Main < Controller
       class MentoringSessions < Controller
         include Authenticable
         

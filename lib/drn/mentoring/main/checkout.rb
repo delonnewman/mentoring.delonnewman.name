@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 module Drn
   module Mentoring
-    class Application
+    class Main < Controller
       class Checkout < Controller
         include Authenticable
         

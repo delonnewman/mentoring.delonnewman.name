@@ -49,8 +49,8 @@ module Drn
     require_relative 'mentoring/admin_controller'
 
     # Main Application
-    require_relative 'mentoring/application/checkout'
-    require_relative 'mentoring/application/mentoring_sessions'
-    require_relative 'mentoring/application/main'
+    require_relative 'mentoring/main/checkout'
+    require_relative 'mentoring/main/mentoring_sessions'
+    require_relative 'mentoring/main'
   end
 end

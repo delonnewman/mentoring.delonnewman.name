@@ -3,19 +3,21 @@ require 'rack/contrib/try_static'
 
 module Drn
   module Mentoring
-    def self.resolved_env(env)
+    module_function
+    
+    def resolved_env(env)
       ENV.fetch('RACK_ENV') { env }.to_sym
     end
 
-    def self.current_env
+    def current_env
       @current_env || :development
     end
 
-    def self.init!(env = current_env)
+    def init!(env = current_env)
       app(env).init!
     end
 
-    def self.app(env = current_env)
+    def app(env = current_env)
       env = resolved_env(env)
       @current_env = env
       @apps ||= {}
