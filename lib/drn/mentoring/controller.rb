@@ -3,7 +3,6 @@ module Drn
   module Mentoring
     class Controller < Templated
       include Rack::Routable
-      include Utils
 
       def status(status)
         response.tap do |r|

@@ -138,6 +138,7 @@ module Rack
       def routes
         @routes ||= Routes.new
       end
+
       # A "macro" method for defining a route for the application.
       #
       # @param method [:get, :post, :delete :put, :head, :link :unlink]

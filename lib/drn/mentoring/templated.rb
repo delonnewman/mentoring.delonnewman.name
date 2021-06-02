@@ -2,6 +2,7 @@
 module Drn
   module Mentoring
     class Templated
+      include Utils
       include Templatable
       
       class << self
@@ -16,8 +17,7 @@ module Drn
       end
 
       %i[layout canonical_name].each do |method|
-        code = %{ def #{method}; self.class.#{method} end }
-        class_eval code
+        class_eval %{ def #{method}; self.class.#{method} end }
       end
       
       def app

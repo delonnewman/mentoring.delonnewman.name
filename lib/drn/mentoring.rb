@@ -35,9 +35,6 @@ module Drn
     # Factory Methods
     require_relative 'mentoring/application/factories'
 
-    # Simple utility methods for controller / view code
-    require_relative 'mentoring/application/helpers'
-
     # Mailers
     require_relative 'mentoring/mailer'
     require_relative 'mentoring/account_messenger'
