@@ -8,7 +8,7 @@ module Drn
       def_delegators :controller, :template_path, :layout_path, :layout
 
       def self.build(app, entity_class, **options)
-        new(app, entity_class, **options).build!.freeze
+        new(app, entity_class, **options).build!
       end
 
       
@@ -33,11 +33,6 @@ module Drn
         define_operation_update
         define_operation_delete
 
-        self
-      end
-
-      def freeze
-        @controller.freeze
         self
       end
 

@@ -15,9 +15,10 @@ module Drn
 
       extend Forwardable
       def_delegators :controllers, :[]
+      def_delegators :app, :logger
 
       def self.build(*entity_classes, **options)
-        new(entity_classes, **options).build!.freeze
+        new(entity_classes, **options).build!
       end
       
       def initialize(entity_classes, prefix: '/admin', **options)
@@ -33,27 +34,11 @@ module Drn
       end
 
       def build!
-        controllers = @controllers
-        @controller = Rack::Builder.app do
-          controllers.each_value do |controller|
-            controller.build!
-            run controller
-          end
-        end
-        
-        self
-      end
-
-      def freeze
-        @controllers.each_value(&:freeze)
+        @controllers.each_value(&:build!)
         self
       end
 
       def call(env)
-        unless @controller
-          raise "This controller has not been built, please call the #build! method"
-        end
-
         @app = env.fetch('mentoring.app') do
           raise "mentoring.app key should be set in env before calling a controller"
         end
@@ -72,7 +57,12 @@ module Drn
           content = render_template(:index, { controllers: controllers })
           [200, Rack::Routable::DEFAULT_HEADERS.dup, [content]]
         else
-          @controller.call(env)
+          res = nil
+          @controllers.each_value do |controller|
+            res = controller.call(env)
+            break if res[0] != 404
+          end
+          res
         end
       end
     end
