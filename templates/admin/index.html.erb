@@ -3,7 +3,7 @@
 <ul>
 <% controllers.each do |(name, controller)| %>
   <li>
-    <%= link_to "/admin/#{name}", name.to_s.capitalize %>
+    <%= link_to "/admin/#{name}", titlecase(name.to_s) %>
   </li>
 <% end %>
 </ul>

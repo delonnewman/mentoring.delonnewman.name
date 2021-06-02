@@ -54,12 +54,13 @@ module Drn
       end
 
       def humanize(string)
+        string = string.name if string.is_a?(Symbol)
         return string unless /[\W_]/ =~ string
         string.to_s.gsub(/[\W_]/, ' ')
       end
 
       def titlecase(string)
-        humanize(string).capitalize
+        humanize(string).split(' ').map!(&:capitalize).join(' ')
       end
   
       def camelcase(string)

@@ -1,6 +1,9 @@
 module Drn
   module Mentoring
     module TemplateHelpers
+      extend Trait
+      required :app
+      
       def url_for(path)
         "#{app.url_scheme}://#{File.join(app.settings['DOMAIN'], path)}"
       end
@@ -9,7 +12,7 @@ module Drn
         classes = options[:class]
         classes = classes.join(' ') if classes.is_a?(Enumerable)
 
-        %{<a href="#{url_for(path)}" title="#{title}", class="#{classes}">#{h name}</a>}
+        %{<a href="#{url_for(path)}" title="#{title}" class="#{classes}">#{h name}</a>}
       end
 
       def input_field(name, value = params[name.to_s], type: 'text')

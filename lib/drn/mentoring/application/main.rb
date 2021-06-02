@@ -12,7 +12,7 @@ module Drn
         
         mount '/checkout', Checkout
         mount '/session',  MentoringSessions
-        mount '/admin',    AdminController.build(User, include: Authenticable)
+        mount '/admin',    AdminController.build(User, UserRegistration, include: Authenticable)
 
         get '/', authenticate: false do
           render :index

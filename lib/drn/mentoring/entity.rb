@@ -34,14 +34,16 @@ module Drn
         def display_order
           alt = 99
           d = self[:display]
-          return alt unless d
+          return alt if d == true
+          return alt  if not d
 
           d.fetch(:order) { alt }
         end
 
         def display_name
           d = self[:display]
-          return Utils.titlecase(name) unless d
+          return Utils.titlecase(name) if d == true
+          return Utils.titlecase(name) if not d
 
           d.fetch(:name) { Utils.titlecase(name.capitalize) }
         end
@@ -197,19 +199,22 @@ module Drn
         end
 
         def primary_key(name = :id, type = Integer, **options)
-          opts = options.merge(
+          opts = {
             required:    false,
             unique:      true,
             index:       true,
             primary_key: true,
             display:     false,
             edit:        false
-          )
+          }
+
+          opts.merge!(options)
 
           if type == :uuid
             opts[:default] = ->{ SecureRandom.uuid }
             opts[:required] = true
           end
+
           reference name, type, **opts
         end
 
