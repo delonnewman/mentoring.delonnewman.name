@@ -1,10 +1,13 @@
 module Drn
   module Mentoring
     class ProductRate < Entity
-      has :id,           Integer,  required: false
-      has :name,         String
+      primary_key :id
+      reference :name, String
+
       has :description,  String,   required: false
       has :subscription, :boolean, default: false
+
+      alias to_s name
     end
   end
 end

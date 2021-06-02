@@ -3,16 +3,28 @@ module Drn
     module TemplateHelpers
       extend Trait
       required :app
-      
+
       def url_for(path)
         "#{app.url_scheme}://#{File.join(app.settings['DOMAIN'], path)}"
       end
 
-      def link_to(path, name, title: name, **options)
+      def link_to(path, content = nil, escape: true, title: nil, **options)
+        raise "Content is required for a link" if not block_given? and content.nil?
+        content = yield if block_given?
+        content = escape_html(content) if escape
+        
         classes = options[:class]
         classes = classes.join(' ') if classes.is_a?(Enumerable)
 
-        %{<a href="#{url_for(path)}" title="#{title}" class="#{classes}">#{h name}</a>}
+        %{<a href="#{url_for(path)}" title="#{title}" class="#{classes}">#{content}</a>}
+      end
+
+      # Font Awesome integration
+      def icon(name, text = nil, type: 'fas')
+        code = %{<i class="#{type} fa-#{name}"></i>}
+        return code unless text
+
+        "#{code}&nbsp;#{text}"
       end
 
       def input_field(name, value = params[name.to_s], type: 'text')

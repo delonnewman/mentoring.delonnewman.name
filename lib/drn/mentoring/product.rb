@@ -1,15 +1,16 @@
 module Drn
   module Mentoring
     class Product < Entity
-      has :id,          :uuid,       default: ->{ SecureRandom.uuid }
-      has :name,        String
+      primary_key :id, :uuid
+
+      has :name,        String, display: { order: 0 }
       has :description, String
       has :image_path,  String
       has :amount,      Integer
-      has :rate,        ProductRate, resolve_with: { Integer => :id, String => :name }, component: true
       has :meta,        Hash,        required: false, serialize: true
       has :sort_order,  Integer,     default: 0
 
+      belongs_to :rate, ProductRate
       def_delegator :rate, :subscription?
 
       def price

@@ -13,10 +13,10 @@ module Drn
         "#{unit}#{sprintf "%.2f", amount}"
       end
 
-      def html_escape(string)
+      def escape_html(string)
         CGI.escapeHTML(string)
       end
-      alias h html_escape
+      alias h escape_html
       
       JS_ESCAPE_MAP = {
         '\\'    => '\\\\',
