@@ -2,11 +2,13 @@ module Drn
   module Mentoring
     # Represents the state of a mentoring session
     class MentoringSession < Entity
-      has :id,                  String,                 required: false
+      primary_key :id, String
+
       has :checkout_session_id, String
-      has :status,              MentoringSessionStatus, resolve_with: { Integer => :id, String => :name }
-      has :started_at,          Time,                   default: -> { Time.now }
-      has :ended_at,            Time,                   required: false
+      has :started_at,          Time, default: -> { Time.now }
+      has :ended_at,            Time, required: false
+
+      belongs_to :status, MentoringSessionStatus
 
       def complete?
         !incomplete?

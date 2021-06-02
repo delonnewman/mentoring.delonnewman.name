@@ -1,8 +1,10 @@
 module Drn
   module Mentoring
     class MentoringSessionStatus < Entity
-      has :id,   Integer, required: false
-      has :name, String
+      primary_key :id
+      reference :name, String
+
+      alias to_s name
     end
   end
 end
