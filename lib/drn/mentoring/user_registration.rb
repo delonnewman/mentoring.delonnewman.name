@@ -11,7 +11,9 @@ module Drn
           display: { order: 4 },
           default: ->{ Time.now + (5 * 60 * 60) } # expires in 5 hours
 
-      has :activation_key, String, display: { order: 3 }, default: ->{ SecureRandom.urlsafe_base64(256) }
+      has :activation_key, String,
+          display: { order: 3 },
+          default: ->{ SecureRandom.urlsafe_base64(256) }
 
       email display: { order: 2 }
       timestamps
@@ -25,10 +27,6 @@ module Drn
             reg
           end
         end
-      end
-
-      def user
-        User[slice(:username, :email).merge(role: 'customer')]
       end
     end
   end
