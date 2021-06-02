@@ -1,7 +1,11 @@
 require 'spec_helper'
 
-RSpec.describe Drn::Mentoring::EntityController do
-  class MockAuthController < Drn::Mentoring::AuthenticatedController
+include Drn::Mentoring
+
+RSpec.describe EntityController do
+  class MockAuthController < Controller
+    include Authenticable
+
     def initialize(env)
       super(env)
       @user = @app.users.first
@@ -13,13 +17,9 @@ RSpec.describe Drn::Mentoring::EntityController do
   end
   
   let(:entity_class) { User }
-  subject(:controller) do
-    described_class.build(
-      entity_class,
-      layout: :admin,
-      controller_super_class: MockAuthController
-    )
-  end
+
+  subject(:controller) {
+    described_class.build(entity_class, layout: :admin, controller_super_class: MockAuthController) }
 
   describe '#entity_class' do
     it 'should be the class given' do
@@ -29,7 +29,7 @@ RSpec.describe Drn::Mentoring::EntityController do
 
   describe '#call' do
     it 'should respond to an entity listing request' do
-      req = app_request(controller.path_list)
+      req = Utils.mock_request(controller.path_list)
       expect(controller.call(req)[2][0]).to match(/Users<\/h1>/)
     end
 

@@ -7,19 +7,18 @@ module Drn
       extend Forwardable
       def_delegators :controller, :template_path, :layout_path, :layout
 
-      def self.build(app, entity_class, **options)
-        new(app, entity_class, **options).build!
+      def self.build(entity_class, **options)
+        new(entity_class, **options).build!
       end
 
       
-      def initialize(app, entity_class, layout: nil, include: nil, controller_super_class: Controller)
-        @app            = app
+      def initialize(entity_class, layout: nil, include: nil, controller_super_class: Controller)
         @entity_class   = entity_class
         @entity_name    = @entity_class.canonical_name.freeze
         @canonical_name = Inflection.plural(@entity_name).freeze
 
         @controller = Class.new(controller_super_class)
-        @controller.class_eval("def self.canonical_name; #{@canonical_name.inspect} end")
+        @controller.class_eval("def self.canonical_name; #{@canonical_name.inspect} end", __FILE__)
         @controller.include(include) if include
         @controller.layout layout if layout
       end
@@ -48,10 +47,6 @@ module Drn
         "/#{canonical_name}"
       end
 
-      def view_list
-        :index
-      end
-      
       def path_new
         "/#{canonical_name}/new"
       end
@@ -71,14 +66,42 @@ module Drn
         "#{path_show(id)}/edit"
       end
 
+      INDEX_TEMPLATE = <<~HTML.freeze
+        <% attributes = entity_class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false } %>
+        <div class="d-flex justify-content-between align-items-center">
+          <%= link_to '/admin', '<< Back', class: 'btn btn-link btn-sm' %>
+          <h1 style="font-size: 1.5em">User Registrations</h1>
+          <%= link_to "/admin/\#{controller_name}/new", "Add \#{humanize entity_class.canonical_name}", class: 'btn btn-sm btn-primary' %>
+        </div>
+        <table class="table table-striped table-sm" style="font-size: 0.9em">
+          <thead>
+            <% attributes.each do |attr| %>
+              <th scope="col"><%= attr.display_name %></th>
+            <% end %>
+            <th scope="col"></th>
+          </thead>
+          <tbody>
+            <% entity_repository.each do |entity| %>
+              <tr>
+        	<% attributes.each do |attr| %>
+        	  <td><%= entity.send(attr.name) %></td>
+        	<% end %>
+        	<td>
+        	  <%= link_to "/admin/\#{controller_name}/\#{entity.id}", 'View', class: "btn btn-link btn-sm" %>
+        	  <%= link_to "/admin/\#{controller_name}/\#{entity.id}/edit", 'Edit', class: "btn btn-link btn-sm" %>
+        	</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      HTML
+
       def define_operation_list
         name  = canonical_name.to_sym
         klass = @entity_class
         repo  = klass.repository
-        view  = view_list
-        controller = @controller
         @controller.get path_list do
-          render view, with: { name => repo, entity_class: klass }
+          render :index, with: { entity_repository: repo, entity_class: klass, controller_name: name }
         end
       end
 

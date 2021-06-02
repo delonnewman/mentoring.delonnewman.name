@@ -1,9 +1,9 @@
 <h1>Admin Console</h1>
 
-<ul>
+<ul class="list-group">
 <% controllers.each do |(name, controller)| %>
-  <li>
-    <%= link_to "/admin/#{name}", titlecase(name.to_s) %>
+  <li class="list-group-item">
+    <%= link_to "/admin/#{name}", titlecase(name) %>
   </li>
 <% end %>
 </ul>

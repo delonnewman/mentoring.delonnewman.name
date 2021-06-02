@@ -1,0 +1,27 @@
+<% attributes = entity_class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false } %>
+<div class="d-flex justify-content-between align-items-center">
+  <%= link_to '/admin', '<< Back', class: 'btn btn-link btn-sm' %>
+  <h1 style="font-size: 1.5em">User Registrations</h1>
+  <%= link_to '/admin/user_registrations/new', 'Add User Registration', class: 'btn btn-sm btn-primary' %>
+</div>
+<table class="table table-striped table-sm" style="font-size: 0.9em">
+  <thead>
+    <% attributes.each do |attr| %>
+      <th scope="col"><%= attr.display_name %></th>
+    <% end %>
+    <th scope="col"></th>
+  </thead>
+  <tbody>
+    <% user_registrations.each do |user_registration| %>
+      <tr>
+	<% attributes.each do |attr| %>
+	  <td><%= user_registration.send(attr.name) %></td>
+	<% end %>
+	<td>
+	  <%= link_to "/admin/user_registrations/#{user_registration.id}", 'View', class: "btn btn-link btn-sm" %>
+	  <%= link_to "/admin/user_registrations/#{user_registration.id}/edit", 'Edit', class: "btn btn-link btn-sm" %>
+	</td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

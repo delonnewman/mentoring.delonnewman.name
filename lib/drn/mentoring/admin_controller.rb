@@ -28,7 +28,7 @@ module Drn
         @layout         = @options[:layout]
         
         @controllers = entity_classes.reduce({}) do |h, klass|
-          c = EntityController.new(app, klass, **@options)
+          c = EntityController.new(klass, **@options)
           h.merge!(c.canonical_name.to_sym => c)
         end.freeze
       end
