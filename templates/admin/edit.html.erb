@@ -1,5 +1,7 @@
-<%= link_to "/admin/#{canonical_name}", '<< Back' %>
-<h1>Edit <%= titlecase entity.class.canonical_name %></h1>
+<div class="d-flex justify-content-start align-items-center mb-3 pb-2 border-bottom">
+  <%= link_to "/admin/#{canonical_name}", icon('arrow-left', 'Back'), escape: false, class: 'btn btn-link btn-sm' %>
+  <h1 style="font-size: 1.5em" class="mb-0 text-muted">Edit <%= titlecase entity.class.canonical_name %></h1>
+</div>
 
 <% attributes = entity.class.attributes.sort_by(&:display_order).reject { |a| a[:edit] == false } %>
 <form action="/admin/<%= canonical_name %>/<%= entity.id %>" method="POST">
