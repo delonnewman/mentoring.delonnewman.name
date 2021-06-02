@@ -54,7 +54,7 @@ module Drn
         env['PATH_INFO'] = env['PATH_INFO'].sub(prefix, '')
         
         if env['PATH_INFO'] == '/' && env['REQUEST_METHOD'] == 'GET'
-          content = render_template(:index, { controllers: controllers })
+          content = render_template('admin/console', { controllers: controllers })
           [200, Rack::Routable::DEFAULT_HEADERS.dup, [content]]
         else
           res = nil

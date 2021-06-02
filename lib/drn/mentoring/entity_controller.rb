@@ -66,49 +66,19 @@ module Drn
         "#{path_show(id)}/edit"
       end
 
-      INDEX_TEMPLATE = <<~HTML.freeze
-        <% attributes = entity_class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false } %>
-        <div class="d-flex justify-content-between align-items-center">
-          <%= link_to '/admin', '<< Back', class: 'btn btn-link btn-sm' %>
-          <h1 style="font-size: 1.5em">User Registrations</h1>
-          <%= link_to "/admin/\#{controller_name}/new", "Add \#{humanize entity_class.canonical_name}", class: 'btn btn-sm btn-primary' %>
-        </div>
-        <table class="table table-striped table-sm" style="font-size: 0.9em">
-          <thead>
-            <% attributes.each do |attr| %>
-              <th scope="col"><%= attr.display_name %></th>
-            <% end %>
-            <th scope="col"></th>
-          </thead>
-          <tbody>
-            <% entity_repository.each do |entity| %>
-              <tr>
-        	<% attributes.each do |attr| %>
-        	  <td><%= entity.send(attr.name) %></td>
-        	<% end %>
-        	<td>
-        	  <%= link_to "/admin/\#{controller_name}/\#{entity.id}", 'View', class: "btn btn-link btn-sm" %>
-        	  <%= link_to "/admin/\#{controller_name}/\#{entity.id}/edit", 'Edit', class: "btn btn-link btn-sm" %>
-        	</td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      HTML
-
       def define_operation_list
         name  = canonical_name.to_sym
         klass = @entity_class
         repo  = klass.repository
         @controller.get path_list do
-          render :index, with: { entity_repository: repo, entity_class: klass, controller_name: name }
+          render 'admin/index', with: { entity_repository: repo, entity_class: klass, controller_name: name }
         end
       end
 
       def define_operation_new
         klass = @entity_class
         @controller.get path_new do
-          render :new, with: { errors: EMPTY_HASH, entity_class: klass }
+          render 'admin/new', with: { errors: EMPTY_HASH, entity_class: klass }
         end
       end
 
@@ -121,7 +91,7 @@ module Drn
             @entity_class.repository.store!(entity)
             redirect_to path_list
           else
-            render :new, with: { errors: errors, entity_class: @entity_class }
+            render 'admin/new', with: { errors: errors, entity_class: @entity_class }
           end
         end
       end
@@ -131,7 +101,7 @@ module Drn
         name  = @entity_name.to_sym
         @controller.get path_show do
           entity = klass.repository.find_by!(id: params[:id])
-          render :show, with: { name => entity }
+          render 'admin/show', with: { entity: entity }
         end
       end
 
@@ -140,7 +110,7 @@ module Drn
         name  = @entity_name.to_sym
         @controller.get path_edit do
           entity = klass.repository.find_by!(id: params[:id])
-          render :edit, with: { errors: EMPTY_HASH, name => entity }
+          render 'admin/edit', with: { errors: EMPTY_HASH, entity: entity }
         end
       end
 
@@ -153,7 +123,7 @@ module Drn
             @entity_class.repository.update!(params[:id], data)
             redirect_to path_show(params[:id])
           else
-            render :edit, with: { errors: errors, @entity_name.to_sym => entity }
+            render 'admin/edit', with: { errors: errors, @entity_name.to_sym => entity }
           end
         end
       end

@@ -1,8 +1,8 @@
-<%= link_to '/admin/users', '<< Back' %>
+<%= link_to "/admin/#{canonical_name}", '<< Back' %>
 <h1>New <%= titlecase entity_class.canonical_name %></h1>
 
 <% attributes = entity_class.attributes.sort_by(&:display_order).reject { |a| a[:edit] == false } %>
-<form action="/admin/users" method="POST">
+<form action="/admin/<%= canonical_name %>" method="POST">
   <% attributes.each do |attr| %>
     <div class="field-group mb-3">
       <label for="<%= attr.name %>"><%= attr.display_name %></label>

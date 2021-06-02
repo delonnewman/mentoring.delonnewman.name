@@ -10,15 +10,28 @@ module Drn
       
       attr_reader :path, :layout
 
-      def self.[](templated, name)
-        path   = templated.app.template_path(templated.canonical_name, name)
-        layout = templated.layout && templated.app.layout_path(templated.layout)
-        tmpl   = new(templated, path, layout)
+      class << self
+        def path(name, templated)
+          if name.is_a?(Symbol) || !name.include?('/')
+            templated.app.template_path(templated.canonical_name, name)
+          else
+            return Pathname.new(name) if File.exist?(name)
+            templated.app.template_path(name)
+          end
+        end
 
-        if templated.app.env == :production
-          tmpl.memoize
-        else
-          tmpl
+        def layout_path(templated)
+          templated.layout && templated.app.layout_path(templated.layout)
+        end
+        
+        def [](templated, name)
+          tmpl = new(templated, path(name, templated), layout_path(templated))
+  
+          if templated.app.env == :production
+            tmpl.memoize
+          else
+            tmpl
+          end
         end
       end
       
@@ -47,7 +60,7 @@ module Drn
           end
         end
 
-        content = eval(code, binding)
+        content = eval(code, binding, path.to_s)
 
         if @layout
           @layout.call(view.merge(__content__: content, view: view))
