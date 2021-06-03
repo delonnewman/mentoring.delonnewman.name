@@ -27,7 +27,6 @@ module Drn
     require_relative 'mentoring/user'
     require_relative 'mentoring/product_rate'
     require_relative 'mentoring/product'
-    require_relative 'mentoring/mentoring_session_status'
     require_relative 'mentoring/mentoring_session'
     require_relative 'mentoring/user_registration'
 
