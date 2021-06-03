@@ -19,7 +19,6 @@ module Drn
     # Repositories
     require_relative 'mentoring/repository'
     require_relative 'mentoring/product_repository'
-    require_relative 'mentoring/mentoring_session_repository'
     require_relative 'mentoring/user_repository'
 
     # Entities

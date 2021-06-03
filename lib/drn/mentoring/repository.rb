@@ -34,6 +34,11 @@ module Drn
         find_by!(id: id)
       end
 
+      def create!(record)
+        store!(record)
+        factory[record]
+      end
+
       def store!(record)
         @dataset.insert(process_record(record))
         self

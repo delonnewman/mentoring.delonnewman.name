@@ -2,10 +2,9 @@ module Drn
   module Mentoring
     class User < Entity
       primary_key :id
+      reference :username, String, unique: true, display: { order: 1 }
 
       has :displayname, String, required: false, display: { name: 'Name', order: 0 }
-      has :username,    String, unique: true, display: { order: 1 }
-
       belongs_to :role, UserRole, display: { order: 3 }
 
       email display: { order: 2 }

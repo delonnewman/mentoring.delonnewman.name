@@ -90,7 +90,14 @@ users = [
 
 pp users
 
-User.repository.store_all!(users)
+User.repository.store_all!(users) if User.repository.empty?
+
+#statuses = [
+#  MentoringSessionStatus[name: 'started'],
+#  MentoringSessionStatus[name: 'ended']
+#]
+#
+#MentoringSessionStatus.repository.store_all!(statuses) if MentoringSessionStatus.repository.empty?
 #product_list = Stripe::Product.list
 #existing = product_list.map(&:name).to_set
 #

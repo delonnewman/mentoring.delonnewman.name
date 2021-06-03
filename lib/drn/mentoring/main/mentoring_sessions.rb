@@ -12,7 +12,13 @@ module Drn
         # create session
         post '/' do |params|
           # create database record session_id:UUID, stripe_session_id:String, started_at:Time, ended_at:Time 
-          session = mentoring_sessions.create!(checkout_session_id: params['checkout_session_id'])
+          session = MentoringSession[
+            checkout_session_id: params['checkout_session_id'],
+            customer: current_user,
+            mentor: 'delon'
+          ]
+          mentoring_sessions.store!(session)
+
           redirect_to session_path(session)
         end
 
@@ -21,7 +27,7 @@ module Drn
           # Display timer
           # Have a link to a Zoom Session
           # Display chat & shared code editor
-          render :show, with: { session: sessions.find_by!(id: params[:id]) }
+          render :show, with: { session: mentoring_sessions.find_by!(id: params[:id]) }
         end
 
         # update session

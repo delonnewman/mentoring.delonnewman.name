@@ -1,20 +1,5 @@
 Sequel.migration do
   change do
-    create_table :mentoring_session_statuses do
-      primary_key :id
-      String      :name, null: false, index: true, unique: true
-    end
-
-    create_table :mentoring_sessions do
-      uuid    :id,                   null: false, index: true, primary_key: true
-      String  :checkout_session_id,  null: false
-      Integer :status_id,            null: false, index: true
-      Time    :started_at,           null: false, index: true
-      Time    :ended_at,                          index: true
-
-      foreign_key [:status_id], :mentoring_session_statuses
-    end
-
     # (e.g. per month, per minute, per hour)
     create_table :product_rates do
       primary_key :id
@@ -52,6 +37,18 @@ Sequel.migration do
       Time        :updated_at,                      index: true
 
       foreign_key [:role_id], :user_roles
+    end
+
+    create_table :mentoring_sessions do
+      uuid    :id,                   null: false, index: true, primary_key: true
+      String  :checkout_session_id,  null: false
+      Time    :started_at,           null: false, index: true
+      Time    :ended_at,                          index: true
+      Integer :mentor_id,            null: false, index: true
+      Integer :customer_id,          null: false, index: true
+
+      foreign_key [:mentor_id], :users
+      foreign_key [:customer_id], :users
     end
 
     create_table :user_registrations do
