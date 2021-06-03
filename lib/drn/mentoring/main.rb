@@ -14,7 +14,7 @@ module Drn
 
       mount '/admin', AdminController.build(
               User, UserRegistration, UserRole, Product, ProductRate,
-              MentoringSession, MentoringSessionStatus, include: Authenticable)
+              MentoringSession, include: Authenticable)
 
       get '/', authenticate: false do
         render :index
