@@ -8,7 +8,7 @@
   <% attributes.each do |attr| %>
     <div class="field-group mb-3">
       <label for="<%= attr.name %>"><%= attr.display_name %></label>
-      <%= form_field(attr, entity) %>
+      <%= form_field(attr, entity: entity) %>
     </div>
   <% end %>
   <button class="btn btn-primary">Update</button>

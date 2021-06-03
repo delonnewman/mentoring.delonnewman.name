@@ -89,6 +89,15 @@ module Drn
         radios.join('')
       end
 
+      BOOLEAN_OPTIONS = {
+        true  => 'Yes',
+        false => 'No'
+      }
+      
+      def boolean_field(name, value)
+        radio_buttons(name, BOOLEAN_OPTIONS, selected: value)
+      end
+
       def entity_field(name, entity_class, **options)
         opts = entity_class.repository.map { |e| [e.id, e.to_s] }.to_h
         if opts.length < 5
@@ -98,17 +107,21 @@ module Drn
         end
       end
 
-      def form_field(attr, entity = nil)
+      def form_field(attr, entity: nil, entity_class: entity.class)
+        name  = "#{entity_class.canonical_name}[#{attr.name}]"
+        value = entity&.send(attr.name)
         if attr.password?
-          password_field attr.name
+          password_field name
         elsif attr.time?
-	  datetime_field attr.name, entity&.send(attr.name)
+	  datetime_field name, value
+        elsif attr.boolean?
+          boolean_field name, value
         elsif attr.email?
-          email_field attr.name, entity&.send(attr.name)
+          email_field name, value
         elsif attr.entity?
-          entity_field attr.name, attr[:type], selected: entity&.send(attr.name)&.id
+          entity_field name, attr[:type], selected: value&.id
         else
-          text_field attr.name, entity&.send(attr.name)
+          text_field name, value
         end
       end
     end

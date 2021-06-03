@@ -32,7 +32,7 @@ module Drn
 
       private_constant :JS_ESCAPE_MAP
 
-      def javascript_escape(javascript)
+      def escape_javascript(javascript)
         javascript = javascript.to_s
         if javascript.empty?
           result = ""
@@ -40,7 +40,7 @@ module Drn
           result = javascript.gsub(/(\\|<\/|\r\n|\342\200\250|\342\200\251|[\n\r"']|[`]|[$])/u, JS_ESCAPE_MAP)
         end
       end
-      alias j javascript_escape
+      alias j escape_javascript
 
       # Blantantly stolen from active-support
       def snakecase(string)

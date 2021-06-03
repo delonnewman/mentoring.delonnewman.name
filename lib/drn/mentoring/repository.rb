@@ -29,6 +29,11 @@ module Drn
         find_by(attributes) or raise "Could not find record with: #{attributes.inspect}" 
       end
 
+      def update!(id, data)
+        @dataset.where(id: id).update(data)
+        find_by!(id: id)
+      end
+
       def store!(record)
         @dataset.insert(process_record(record))
         self

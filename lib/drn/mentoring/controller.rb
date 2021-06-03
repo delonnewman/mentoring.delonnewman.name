@@ -25,7 +25,7 @@ module Drn
           elsif (content = options.delete(:js))
             response.tap do |res|
               content = content.to_js if content.respond_to?(:to_js)
-              res.write escape_javascript content
+              res.write content
               res.set_header 'Content-Type', 'application/javascript'
             end
           else

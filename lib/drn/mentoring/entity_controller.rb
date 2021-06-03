@@ -42,6 +42,11 @@ module Drn
 
         @controller.call(env)
       end
+
+      
+      def attributes
+        @attributes ||= entity_class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false }
+      end
       
       def path_list
         "/#{canonical_name}"
@@ -115,15 +120,18 @@ module Drn
       end
 
       def define_operation_update
+        klass = entity_class
+        entity_name = entity_class.canonical_name
         @controller.post path_update do
-          data   = entity_data(params)
-          entity = @entity_class.repository.find_by!(id: params[:id])
-          if (errors = @entity_class.errors(data)).empty?
+          app.logger.info "Update #{entity_name} with params: #{params.inspect}"
+          data   = params[entity_name].transform_keys(&:to_sym)
+          entity = klass.repository.find_by!(id: params[:id])
+          if (errors = klass.errors(data)).empty?
             # TODO: add Repository#update!
-            @entity_class.repository.update!(params[:id], data)
-            redirect_to path_show(params[:id])
+            klass.repository.update!(params[:id], data)
+            redirect_to "/admin/#{canonical_name}/#{params[:id]}"
           else
-            render 'admin/edit', with: { errors: errors, @entity_name.to_sym => entity }
+            render 'admin/edit', with: { errors: errors, entity: entity }
           end
         end
       end
@@ -135,12 +143,6 @@ module Drn
           redirect_to path_list
         end
       end
-
-      private
-
-        def entity_data(params)
-          params[@entity_name].transform_keys(&:to_sym)
-        end
     end
   end
 end

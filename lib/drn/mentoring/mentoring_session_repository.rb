@@ -8,11 +8,6 @@ module Drn
         factory[record]
       end
 
-      def update!(id, data)
-        @dataset.where(id: id).update(data)
-        find_by!(id: id)
-      end
-
       def end!(id)
         update!(id, ended_at: Time.now)
       end
