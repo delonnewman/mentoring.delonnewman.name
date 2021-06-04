@@ -1,0 +1,7 @@
+AllCops:
+  TargetRubyVersion: 3.0
+
+Layout/HashAlignment:
+  Enabled: true
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
