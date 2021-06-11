@@ -63,12 +63,32 @@ module Drn
         humanize(string).split(' ').map!(&:capitalize).join(' ')
       end
   
-      def camelcase(string)
+      def camelcase(string, uppercase_first: true)
+        string = string.to_s
+        if uppercase_first
+          string = string.sub(/^[a-z\d]*/) { |match| match.capitalize }
+        else
+          string = string.sub(/^[A-Z\d]*/) { |match| match[0].downcase!; match }
+        end
+        string.gsub!(/(?:_|(\/))([a-z\d]*)/i) { "#{$2.capitalize}" }
+        string.gsub!("/", "::")
         string
       end
   
       def kebabcase(string)
         string
+      end
+
+      def entity_name(string)
+        Inflection.singular(camelcase(string))
+      end
+
+      def table_name(entity_name)
+        "#{Inflection.plural(Utils.snakecase(entity_name.split('::').last))}"
+      end
+
+      def constantize(string)
+        Drn::Mentoring.const_get(string)
       end
   
       def pluralize(number, string)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
     # Represents a domain entity that will be modeled. Provides dynamic checks and
@@ -35,7 +37,7 @@ module Drn
           alt = 99
           d = self[:display]
           return alt if d == true
-          return alt  if not d
+          return alt unless d
 
           d.fetch(:order) { alt }
         end
@@ -43,7 +45,7 @@ module Drn
         def display_name
           d = self[:display]
           return Utils.titlecase(name) if d == true
-          return Utils.titlecase(name) if not d
+          return Utils.titlecase(name) unless d
 
           d.fetch(:name) { Utils.titlecase(name.capitalize) }
         end
@@ -71,11 +73,18 @@ module Drn
         def type
           t = self[:type]
 
-          return t                 if t.respond_to?(:call)
-          return CLASSICAL_TYPE[t] if t.is_a?(Class)
-          return REGEXP_TYPE[t]    if t.is_a?(Regexp)
+          return t                           if t.respond_to?(:call)
+          return CLASSICAL_TYPE[t]           if t.is_a?(Class)
+          return CLASSICAL_TYPE[value_class] if t.is_a?(String)
+          return REGEXP_TYPE[t]              if t.is_a?(Regexp)
 
           SPECIAL_TYPES[t]
+        end
+
+        def value_class
+          t = self[:type]
+          return t if t.is_a?(Class)
+          return Utils.constantize(t) if t.is_a?(String)
         end
 
         def boolean?
@@ -94,26 +103,33 @@ module Drn
           self[:component] == true
         end
 
+        def many?
+          self[:many] == true
+        end
+
         def mutable?
           self[:mutable] == true
         end
 
-        def has_resolver?
-          key?(:resolve_with)
+        def resolver
+          value_class&.reference_mapping
         end
 
-        DEFAULT_RESOLUTION_MAP = { Integer => :id }.freeze
+        def valid_reference?(value)
+          return false unless entity?
+          return true  if value.is_a?(Hash) # TODO: use the value class to validate
 
-        def resolver
-          fetch(:resolve_with) { DEFAULT_RESOLUTION_MAP }
+          mapping = value_class.reference_mapping
+          mapping.keys.any? { |k| value.is_a?(k) }
         end
 
         def entity?
-          self[:type].is_a?(Class) && self[:type] < Entity
+          klass = value_class
+          klass && klass < Entity
         end
 
         def valid_value?(value)
-          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (entity? && value.is_a?(Hash))
+          type.call(value) || valid_reference?(value)
         end
       end
 
@@ -152,38 +168,15 @@ module Drn
               end
             end
 
-            code = <<~CODE
-              def #{name}
-                value = @hash[#{name.inspect}]
-                type  = self.class.attribute(#{name.inspect})[:type]
-                if value.is_a?(type)
-                  value
-                else
-                  @hash[#{name.inspect}] = type.ensure!(value)
-                end
+            define_method name do
+              value = @hash[name]
+              type  = self.class.attribute(name).value_class
+              if value.is_a?(type)
+                value
+              else
+                @hash[name.inspect] = type.ensure!(value)
               end
-            CODE
-
-            class_eval code
-
-            case_body = mapping
-              .map { |(k, v)|
-                "when #{k.name}\n  repository.find_by!(#{v.inspect} => value)" }
-              .join("\n")
-
-            attribute[:type].class_eval <<~CODE
-              def self.ensure!(value)
-                case value
-                #{case_body}\n
-                when self
-                  value
-                when Hash
-                  new(value)
-                else
-                  raise TypeError, \"\#{value.inspect}:\#{value.class} cannot be coerced into \#{self}"
-                end
-              end
-            CODE
+            end
           elsif attribute.default
             define_method name do
               value_for(name)
@@ -196,6 +189,8 @@ module Drn
 
           @attributes ||= {}
           @attributes[name] = attribute
+
+          name
         end
 
         def primary_key(name = :id, type = Integer, **options)
@@ -218,9 +213,18 @@ module Drn
           reference name, type, **opts
         end
 
+        def has_many(name, **options)
+          type = Utils.entity_name(name)
+          has name, type, **{ required: false }.merge!(options.merge(many: true))
+          exclude_for_storage << name
+          name
+        end
+
         def reference(name, type, **options)
           has name, type, **options.merge(reference: true)
         end
+
+        DEFAULT_RESOLUTION_MAP = { Integer => :id }.freeze
 
         def reference_mapping
           attributes
@@ -228,14 +232,38 @@ module Drn
             .reduce({}) { |h, a| h.merge(a[:type] => a.name) }
         end
 
-        def belongs_to(name, entity_class, **options)
-          has name, entity_class, **options.merge(resolve_with: entity_class.reference_mapping, component: true)
+        def ensure!(value)
+          case value
+          when self
+            value
+          when Hash
+            new(value)
+          else
+            # NOTE: As an optimization we could generate the comparible code
+            # whenever a reference attribute is added to the class.
+            reference_mapping.each do |klass, ref|
+              if value.is_a?(klass)
+                return repository.find_by!(ref => value)
+              end
+            end
+            raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{self}"
+          end
+        end
+        
+        def belongs_to(name, **options)
+          type = Utils.entity_name("#{self}_#{name}")
+          has name, type, **options.merge(component: true)
           exclude_for_storage << name
+          name
+        end
+
+        def timestamp(name)
+          has name, Time, edit: false, default: ->{ Time.now }
         end
 
         def timestamps
-          has :created_at, Time, edit: false, default: ->{ Time.now }
-          has :updated_at, Time, edit: false, default: ->{ Time.now }
+          timestamp :created_at
+          timestamp :updated_at
         end
 
         def exclude_for_storage
@@ -255,6 +283,8 @@ module Drn
               default:  ->{ BCrypt::Password.new(encrypted_password) }
 
           exclude_for_storage << :password
+
+          :password
         end
 
         def email(name = :email, **options)
@@ -278,7 +308,8 @@ module Drn
           return false if entity.empty?
           
           attributes.reduce(true) do |is_valid, attr|
-            is_valid && attr.required? && !!(value = entity[attr.name]) && attr.valid_value?(value) && !attr.default
+            is_valid && attr.required? && !!(value = entity[attr.name]) &&
+              attr.valid_value?(value) && !attr.default
           end
         end
 
@@ -323,12 +354,6 @@ module Drn
           new(attributes)
         end
 
-        def ensure!(value)
-          return value if value.is_a?(self)
-
-          new(value)
-        end
-
         def repository_class_name(class_name = nil)
           @repository_class_name = class_name if class_name
           @repository_class_name || "#{self}Repository"
@@ -344,7 +369,11 @@ module Drn
         end
 
         def repository_table_name
-          "#{Inflection.plural(Utils.snakecase(self.name.split('::').last))}"
+          Utils.table_name(self.name)
+        end
+
+        def component_table_name(attribute_name)
+          Utils.table_name("#{canonical_name}_#{attribute_name}")
         end
 
         # When no arguments are given it will return a repository instance. When the class argument
