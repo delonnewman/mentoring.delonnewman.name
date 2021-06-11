@@ -17,10 +17,6 @@ module Drn
       timestamps
 
       repository do
-        def find_or_create_from_auth(auth)
-          logger.info "User auth: #{auth.inspect}"
-        end
-
         def find_user_and_authenticate(username:, password:)
           user = find_by(username: username)
           return nil unless user

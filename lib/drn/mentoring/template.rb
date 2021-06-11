@@ -7,7 +7,7 @@ module Drn
 
       extend Forwardable
       def_delegators :@templated, :params, :app, :request
-      
+
       attr_reader :path, :layout
 
       class << self
@@ -16,6 +16,7 @@ module Drn
             templated.app.template_path(templated.canonical_name, name)
           else
             return Pathname.new(name) if File.exist?(name)
+
             templated.app.template_path(name)
           end
         end
@@ -23,10 +24,10 @@ module Drn
         def layout_path(templated)
           templated.layout && templated.app.layout_path(templated.layout)
         end
-        
+
         def [](templated, name)
           tmpl = new(templated, path(name, templated), layout_path(templated))
-  
+
           if templated.app.env == :production
             tmpl.memoize
           else
@@ -34,7 +35,7 @@ module Drn
           end
         end
       end
-      
+
       def initialize(templated, path, layout)
         @templated = templated
         @app       = templated.app
