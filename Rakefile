@@ -5,7 +5,7 @@ task :default => :spec
 
 desc "Run spec"
 task :spec do
-  sh "RACK_ENV=test bundle exec rspec"
+  sh "RACK_ENV=test bundle exec rspec --no-color"
 end
 
 desc "Open project console"

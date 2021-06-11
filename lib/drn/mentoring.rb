@@ -15,7 +15,7 @@ module Drn
     require_relative 'mentoring/templated'
     require_relative 'mentoring/template_helpers'
     require_relative 'mentoring/template'
-    
+
     # Repositories
     require_relative 'mentoring/repository'
     require_relative 'mentoring/product_repository'
