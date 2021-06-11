@@ -16,12 +16,8 @@ module Drn
     require_relative 'mentoring/template_helpers'
     require_relative 'mentoring/template'
 
-    # Repositories
-    require_relative 'mentoring/repository'
-    require_relative 'mentoring/product_repository'
-    require_relative 'mentoring/user_repository'
-
     # Entities
+    require_relative 'mentoring/repository'
     require_relative 'mentoring/entity'
     require_relative 'mentoring/user_role'
     require_relative 'mentoring/user'
