@@ -67,6 +67,7 @@ module Drn
             h.merge!(key => ENV.fetch(key))
           end.freeze
         else
+          Dir.chdir(root)
           @settings = Dotenv.load(dotenv_path).freeze
         end
         self
