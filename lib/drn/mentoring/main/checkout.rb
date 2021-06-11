@@ -38,6 +38,7 @@ module Drn
           # is redirected to the success page.
           begin
             logger.info "#{self}"
+            # TODO: Take customer id from session and add to user account & associate product with customer
             session = Stripe::Checkout::Session.create(session_data(product))
             logger.info "Session created: #{session.inspect}"
             render json: success_data(product, session)
@@ -107,7 +108,7 @@ module Drn
         
         def success_url(product)
           if product.subscription?
-            "http://#{Drn::Mentoring.app.settings['DOMAIN']}/success.html?session_id={CHECKOUT_SESSION_ID}"
+            "http://#{Drn::Mentoring.app.settings['DOMAIN']}?session_id={CHECKOUT_SESSION_ID}"
           else
             "http://#{Drn::Mentoring.app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
           end

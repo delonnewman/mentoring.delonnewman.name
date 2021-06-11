@@ -85,6 +85,12 @@ users = [
     displayname: 'Johnny Cash',
     email: 'delon.newman+jcash@gmail.com',
     role: 'customer',
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO'],
+  User[
+    username: 'june-carter',
+    displayname: 'June Carter Cash',
+    email: 'delon.newman+j-carter-cash@gmail.com',
+    role: 'customer',
     encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO']
 ]
 

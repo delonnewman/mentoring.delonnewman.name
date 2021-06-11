@@ -119,7 +119,7 @@ module Drn
         elsif attr.email?
           email_field name, value
         elsif attr.entity?
-          entity_field name, attr[:type], selected: value&.id
+          entity_field name, attr.value_class, selected: value&.id
         else
           text_field name, value
         end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
     # Represents the state of a mentoring session
@@ -8,8 +10,8 @@ module Drn
       has :started_at,          Time, default: ->{ Time.now }
       has :ended_at,            Time, required: false
 
-      belongs_to :mentor,   User, default: 'delon'
-      belongs_to :customer, User
+      belongs_to :mentor, type: User, default: 'delon'
+      belongs_to :customer, type: User
 
       repository do
         def end!(id)

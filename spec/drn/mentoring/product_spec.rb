@@ -1,5 +1,4 @@
 require 'spec_helper'
-
 include Drn::Mentoring
 
 RSpec.describe Product do
