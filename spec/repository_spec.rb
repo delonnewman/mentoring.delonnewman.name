@@ -1,10 +1,11 @@
 require 'spec_helper'
+include Drn::Mentoring
 
-RSpec.describe Drn::Mentoring::UserRepository do
+RSpec.describe Repository do
   let(:db) { Drn::Mentoring.app.db }
   let(:users) { described_class.new(db[:users], Drn::Mentoring::User) }
 
-  describe "#find_by" do
+  describe '#find_by' do
     it 'should retrieve a single value or return nil' do
       user = users.find_by(username: 'delon')
       expect(user).not_to be_nil
