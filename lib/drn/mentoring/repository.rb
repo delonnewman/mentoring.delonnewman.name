@@ -29,7 +29,8 @@ module Drn
       end
 
       def all(&block)
-        run sql_query_template(one: false) do |records|
+        tag = "#{entity_class}.repository.all"
+        run sql_query_template(one: false, predicates: false), tag: tag do |records|
           records.map do |record|
             build_entity(record).tap do |product|
               block&.call(product)
@@ -42,8 +43,8 @@ module Drn
       def find_by(predicates)
         preds       = predicates.transform_keys(&query_attribute_map)
         qstr, binds = sql_where(preds)
-        query       = sql_query_template(one: true).sub('/* where */', qstr)
-        records     = run(query, *binds)
+        query       = sql_query_template(one: true, predicates: true).sub('/* where */', qstr)
+        records     = run(query, *binds, tag: "#{entity_class}.repository.find_by")
 
         return nil if records.empty?
 
@@ -76,9 +77,16 @@ module Drn
 
       def delete_where!(predicates)
         qstr, binds = sql_where(predicates)
-        query       = "delete from products #{qstr}"
-        run(query, *binds)
+        table       = entity_class.repository_table_name
+        query       = "delete from #{db.literal(Sequel.identifier(table))} #{qstr}"
+
+        run(query, *binds, tag: 'delete_where!')
+
         self
+      end
+
+      def delete_all!
+        dataset.delete
       end
 
       protected
@@ -120,7 +128,17 @@ module Drn
         fields.join(', ')
       end
 
-      def sql_query_template(one:)
+      def sql_ident_quote(*args)
+        if args.size == 1
+          db.literal(Sequel.identifier(args[0]))
+        elsif args.size == 2
+          db.literal(Sequel.qualify(*args))
+        else
+          raise ArgumentError, "wrong number or arguments (given #{args.size}, expected 1 or 2)"
+        end
+      end
+
+      def sql_query_template(one:, predicates:)
         buffer = StringIO.new
 
         buffer.write 'select '
@@ -131,18 +149,18 @@ module Drn
         entity_class.component_attributes.each_with_index do |attr, i|
           component_table_name  = entity_class.component_table_name(attr)
           component_table_alias = "#{component_table_name}#{i}"
-          buffer.write " inner join #{db.literal(Sequel.identifier(component_table_name))}"
-          buffer.write " as #{db.literal(Sequel.identifier(component_table_alias))}"
+          buffer.write " inner join #{sql_ident_quote(component_table_name)}"
+          buffer.write " as #{sql_ident_quote(component_table_alias)}"
           buffer.write ' on '
-          buffer.write db.literal(Sequel.qualify(entity_class.repository_table_name, attr.reference_key))
+          buffer.write sql_ident_quote(entity_class.repository_table_name, attr.reference_key)
           buffer.write ' = '
-          buffer.write db.literal(Sequel.qualify(component_table_alias, 'id'))
+          buffer.write sql_ident_quote(component_table_alias, 'id')
         end
 
-        buffer.write(' /* where */')
+        buffer.write(' /* where */') if predicates
 
         order_by = self.class.order_by_attribute_name
-        buffer.write(" order by #{Sequel.identifier(order_by)}") if one == false && order_by
+        buffer.write(" order by #{sql_ident_quote(order_by)}") if one == false && order_by
 
         buffer.write(' limit 1') if one
 
@@ -171,18 +189,14 @@ module Drn
         end
       end
 
-      def run(query, *args, entity_class: nil, tag: nil, &block)
-        tag = tag ? 'SQL' : "SQL #{tag}"
+      def run(query, *args, tag: nil, &block)
+        tag = tag.nil? ? 'SQL' : "SQL #{tag}"
         logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
 
         results = []
         @dataset.db.fetch(query, *args) do |row|
           row = row.transform_keys(&:to_sym)
-          if entity_class
-            results << entity_class[row]
-          else
-            results << row
-          end
+          results << row
         end
 
         return EMPTY_ARRAY if results.empty?
