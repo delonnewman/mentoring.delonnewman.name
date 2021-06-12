@@ -267,7 +267,11 @@ module Drn
         end
 
         def exclude_for_storage
-          @exclude_for_storage ||= []
+          @exclude_for_storage ||= Set.new
+        end
+
+        def storable_attributes
+          attributes.reject { |attr| exclude_for_storage.include?(attr.name) }
         end
 
         def password
@@ -369,11 +373,15 @@ module Drn
         end
 
         def repository_table_name
-          Utils.table_name(self.name)
+          Utils.table_name(name)
         end
 
-        def component_table_name(attribute_name)
-          Utils.table_name("#{canonical_name}_#{attribute_name}")
+        def component_table_name(attribute)
+          Utils.table_name(attribute.value_class.canonical_name)
+        end
+
+        def component_attributes
+          attributes.select(&:component?)
         end
 
         # When no arguments are given it will return a repository instance. When the class argument

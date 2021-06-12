@@ -10,6 +10,11 @@ module Drn
       has :started_at,          Time, default: ->{ Time.now }
       has :ended_at,            Time, required: false
 
+      # TODO: add a way to establish a looser relationship or
+      # to select the fields that will be loaded (maybe both?).
+      #
+      # Also need to add to repository aspects of component attributes
+      # if the field is not required it should be an outer join.
       belongs_to :mentor, type: User, default: 'delon'
       belongs_to :customer, type: User
 
