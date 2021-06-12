@@ -19,14 +19,15 @@ module Drn
       # Return true if there are any active mentoring sessions
       # and if the mentor is available the current time.
       #
-      # @param now [Time]
-      def disabled?(now = Time.now)
+      # @option now [Time]
+      # @option availability [Hash<Integer, { start: Integer, end: Integer }>]
+      def disabled?(_, now: Time.now, availability: INSTANT_HELP_AVAILABILITY)
         return true unless mentoring_sessions.empty?
 
-        day = INSTANT_HELP_AVAILABILITY[now.wday]
+        day = availability[now.wday]
         return true unless day
 
-        day[:start] <= now.hour && day[:end] >= now.hour
+        now.hour < day[:start] || now.hour > day[:end]
       end
     end
   end

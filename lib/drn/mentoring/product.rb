@@ -3,6 +3,7 @@
 module Drn
   module Mentoring
     require_relative 'instant_help_policy'
+    require_relative 'ongoing_mentoring_policy'
 
     # Represents mentoring products
     class Product < Entity
@@ -21,6 +22,8 @@ module Drn
       def_delegator :policy, :disabled?
 
       repository do
+        order_by :sort_order
+
         def by_price_id(price_id)
           find { |product| product.price_id == price_id }
         end
@@ -38,8 +41,10 @@ module Drn
 
       def policy
         case name
-        when 'Instant Help', 'Instant Coversation'
+        when 'Instant Help', 'Instant Conversation'
           InstantHelpPolicy.new(product: self, mentoring_sessions: MentoringSession.repository)
+        when 'Ongoing Mentoring'
+          OngoingMentoringPolicy.new(self)
         end
       end
 
