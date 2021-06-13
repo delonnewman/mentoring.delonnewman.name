@@ -2,8 +2,8 @@
 
 module Drn
   module Mentoring
-    require_relative 'instant_help_policy'
-    require_relative 'ongoing_mentoring_policy'
+    require_relative 'product/instant_help_policy'
+    require_relative 'product/ongoing_mentoring_policy'
 
     # Represents mentoring products
     class Product < Entity
