@@ -19,33 +19,26 @@ module Drn
       has_many :users
       belongs_to :rate
       def_delegator :rate, :subscription?
-      def_delegator :policy, :disabled?
 
       repository do
         order_by :sort_order
-
-        def by_price_id(price_id)
-          find { |product| product.price_id == price_id }
-        end
-
-        def by_price_id!(price_id)
-          by_price_id(price_id) or raise "Couldn't find product with price_id #{price_id.inspect}"
-        end
-
-        def by_id(id)
-          find { |product| product.product_id == id }
-        end
       end
 
       alias to_s name
 
       def policy
+        return @policy if @policy
+
         case name
         when 'Instant Help', 'Instant Conversation'
-          InstantHelpPolicy.new(product: self, mentoring_sessions: MentoringSession.repository)
+          @policy = InstantHelpPolicy.new(product: self, mentoring_sessions: MentoringSession.repository)
         when 'Ongoing Mentoring'
-          OngoingMentoringPolicy.new(self)
+          @policy = OngoingMentoringPolicy.new(product: self)
         end
+      end
+
+      def disabled?(*args)
+        policy&.disabled?(*args)
       end
 
       def price
