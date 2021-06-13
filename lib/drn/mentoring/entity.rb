@@ -216,6 +216,15 @@ module Drn
         def has_many(name, **options)
           type = Utils.entity_name(name)
           has name, type, **{ required: false }.merge!(options.merge(many: true))
+
+          define_method name do
+            if self[name]
+              self[name]
+            else
+              @hash[name] = attribute(name).join_table.where(entity_class)
+            end
+          end
+
           exclude_for_storage << name
           name
         end

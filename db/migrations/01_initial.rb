@@ -39,6 +39,14 @@ Sequel.migration do
       foreign_key [:role_id], :user_roles
     end
 
+    create_table :product_users do
+      uuid    :product_id, null: false, index: true
+      Integer :user_id,    null: false, index: true
+
+      foreign_key [:product_id], :products
+      foreign_key [:user_id],    :users
+    end
+
     create_table :mentoring_sessions do
       uuid    :id,                   null: false, index: true, primary_key: true
       String  :checkout_session_id,  null: false
