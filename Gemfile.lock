@@ -1,10 +1,4 @@
 GIT
-  remote: https://github.com/delonnewman/hash_delegator.git
-  revision: b0661844c851c979966b90b849d75519c72f14fe
-  specs:
-    hash_delegator (0.1.0)
-
-GIT
   remote: https://github.com/delonnewman/shotgun.git
   revision: 762eae9e4eac5babdc4e3e0cea1beeeb427638ea
   specs:
@@ -34,6 +28,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
     erubi (1.10.0)
+    hash_delegator (0.1.2)
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -103,7 +98,7 @@ DEPENDENCIES
   concurrent-ruby
   dotenv
   erubi
-  hash_delegator!
+  hash_delegator
   inflection
   invokable
   mailjet
