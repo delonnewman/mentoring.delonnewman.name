@@ -1,10 +1,10 @@
 module Drn
   module Mentoring
-    class Product
+    class Product < Entity
       class OngoingMentoringPolicy
         attr_reader :product
 
-        def initialize(product:)
+        def initialize(product)
           @product = product
         end
 
@@ -13,7 +13,7 @@ module Drn
         # Return true if the user is already subscribed or the mentor
         # is at his maximum number of students.
         def disabled?(user)
-          true
+          product.users.include?(user)
         end
       end
     end

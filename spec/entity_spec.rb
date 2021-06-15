@@ -1,10 +1,6 @@
 require 'spec_helper'
 include Drn::Mentoring
 
-class TestHasMany < Entity
-  has_many :testers
-end
-
 class EntityBasic < Entity; end
 
 class EntitySingle < Entity

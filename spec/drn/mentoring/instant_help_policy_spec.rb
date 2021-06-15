@@ -1,12 +1,12 @@
 require 'spec_helper'
 include Drn::Mentoring
 
-RSpec.describe InstantHelpPolicy do
+RSpec.describe Product::InstantHelpPolicy do
   let(:customer) { 'the-man-in-black' }
   let(:mentor) { User.repository.find_by!(username: 'delon') }
   let(:product) { Product.repository.find_by!(name: 'Instant Help') }
   subject(:policy) do
-    described_class.new(product: product, mentoring_sessions: MentoringSession.repository)
+    described_class.new(product, mentoring_sessions: MentoringSession.repository)
   end
 
   describe '#disabled?' do
