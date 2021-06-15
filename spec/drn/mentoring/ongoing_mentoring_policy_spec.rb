@@ -1,7 +1,7 @@
 require 'spec_helper'
 include Drn::Mentoring
 
-RSpec.describe OngoingMentoringPolicy do
+RSpec.describe Product::OngoingMentoringPolicy do
   let(:product) { Product.repository.find_by!(name: 'Ongoing Mentoring') }
   subject(:policy) { described_class.new(product) }
 

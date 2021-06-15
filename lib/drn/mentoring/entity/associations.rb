@@ -3,6 +3,10 @@ module Drn
     class Entity
       # Methods used for Entity associations
       module Associations
+        def reference_key
+          :"#{canonical_name.downcase}_id"
+        end
+        
         def has_many(name, **options)
           type = Utils.entity_name(name)
           has name, type, **{ required: false }.merge!(options.merge(many: true))
@@ -11,7 +15,8 @@ module Drn
             if self[name]
               self[name]
             else
-              @hash[name] = attribute(name).join_table.where(entity_class)
+              attr = self.class.attribute(name)
+              self[name] = attr.join_table.where(attr.entity.reference_key => id)
             end
           end
 

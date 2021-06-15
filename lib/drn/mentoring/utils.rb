@@ -56,6 +56,7 @@ module Drn
       def humanize(string)
         string = string.name if string.is_a?(Symbol)
         return string unless /[\W_]/ =~ string
+
         string.to_s.gsub(/[\W_]/, ' ')
       end
 
@@ -74,7 +75,7 @@ module Drn
         string.gsub!("/", "::")
         string
       end
-  
+
       def kebabcase(string)
         string
       end
@@ -84,7 +85,11 @@ module Drn
       end
 
       def table_name(entity_name)
-        "#{Inflection.plural(Utils.snakecase(entity_name.split('::').last))}"
+        Inflection.plural(Utils.snakecase(entity_name.split('::').last))
+      end
+
+      def join_table_name(entity_name, attribute_name)
+        Utils.snakecase("#{table_name(entity_name)}_#{attribute_name}")
       end
 
       def constantize(string)

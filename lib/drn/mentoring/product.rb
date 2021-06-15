@@ -31,9 +31,9 @@ module Drn
 
         case name
         when 'Instant Help', 'Instant Conversation'
-          @policy = InstantHelpPolicy.new(product: self, mentoring_sessions: MentoringSession.repository)
+          @policy = InstantHelpPolicy.new(self, mentoring_sessions: MentoringSession.repository)
         when 'Ongoing Mentoring'
-          @policy = OngoingMentoringPolicy.new(product: self)
+          @policy = OngoingMentoringPolicy.new(self)
         end
       end
 

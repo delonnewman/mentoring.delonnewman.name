@@ -1,11 +1,11 @@
 module Drn
   module Mentoring
-    class Product
+    class Product < Entity
       # Represents the policies for the "Instant" products
       class InstantHelpPolicy
         attr_reader :product, :mentoring_sessions
 
-        def initialize(product:, mentoring_sessions:)
+        def initialize(product, mentoring_sessions:)
           @product = product
           @mentoring_sessions = mentoring_sessions
         end
