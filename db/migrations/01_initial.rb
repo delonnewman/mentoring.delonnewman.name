@@ -39,7 +39,7 @@ Sequel.migration do
       foreign_key [:role_id], :user_roles
     end
 
-    create_table :products_users do
+    create_table :users_products do
       uuid    :product_id, null: false, index: true
       Integer :user_id,    null: false, index: true
 
