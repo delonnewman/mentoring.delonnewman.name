@@ -6,17 +6,20 @@ module Drn
         def reference_key
           :"#{canonical_name.downcase}_id"
         end
-        
+
         def has_many(name, **options)
           type = Utils.entity_name(name)
-          has name, type, **{ required: false }.merge!(options.merge(many: true))
+          has name,
+              type,
+              **{ required: false }.merge!(options.merge(many: true))
 
           define_method name do
             if self[name]
               self[name]
             else
               attr = self.class.attribute(name)
-              self[name] = attr.join_table.where(attr.entity.reference_key => id)
+              self[name] =
+                attr.join_table.where(attr.entity.reference_key => id)
             end
           end
 
@@ -51,18 +54,18 @@ module Drn
 
         def primary_key(name = :id, type = Integer, **options)
           opts = {
-            required:    false,
-            unique:      true,
-            index:       true,
+            required: false,
+            unique: true,
+            index: true,
             primary_key: true,
-            display:     false,
-            edit:        false
+            display: false,
+            edit: false
           }
 
           opts.merge!(options)
 
           if type == :uuid
-            opts[:default] = ->{ SecureRandom.uuid }
+            opts[:default] = -> { SecureRandom.uuid }
             opts[:required] = true
           end
 
@@ -79,14 +82,13 @@ module Drn
             # NOTE: As an optimization we could generate the comparible code
             # whenever a reference attribute is added to the class.
             reference_mapping.each do |klass, ref|
-              if value.is_a?(klass)
-                return repository.find_by!(ref => value)
-              end
+              return repository.find_by!(ref => value) if value.is_a?(klass)
             end
-            raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{self}"
+            raise TypeError,
+                  "#{value.inspect}:#{value.class} cannot be coerced into #{self}"
           end
         end
-        
+
         def exclude_for_storage
           @exclude_for_storage ||= Set.new
         end

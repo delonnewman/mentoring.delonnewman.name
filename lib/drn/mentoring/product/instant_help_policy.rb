@@ -11,10 +11,22 @@ module Drn
         end
 
         INSTANT_HELP_AVAILABILITY = {
-          1 => { start: 10, end: 17 },
-          3 => { start: 13, end: 17 },
-          4 => { start: 10, end: 17 },
-          5 => { start: 10, end: 17 }
+          1 => {
+            start: 10,
+            end: 17
+          },
+          3 => {
+            start: 13,
+            end: 17
+          },
+          4 => {
+            start: 10,
+            end: 17
+          },
+          5 => {
+            start: 10,
+            end: 17
+          }
         }.freeze
 
         # Return true if there are any active mentoring sessions

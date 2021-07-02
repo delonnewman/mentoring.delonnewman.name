@@ -14,7 +14,7 @@ module Drn
         # TODO: move this to a validator or form object similar in function to repository
         def errors(entity)
           attributes.reduce({}) do |errors, attr|
-            key  = attr.name
+            key = attr.name
             name = key.to_s.tr('_', ' ').capitalize
 
             a = []
@@ -28,23 +28,20 @@ module Drn
             end
 
             unique = attr[:unique]
-            repo   = if unique.is_a?(Class) && unique < Entity
-                       unique.repository
-                     elsif unique.is_a?(Repository)
-                       unique
-                     else
-                       repository
-                     end
+            repo =
+              if unique.is_a?(Class) && unique < Entity
+                unique.repository
+              elsif unique.is_a?(Repository)
+                unique
+              else
+                repository
+              end
 
             if unique && repo.find_by(attr.name => value)
               a << attr.fetch(:message) { "#{name} is not unique" }
             end
 
-            if a.empty?
-              errors
-            else
-              errors.merge!(key => a)
-            end
+            a.empty? ? errors : errors.merge!(key => a)
           end
         end
       end

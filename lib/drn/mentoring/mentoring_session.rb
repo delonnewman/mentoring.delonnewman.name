@@ -7,8 +7,8 @@ module Drn
       primary_key :id, :uuid
 
       has :checkout_session_id, String
-      has :started_at,          Time, default: ->{ Time.now }
-      has :ended_at,            Time, required: false
+      has :started_at, Time, default: -> { Time.now }
+      has :ended_at, Time, required: false
 
       # TODO: add a way to establish a looser relationship or
       # to select the fields that will be loaded (maybe both?).

@@ -5,13 +5,18 @@ module Drn
     class Main < Controller
       class Checkout < Controller
         include Authenticable
-        
+
         get '/setup' do
           settings = { pub_key: Drn::Mentoring.app.settings['STRIPE_PUB_KEY'] }
 
-          settings[:prices] = products.map do |product|
-            { product_id: product.id, price_id: product.price_id, name: product.name }
-          end
+          settings[:prices] =
+            products.map do |product|
+              {
+                product_id: product.id,
+                price_id: product.price_id,
+                name: product.name
+              }
+            end
 
           render json: settings
         end
@@ -20,7 +25,7 @@ module Drn
         # TODO: Remove
         get '/session/:session_id' do |params|
           logger.info "Checkout Session params: #{params.inspect}"
-        
+
           render json: Stripe::Checkout::Session.retrieve(params[:session_id])
         end
 
@@ -38,6 +43,7 @@ module Drn
           # is redirected to the success page.
           begin
             logger.info "#{self}"
+
             # TODO: Take customer id from session and add to user account & associate product with customer
             session = Stripe::Checkout::Session.create(session_data(product))
             logger.info "Session created: #{session.inspect}"
@@ -50,24 +56,25 @@ module Drn
 
         post '/customer-portal' do |params, request|
           data = JSON.parse(request.body.read)
-        
+
           # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
           # Typically this is stored alongside the authenticated user in your database.
           checkout_session_id = data['sessionId']
-          checkout_session = Stripe::Checkout::Session.retrieve(checkout_session_id)
-        
+          checkout_session =
+            Stripe::Checkout::Session.retrieve(checkout_session_id)
+
           # This is the URL to which users will be redirected after they are done
           # managing their billing.
           return_url = Drn::Mentoring.app.settings['DOMAIN']
-        
-          session = Stripe::BillingPortal::Session.create({
-            customer: checkout_session['customer'],
-            return_url: return_url
-          })
-        
+
+          session =
+            Stripe::BillingPortal::Session.create(
+              { customer: checkout_session['customer'], return_url: return_url }
+            )
+
           render json: { url: session.url }
         end
-        
+
         post '/webhook' do |params, request|
           # You can use webhooks to receive information about asynchronous payment events.
           # For more about our webhook events check out https://stripe.com/docs/webhooks.
@@ -77,11 +84,14 @@ module Drn
             # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
             sig_header = request.env['HTTP_STRIPE_SIGNATURE']
             event = nil
-        
+
             begin
-              event = Stripe::Webhook.construct_event(
-                payload, sig_header, webhook_secret
-              )
+              event =
+                Stripe::Webhook.construct_event(
+                  payload,
+                  sig_header,
+                  webhook_secret
+                )
             rescue JSON::ParserError => e
               # Invalid payload
               return { status: 400 }
@@ -94,18 +104,20 @@ module Drn
             data = JSON.parse(payload, symbolize_names: true)
             event = Stripe::Event.construct_from(data)
           end
+
           # Get the type of webhook event sent - used to check the status of PaymentIntents.
           event_type = event['type']
           data = event['data']
           data_object = data['object']
-        
-          puts '🔔  Payment succeeded!' if event_type == 'checkout.session.completed'
-        
+
+          if event_type == 'checkout.session.completed'
+            puts '🔔  Payment succeeded!'
+          end
+
           render json: { status: 'success' }
         end
 
         # Helpers
-        
         def success_url(product)
           if product.subscription?
             "http://#{Drn::Mentoring.app.settings['DOMAIN']}?session_id={CHECKOUT_SESSION_ID}"
@@ -113,27 +125,31 @@ module Drn
             "http://#{Drn::Mentoring.app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
           end
         end
-  
+
         def session_data(product)
           data = {
             success_url: success_url(product),
             cancel_url: "http://#{Drn::Mentoring.app.settings['DOMAIN']}",
             payment_method_types: ['card'],
-            mode: product.checkout_mode,
+            mode: product.checkout_mode
           }
-          
+
           if not product.subscription?
             data
           else
             data.merge!(line_items: [{ quantity: 1, price: product.price_id }])
           end
         end
-  
+
         def success_data(product, session)
           if product.subscription?
             { type: 'complete', sessionId: session.id }
           else
-            { type: 'setup', sessionId: session.id, setupIntent: session.setup_intent }
+            {
+              type: 'setup',
+              sessionId: session.id,
+              setupIntent: session.setup_intent
+            }
           end
         end
       end

@@ -19,8 +19,8 @@ module Drn
       attr_reader :entity_class, :dataset, :db
 
       def initialize(dataset, entity_class)
-        @dataset      = dataset
-        @db           = dataset.db
+        @dataset = dataset
+        @db = dataset.db
         @entity_class = entity_class
       end
 
@@ -30,21 +30,24 @@ module Drn
 
       def all(&block)
         tag = "#{entity_class}.repository.all"
-        run sql_query_template(one: false, predicates: false), tag: tag do |records|
+        run sql_query_template(one: false, predicates: false),
+            tag: tag do |records|
           records.map do |record|
-            build_entity(record).tap do |product|
-              block&.call(product)
-            end
+            build_entity(record).tap { |product| block&.call(product) }
           end
         end
       end
       alias each all
 
       def find_by(predicates)
-        preds       = predicates.transform_keys(&query_attribute_map)
+        preds = predicates.transform_keys(&query_attribute_map)
         qstr, binds = sql_where(preds)
-        query       = sql_query_template(one: true, predicates: true).sub('/* where */', qstr)
-        records     = run(query, *binds, tag: "#{entity_class}.repository.find_by")
+        query =
+          sql_query_template(one: true, predicates: true).sub(
+            '/* where */',
+            qstr
+          )
+        records = run(query, *binds, tag: "#{entity_class}.repository.find_by")
 
         return nil if records.empty?
 
@@ -52,7 +55,8 @@ module Drn
       end
 
       def find_by!(attributes)
-        find_by(attributes) or raise "Could not find record with: #{attributes.inspect}"
+        find_by(attributes) or
+          raise "Could not find record with: #{attributes.inspect}"
       end
 
       def update!(id, data)
@@ -77,8 +81,8 @@ module Drn
 
       def delete_where!(predicates)
         qstr, binds = sql_where(predicates)
-        table       = entity_class.repository_table_name
-        query       = "delete from #{db.literal(Sequel.identifier(table))} #{qstr}"
+        table = entity_class.repository_table_name
+        query = "delete from #{db.literal(Sequel.identifier(table))} #{qstr}"
 
         run(query, *binds, tag: 'delete_where!')
 
@@ -101,28 +105,39 @@ module Drn
       ATTRIBUTE_MAP = Hash.new { |_, key| key }
 
       def query_attribute_map
-        entity_class.attributes.each_with_object(ATTRIBUTE_MAP.dup) do |attr, hash|
-          attr_name = attr.component? ? attr.reference_key : attr.name
-          if attr.many?
-            hash
-          else
-            hash.merge!(attr.name => Sequel.qualify(entity_class.repository_table_name, attr_name))
+        entity_class
+          .attributes
+          .each_with_object(ATTRIBUTE_MAP.dup) do |attr, hash|
+            attr_name = attr.component? ? attr.reference_key : attr.name
+            if attr.many?
+              hash
+            else
+              hash.merge!(
+                attr.name =>
+                  Sequel.qualify(entity_class.repository_table_name, attr_name)
+              )
+            end
           end
-        end
       end
 
       def sql_query_fields
-        fields = query_attribute_map
-                   .reject { |(name, _)| entity_class.exclude_for_storage.include?(name) }
-                   .map { |(_, ident)| db.literal(ident) }
+        fields =
+          query_attribute_map
+            .reject do |(name, _)|
+              entity_class.exclude_for_storage.include?(name)
+            end
+            .map { |(_, ident)| db.literal(ident) }
 
         entity_class.component_attributes.each_with_index do |comp, i|
-          comp.value_class.storable_attributes.each do |attr|
-            table = "#{entity_class.component_table_name(comp)}#{i}"
-            ident = Sequel.qualify(table, attr.name)
-            name  = Sequel.identifier("#{comp.name}_#{attr.name}")
-            fields << "#{db.literal(ident)} as #{db.literal(name)}"
-          end
+          comp
+            .value_class
+            .storable_attributes
+            .each do |attr|
+              table = "#{entity_class.component_table_name(comp)}#{i}"
+              ident = Sequel.qualify(table, attr.name)
+              name = Sequel.identifier("#{comp.name}_#{attr.name}")
+              fields << "#{db.literal(ident)} as #{db.literal(name)}"
+            end
         end
 
         fields.join(', ')
@@ -134,7 +149,8 @@ module Drn
         elsif args.size == 2
           db.literal(Sequel.qualify(*args))
         else
-          raise ArgumentError, "wrong number or arguments (given #{args.size}, expected 1 or 2)"
+          raise ArgumentError,
+                "wrong number or arguments (given #{args.size}, expected 1 or 2)"
         end
       end
 
@@ -147,12 +163,15 @@ module Drn
         buffer.write entity_class.repository_table_name
 
         entity_class.component_attributes.each_with_index do |attr, i|
-          component_table_name  = entity_class.component_table_name(attr)
+          component_table_name = entity_class.component_table_name(attr)
           component_table_alias = "#{component_table_name}#{i}"
           buffer.write " inner join #{sql_ident_quote(component_table_name)}"
           buffer.write " as #{sql_ident_quote(component_table_alias)}"
           buffer.write ' on '
-          buffer.write sql_ident_quote(entity_class.repository_table_name, attr.reference_key)
+          buffer.write sql_ident_quote(
+                         entity_class.repository_table_name,
+                         attr.reference_key
+                       )
           buffer.write ' = '
           buffer.write sql_ident_quote(component_table_alias, 'id')
         end
@@ -160,7 +179,9 @@ module Drn
         buffer.write(' /* where */') if predicates
 
         order_by = self.class.order_by_attribute_name
-        buffer.write(" order by #{sql_ident_quote(order_by)}") if one == false && order_by
+        if one == false && order_by
+          buffer.write(" order by #{sql_ident_quote(order_by)}")
+        end
 
         buffer.write(' limit 1') if one
 
@@ -168,9 +189,7 @@ module Drn
       end
 
       def sql_where(predicates)
-        preds = predicates.map do |(ident, _)|
-          "#{db.literal(ident)} = ?"
-        end
+        preds = predicates.map { |(ident, _)| "#{db.literal(ident)} = ?" }
 
         ["where #{preds.join(' and ')}", predicates.values]
       end
@@ -194,37 +213,43 @@ module Drn
         logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
 
         results = []
-        @dataset.db.fetch(query, *args) do |row|
-          row = row.transform_keys(&:to_sym)
-          results << row
-        end
+        @dataset
+          .db
+          .fetch(query, *args) do |row|
+            row = row.transform_keys(&:to_sym)
+            results << row
+          end
 
         return EMPTY_ARRAY if results.empty?
 
-        if block
-          block.call(results)
-        else
-          results
-        end
+        block ? block.call(results) : results
       end
 
       # TODO: for performance this would be better as opt-in
       def process_record(record)
         record = entity_class.ensure!(record)
         h = record.to_h.dup
-        record.class.attributes.select(&:serialize?).each do |attr|
-          h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name]
-        end
-
-        record.class.attributes.select(&:component?).each do |attr|
-          id_key = attr.reference_key
-          if !record.key?(id_key) && (id_val = record.send(attr.name).id)
-            h[id_key] = id_val
-          elsif attr.required?
-            raise "#{id_key.inspect} is required for storage but is missing"
+        record
+          .class
+          .attributes
+          .select(&:serialize?)
+          .each do |attr|
+            h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name]
           end
-          h.delete(attr.name)
-        end
+
+        record
+          .class
+          .attributes
+          .select(&:component?)
+          .each do |attr|
+            id_key = attr.reference_key
+            if !record.key?(id_key) && (id_val = record.send(attr.name).id)
+              h[id_key] = id_val
+            elsif attr.required?
+              raise "#{id_key.inspect} is required for storage but is missing"
+            end
+            h.delete(attr.name)
+          end
 
         h[:updated_at] = Time.now if h.key?(:updated_at)
 
@@ -232,21 +257,27 @@ module Drn
       end
 
       def reconstitute_record(h)
-        entity_class.attributes.select(&:serialize?).each do |attr|
-          h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name]
-        end
+        entity_class
+          .attributes
+          .select(&:serialize?)
+          .each do |attr|
+            h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name]
+          end
         h
       end
 
       def build_entity(record)
         record = reconstitute_record(record)
-        entity_class.attributes.select(&:component?).each do |attr|
-          begin
-            record = nest_component_attributes(record, attr.name)
-          rescue
-            binding.irb
+        entity_class
+          .attributes
+          .select(&:component?)
+          .each do |attr|
+            begin
+              record = nest_component_attributes(record, attr.name)
+            rescue StandardError
+              binding.irb
+            end
           end
-        end
 
         entity_class[record]
       end

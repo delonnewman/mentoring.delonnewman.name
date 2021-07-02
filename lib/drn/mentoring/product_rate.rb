@@ -4,7 +4,7 @@ module Drn
       primary_key :id
       reference :name, String
 
-      has :description,  String,   required: false
+      has :description, String, required: false
       has :subscription, :boolean, default: false
 
       alias to_s name

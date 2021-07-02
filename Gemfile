@@ -42,6 +42,8 @@ gem 'mailjet'
 group :development, :test do
   gem 'rake'
   gem 'rspec'
+  gem 'prettier'
+  gem 'rubocop'
 
   gem 'yard'
   gem 'webrick' # for yard documentation server

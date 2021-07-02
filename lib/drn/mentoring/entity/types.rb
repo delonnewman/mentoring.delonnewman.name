@@ -3,7 +3,7 @@ module Drn
     class Entity
       module Types
         def timestamp(name)
-          has name, Time, edit: false, default: ->{ Time.now }
+          has name, Time, edit: false, default: -> { Time.now }
         end
 
         def timestamps
@@ -12,16 +12,18 @@ module Drn
         end
 
         def password
-          has :encrypted_password, String,
+          has :encrypted_password,
+              String,
               required: false,
-              display:  false,
-              edit:     false,
-              default:  ->{ BCrypt::Password.create(password) }
+              display: false,
+              edit: false,
+              default: -> { BCrypt::Password.create(password) }
 
-          has :password, :password,
+          has :password,
+              :password,
               required: false,
-              display:  false,
-              default:  ->{ BCrypt::Password.new(encrypted_password) }
+              display: false,
+              default: -> { BCrypt::Password.new(encrypted_password) }
 
           exclude_for_storage << :password
 

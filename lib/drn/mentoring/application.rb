@@ -4,7 +4,7 @@ require 'rack/contrib/try_static'
 module Drn
   module Mentoring
     module_function
-    
+
     def resolved_env(env)
       ENV.fetch('RACK_ENV') { env }.to_sym
     end
@@ -28,14 +28,22 @@ module Drn
     class Application
       # Methods that should not be shared in other contexts (see Drn::Mentoring::Controller)
       METHODS_NOT_SHARED = Set[:env, :call, :init!, :main].freeze
-      SETTINGS = %w[DATABASE_URL DOMAIN STRIPE_KEY STRIPE_PUB_KEY MENTORING_SESSION_SECRET MAILJET_API_KEY MAILJET_SECRET_KEY].freeze
+      SETTINGS = %w[
+        DATABASE_URL
+        DOMAIN
+        STRIPE_KEY
+        STRIPE_PUB_KEY
+        MENTORING_SESSION_SECRET
+        MAILJET_API_KEY
+        MAILJET_SECRET_KEY
+      ].freeze
 
       attr_reader :env, :logger, :root, :db, :session_secret, :settings
 
       def initialize(env)
-        @env    = env
+        @env = env
         @logger = Logger.new($stdout, level: log_level)
-        @root   = Pathname.new(File.join(__dir__, '..', '..', '..')).expand_path
+        @root = Pathname.new(File.join(__dir__, '..', '..', '..')).expand_path
       end
 
       def log_level
@@ -63,9 +71,10 @@ module Drn
       def load_env!
         case env
         when :production
-          @settings = SETTINGS.reduce({}) do |h, key|
-            h.merge!(key => ENV.fetch(key))
-          end.freeze
+          @settings =
+            SETTINGS
+              .reduce({}) { |h, key| h.merge!(key => ENV.fetch(key)) }
+              .freeze
         else
           Dir.chdir(root)
           @settings = Dotenv.load(dotenv_path).freeze
@@ -102,7 +111,7 @@ module Drn
 
       def init!
         if initialized?
-          raise "An application can only be initialized once"
+          raise 'An application can only be initialized once'
         else
           if env == :production
             puts "Initializing application in #{env} environment"

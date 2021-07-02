@@ -3,7 +3,7 @@ module Drn
     module Authenticable
       extend Trait
       required :request, :app, :options, :redirect_to
-      
+
       def current_user
         return @current_user if @current_user
 
@@ -28,7 +28,8 @@ module Drn
       end
 
       def call
-        if current_user || request.path_info == '/login' || options[:authenticate] == false
+        if current_user || request.path_info == '/login' ||
+             options[:authenticate] == false
           super
         else
           redirect_to '/login'
