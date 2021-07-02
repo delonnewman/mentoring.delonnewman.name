@@ -3,7 +3,7 @@ module Drn
     class Main < Controller
       class MentoringSessions < Controller
         include Authenticable
-        
+
         get '/new' do |params|
           # start / cancel buttons with some instructions
           render :new, with: { checkout_session_id: params['session_id'] }
@@ -11,12 +11,13 @@ module Drn
 
         # create session
         post '/' do |params|
-          # create database record session_id:UUID, stripe_session_id:String, started_at:Time, ended_at:Time 
-          session = MentoringSession[
-            checkout_session_id: params['checkout_session_id'],
-            customer: current_user,
-            mentor: 'delon'
-          ]
+          # create database record session_id:UUID, stripe_session_id:String, started_at:Time, ended_at:Time
+          session =
+            MentoringSession[
+              checkout_session_id: params['checkout_session_id'],
+              customer: current_user,
+              mentor: 'delon'
+            ]
           mentoring_sessions.store!(session)
 
           redirect_to session_path(session)
@@ -27,7 +28,10 @@ module Drn
           # Display timer
           # Have a link to a Zoom Session
           # Display chat & shared code editor
-          render :show, with: { session: mentoring_sessions.find_by!(id: params[:id]) }
+          render :show,
+                 with: {
+                   session: mentoring_sessions.find_by!(id: params[:id])
+                 }
         end
 
         # update session

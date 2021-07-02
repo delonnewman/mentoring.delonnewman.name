@@ -9,20 +9,18 @@ module Drn
     class Product < Entity
       primary_key :id, :uuid
 
-      has :name,        String, display: { order: 0 }
+      has :name, String, display: { order: 0 }
       has :description, String
-      has :image_path,  String
-      has :amount,      Integer
-      has :meta,        Hash,    serialize: true, default: EMPTY_HASH
-      has :sort_order,  Integer, default: 0
+      has :image_path, String
+      has :amount, Integer
+      has :meta, Hash, serialize: true, default: EMPTY_HASH
+      has :sort_order, Integer, default: 0
 
       has_many :users, join_table: :users_products
       belongs_to :rate
       def_delegator :rate, :subscription?
 
-      repository do
-        order_by :sort_order
-      end
+      repository { order_by :sort_order }
 
       alias to_s name
 
@@ -31,7 +29,11 @@ module Drn
 
         case name
         when 'Instant Help', 'Instant Conversation'
-          @policy = InstantHelpPolicy.new(self, mentoring_sessions: MentoringSession.repository)
+          @policy =
+            InstantHelpPolicy.new(
+              self,
+              mentoring_sessions: MentoringSession.repository
+            )
         when 'Ongoing Mentoring'
           @policy = OngoingMentoringPolicy.new(self)
         end

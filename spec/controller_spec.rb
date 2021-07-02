@@ -3,7 +3,7 @@ require 'spec_helper'
 include Drn::Mentoring
 
 RSpec.describe Controller do
-  describe "#status" do
+  describe '#status' do
     it 'will set the status of the response'
   end
 

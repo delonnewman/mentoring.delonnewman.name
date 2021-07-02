@@ -1,7 +1,8 @@
 require 'spec_helper'
 include Drn::Mentoring
 
-class EntityBasic < Entity; end
+class EntityBasic < Entity
+end
 
 class EntitySingle < Entity
   has :name

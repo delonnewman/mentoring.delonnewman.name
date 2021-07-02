@@ -6,13 +6,19 @@ RSpec.describe Product::InstantHelpPolicy do
   let(:mentor) { User.repository.find_by!(username: 'delon') }
   let(:product) { Product.repository.find_by!(name: 'Instant Help') }
   subject(:policy) do
-    described_class.new(product, mentoring_sessions: MentoringSession.repository)
+    described_class.new(
+      product,
+      mentoring_sessions: MentoringSession.repository
+    )
   end
 
   describe '#disabled?' do
     it 'returns true if there are any active mentoring sessions' do
       MentoringSession.repository.create!(
-        checkout_session_id: "testing-#{SecureRandom.uuid}", customer: customer, mentor_id: mentor.id)
+        checkout_session_id: "testing-#{SecureRandom.uuid}",
+        customer: customer,
+        mentor_id: mentor.id
+      )
 
       expect(policy.disabled?(mentor)).to be true
     end

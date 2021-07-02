@@ -12,7 +12,9 @@ module Drn
           return @repository_class if @repository_class
 
           class_name = repository_class_name
-          @repository_class = const_get(class_name) if const_defined?(class_name)
+          @repository_class = const_get(class_name) if const_defined?(
+            class_name
+          )
           @repository_class || Repository
         end
 
@@ -86,7 +88,11 @@ module Drn
             repository_class.class_eval(&block)
           end
 
-          @repository ||= repository_class.new(Drn::Mentoring.app.db[repository_table_name.to_sym], self)
+          @repository ||=
+            repository_class.new(
+              Drn::Mentoring.app.db[repository_table_name.to_sym],
+              self
+            )
         end
       end
     end

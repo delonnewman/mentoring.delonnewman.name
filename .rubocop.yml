@@ -1,7 +1,10 @@
+#inherit_gem:
+#  prettier: rubocop.yml
+
 AllCops:
   TargetRubyVersion: 3.0
 
 Layout/HashAlignment:
-  Enabled: true
+  Enabled: false
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
