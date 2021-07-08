@@ -39,7 +39,7 @@ namespace :db do
 
   desc 'Drop tables'
   task :drop_tables do
-    sh "source .env && bundle exec sequel #{ENV['DATABASE_URL']} -c 'DB.tables.each { |t| DB.drop_table?(t, cascade: true) }'"
+    sh "source .env && bundle exec sequel '#{ENV['DATABASE_URL']}' -c 'DB.tables.each { |t| DB.drop_table?(t, cascade: true) }'"
   end
 
   desc 'Drop database'
