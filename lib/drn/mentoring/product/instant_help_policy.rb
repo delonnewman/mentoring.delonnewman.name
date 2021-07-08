@@ -29,12 +29,16 @@ module Drn
           }
         }.freeze
 
+        def mentor_availability
+          INSTANT_HELP_AVAILABILITY
+        end
+
         # Return true if there are any active mentoring sessions
         # and if the mentor is available the current time.
         #
         # @option now [Time]
         # @option availability [Hash<Integer, { start: Integer, end: Integer }>]
-        def disabled?(_, now: Time.now, availability: INSTANT_HELP_AVAILABILITY)
+        def disabled?(_, now: Time.now, availability: mentor_availability)
           return true unless mentoring_sessions.empty?
 
           day = availability[now.wday]

@@ -42,6 +42,7 @@ module Drn
     # Main Application
     require_relative 'mentoring/main/checkout'
     require_relative 'mentoring/main/mentoring_sessions'
+    require_relative 'mentoring/main_helpers'
     require_relative 'mentoring/main'
   end
 end

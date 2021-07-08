@@ -9,6 +9,8 @@ RSpec.describe Product::OngoingMentoringPolicy do
     it 'returns true if the user already is subscribed to ongoing mentoring' do
       user = User.repository.find_by!(username: 'the-man-in-black')
 
+      Product.repository.subscribe(product, user)
+
       expect(policy.disabled?(user)).to be true
     end
 

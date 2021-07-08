@@ -8,7 +8,7 @@ RSpec.describe Entity::Attribute do
     end
 
     it 'returns a symbol join table name if the attribute is many' do
-      expect(Product.attribute(:users).join_table_name).to be :products_users
+      expect(Product.attribute(:users).join_table_name).to be :users_products
     end
   end
 

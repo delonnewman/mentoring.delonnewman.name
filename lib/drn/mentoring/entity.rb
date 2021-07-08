@@ -55,9 +55,9 @@ module Drn
             end
 
             mapping.each do |key, value|
-              unless key.is_a?(Class)
+              unless key.respond_to?(:call)
                 raise TypeError,
-                      "Keys in value mappings should be class objects: #{key.inspect}:#{key.class}"
+                      "Keys in value mappings should be callable objects: #{key.inspect}:#{key.class}"
               end
               unless value.is_a?(Symbol) && value.name =~ /\A\w+\z/
                 raise TypeError,

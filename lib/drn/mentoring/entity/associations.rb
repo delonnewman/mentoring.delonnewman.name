@@ -49,7 +49,7 @@ module Drn
         def reference_mapping
           attributes
             .select { |a| a[:reference] }
-            .reduce({}) { |h, a| h.merge(a[:type] => a.name) }
+            .reduce({}) { |h, a| h.merge(a.type => a.name) }
         end
 
         def primary_key(name = :id, type = Integer, **options)
@@ -81,8 +81,8 @@ module Drn
           else
             # NOTE: As an optimization we could generate the comparible code
             # whenever a reference attribute is added to the class.
-            reference_mapping.each do |klass, ref|
-              return repository.find_by!(ref => value) if value.is_a?(klass)
+            reference_mapping.each do |type, ref|
+              return repository.find_by!(ref => value) if type.call(value)
             end
             raise TypeError,
                   "#{value.inspect}:#{value.class} cannot be coerced into #{self}"

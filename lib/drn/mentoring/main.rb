@@ -3,10 +3,9 @@ module Drn
   module Mentoring
     class Main < Controller
       include Authenticable
+      include MainHelpers
 
       use Rack::Session::Cookie, secret: Mentoring.app.session_secret
-
-      #use Rack::MiniProfiler
 
       static '/' => 'public'
 
@@ -56,13 +55,7 @@ module Drn
       end
 
       get '/activate/:id', authenticate: false do
-        if (
-             reg =
-               user_registrations.find_active_by_id_and_key(
-                 params[:id],
-                 params['key']
-               )
-           )
+        if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key']))
           render :account_activated, with: { registration: reg }
         else
           render :activation_invalid
@@ -78,13 +71,7 @@ module Drn
 
         logger.info "Form data: #{data.inspect}"
 
-        if (
-             reg =
-               user_registrations.find_active_by_id_and_key(
-                 params[:id],
-                 params['key']
-               )
-           ).nil?
+        if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key'])).nil?
           render :activation_invalid
         elsif (errors = User.errors(data)).empty?
           User[data].tap do |user|
@@ -108,6 +95,7 @@ module Drn
             username: params['username'],
             password: params['password']
           )
+
         ref = params['ref'].empty? ? '/' : params['ref']
 
         if user

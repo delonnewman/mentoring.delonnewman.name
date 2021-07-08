@@ -138,7 +138,7 @@ module Drn
           return true if value.is_a?(Hash) # TODO: use the value class to validate
 
           mapping = value_class.reference_mapping
-          mapping.keys.any? { |k| value.is_a?(k) }
+          mapping.keys.any? { |k| k.call(value) }
         end
 
         def entity?

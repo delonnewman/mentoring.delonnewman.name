@@ -1,5 +1,5 @@
 <div class="d-flex mt-5">
-  <% products.all.each do |product| %>
+  <% products.each do |product| %>
     <section class="card mr-3" style="width: 350px">
       <img
         class="card-img-top"
@@ -7,6 +7,7 @@
       <div class="card-body">
         <h5 class="card-title name"><%= product.name %></h5>
         <div class="description text-muted" style="font-size: 0.9em"><%= product.description %></div>
+        <%= mentor_availability product, current_user %>
       </div>
       <div class="card-footer d-flex justify-content-between">
         <div class="price">

@@ -49,6 +49,7 @@ module Drn
       # Blantantly stolen from active-support
       def snakecase(string)
         return string unless /[A-Z-]|::/ =~ string
+
         word = string.to_s.gsub('::', '/')
         word.gsub!(/([A-Z\d]+)([A-Z][a-z])/, '\1_\2')
         word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
@@ -120,7 +121,7 @@ module Drn
 
       def time_ago_in_words(time)
         diff = Time.now - time
-        suffix = diff < 0 ? 'from now' : 'ago'
+        suffix = diff.negative? ? 'from now' : 'ago'
         diff_ = diff.abs
 
         if diff_ > YEAR_IN_SECONDS

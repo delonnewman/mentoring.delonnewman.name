@@ -20,7 +20,15 @@ module Drn
       belongs_to :rate
       def_delegator :rate, :subscription?
 
-      repository { order_by :sort_order }
+      repository do
+        order_by :sort_order
+
+        def subscribe(product, user)
+          product = Product.ensure!(product)
+          user = User.ensure!(user)
+          db[:users_products].insert(product_id: product.id, user_id: user.id)
+        end
+      end
 
       alias to_s name
 
