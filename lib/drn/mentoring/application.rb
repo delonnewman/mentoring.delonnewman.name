@@ -70,11 +70,8 @@ module Drn
 
       def load_env!
         case env
-        when :production
-          @settings =
-            SETTINGS
-              .reduce({}) { |h, key| h.merge!(key => ENV.fetch(key)) }
-              .freeze
+        when :production, :ci
+          @settings = SETTINGS.reduce({}) { |h, key| h.merge!(key => ENV.fetch(key)) }.freeze
         else
           Dir.chdir(root)
           @settings = Dotenv.load(dotenv_path).freeze

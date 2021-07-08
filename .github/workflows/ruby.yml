@@ -8,6 +8,7 @@
 name: Ruby / PostgreSQL
 
 env:
+  RACK_ENV: "ci"
   DATABASE_NAME: mentoring_test
   DATABASE_URL: "postgresql://localhost/mentoring_test?username=tester&password=somestrong"
   DOMAIN: "http://localhost:3000"
