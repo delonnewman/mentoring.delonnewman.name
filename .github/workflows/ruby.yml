@@ -9,7 +9,7 @@ name: Ruby
 
 env:
   DATABASE_NAME: mentoring_tests
-  DATABASE_URL: "postgresql://localhost/mentoring_test?username=tester&password=somestrong"
+  DATABASE_URL: "postgresql://localhost/mentoring_tests?username=tester&password=somestrong"
   DOMAIN: "http://localhost:3000"
   STRIPE_KEY: "test"
   STRIPE_PUB_KEY: "test"
