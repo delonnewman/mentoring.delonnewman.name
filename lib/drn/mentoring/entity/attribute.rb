@@ -16,9 +16,7 @@ module Drn
         uuid: REGEXP_TYPE[UUID_REGEXP],
         email: REGEXP_TYPE[EMAIL_REGEXP],
         # TODO: add more checks here
-        password: ->(v) do
-          v.is_a?(String) && v.length > 10 || v.is_a?(BCrypt::Password)
-        end
+        password: ->(v) { v.is_a?(String) && v.length > 10 || v.is_a?(BCrypt::Password) }
       }
 
       # Represents an attribute of a domain entity. Drives dynamic checks and provides
@@ -53,8 +51,7 @@ module Drn
         end
 
         def time?
-          self[:type].is_a?(Class) &&
-            (self[:type] == Time || self[:type] < Time)
+          self[:type].is_a?(Class) && (self[:type] == Time || self[:type] < Time)
         end
 
         def password?
@@ -105,12 +102,11 @@ module Drn
         end
 
         def boolean?
-          self[:type] == :boolean || self[:type] == FalseClass ||
-            self[:type] == TrueClass
+          self[:type] == :boolean || self[:type] == FalseClass || self[:type] == TrueClass
         end
 
         def reference_key
-          :"#{name}_id"
+          Utils.reference_key(name.name).to_sym
         end
 
         def serialize?

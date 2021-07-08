@@ -15,8 +15,9 @@ require_relative 'core_ext'
 
 require_relative 'trait'
 
-# Simple utility methods
+# Utility methods
 require_relative 'utils'
+require_relative 'sql_utils'
 
 # Application state
 require_relative 'application'

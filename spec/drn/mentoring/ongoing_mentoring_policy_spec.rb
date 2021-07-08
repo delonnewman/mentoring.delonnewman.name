@@ -2,14 +2,14 @@ require 'spec_helper'
 include Drn::Mentoring
 
 RSpec.describe Product::OngoingMentoringPolicy do
-  let(:product) { Product.repository.find_by!(name: 'Ongoing Mentoring') }
+  let(:product) { app.products.find_by!(name: 'Ongoing Mentoring') }
   subject(:policy) { described_class.new(product) }
 
   describe '#disabled?' do
     it 'returns true if the user already is subscribed to ongoing mentoring' do
       user = User.repository.find_by!(username: 'the-man-in-black')
 
-      Product.repository.subscribe(product, user)
+      app.products.subscribe(product, user)
 
       expect(policy.disabled?(user)).to be true
     end

@@ -9,18 +9,16 @@ module Drn
 
         def has_many(name, **options)
           type = Utils.entity_name(name)
-          has name,
-              type,
-              **{ required: false }.merge!(options.merge(many: true))
+          has name, type, **{ required: false }.merge!(options.merge(many: true))
 
           define_method name do
-            if self[name]
-              self[name]
-            else
-              attr = self.class.attribute(name)
-              self[name] =
-                attr.join_table.where(attr.entity.reference_key => id)
-            end
+            attr = self.class.attribute(name)
+            pp attr
+            attr
+              .join_table
+              .join(name, id: attr.reference_key)
+              .where(attr.entity.reference_key => id)
+              .map { |record| attr.value_class[record] }
           end
 
           exclude_for_storage << name
@@ -47,9 +45,7 @@ module Drn
         end
 
         def reference_mapping
-          attributes
-            .select { |a| a[:reference] }
-            .reduce({}) { |h, a| h.merge(a.type => a.name) }
+          attributes.select { |a| a[:reference] }.reduce({}) { |h, a| h.merge(a.type => a.name) }
         end
 
         def primary_key(name = :id, type = Integer, **options)
@@ -84,8 +80,7 @@ module Drn
             reference_mapping.each do |type, ref|
               return repository.find_by!(ref => value) if type.call(value)
             end
-            raise TypeError,
-                  "#{value.inspect}:#{value.class} cannot be coerced into #{self}"
+            raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{self}"
           end
         end
 

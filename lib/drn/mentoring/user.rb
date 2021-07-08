@@ -7,13 +7,7 @@ module Drn
       primary_key :id
       reference :username, String, unique: true, display: { order: 1 }
 
-      has :displayname,
-          String,
-          required: false,
-          display: {
-            name: 'Name',
-            order: 0
-          }
+      has :displayname, String, required: false, display: { name: 'Name', order: 0 }
       belongs_to :role, display: { order: 3 }
       has_many :products
 

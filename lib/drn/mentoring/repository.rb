@@ -30,23 +30,29 @@ module Drn
 
       def all(&block)
         tag = "#{entity_class}.repository.all"
-        run sql_query_template(one: false, predicates: false),
-            tag: tag do |records|
-          records.map do |record|
-            build_entity(record).tap { |product| block&.call(product) }
-          end
+        sql =
+          SqlUtils.query_template(
+            entity_class,
+            db,
+            one: false,
+            predicates: false,
+            order_by: self.class.order_by_attribute_name
+          )
+
+        run sql, tag: tag do |records|
+          records.map { |record| build_entity(record).tap { |product| block&.call(product) } }
         end
       end
       alias each all
 
       def find_by(predicates)
-        preds = predicates.transform_keys(&query_attribute_map)
-        qstr, binds = sql_where(preds)
+        preds = predicates.transform_keys(&SqlUtils.query_attribute_map(entity_class))
+        qstr, binds = SqlUtils.where(db, preds)
         query =
-          sql_query_template(one: true, predicates: true).sub(
-            '/* where */',
-            qstr
-          )
+          SqlUtils
+            .query_template(entity_class, db, one: true, predicates: true)
+            .sub('/* where */', qstr)
+
         records = run(query, *binds, tag: "#{entity_class}.repository.find_by")
 
         return nil if records.empty?
@@ -55,8 +61,7 @@ module Drn
       end
 
       def find_by!(attributes)
-        find_by(attributes) or
-          raise "Could not find record with: #{attributes.inspect}"
+        find_by(attributes) or raise "Could not find record with: #{attributes.inspect}"
       end
 
       def update!(id, data)
@@ -80,11 +85,11 @@ module Drn
       end
 
       def delete_where!(predicates)
-        qstr, binds = sql_where(predicates)
+        qstr, binds = SqlUtils.where(db, predicates)
         table = entity_class.repository_table_name
         query = "delete from #{db.literal(Sequel.identifier(table))} #{qstr}"
 
-        run(query, *binds, tag: 'delete_where!')
+        run query, *binds, tag: 'delete_where!'
 
         self
       end
@@ -93,106 +98,15 @@ module Drn
         dataset.delete
       end
 
-      protected
+      private
 
       %i[logger db].each do |method|
         define_method method do
           Drn::Mentoring.app.send(method)
         end
-        private method
       end
 
-      ATTRIBUTE_MAP = Hash.new { |_, key| key }
-
-      def query_attribute_map
-        entity_class
-          .attributes
-          .each_with_object(ATTRIBUTE_MAP.dup) do |attr, hash|
-            attr_name = attr.component? ? attr.reference_key : attr.name
-            if attr.many?
-              hash
-            else
-              hash.merge!(
-                attr.name =>
-                  Sequel.qualify(entity_class.repository_table_name, attr_name)
-              )
-            end
-          end
-      end
-
-      def sql_query_fields
-        fields =
-          query_attribute_map
-            .reject do |(name, _)|
-              entity_class.exclude_for_storage.include?(name)
-            end
-            .map { |(_, ident)| db.literal(ident) }
-
-        entity_class.component_attributes.each_with_index do |comp, i|
-          comp
-            .value_class
-            .storable_attributes
-            .each do |attr|
-              table = "#{entity_class.component_table_name(comp)}#{i}"
-              ident = Sequel.qualify(table, attr.name)
-              name = Sequel.identifier("#{comp.name}_#{attr.name}")
-              fields << "#{db.literal(ident)} as #{db.literal(name)}"
-            end
-        end
-
-        fields.join(', ')
-      end
-
-      def sql_ident_quote(*args)
-        if args.size == 1
-          db.literal(Sequel.identifier(args[0]))
-        elsif args.size == 2
-          db.literal(Sequel.qualify(*args))
-        else
-          raise ArgumentError,
-                "wrong number or arguments (given #{args.size}, expected 1 or 2)"
-        end
-      end
-
-      def sql_query_template(one:, predicates:)
-        buffer = StringIO.new
-
-        buffer.write 'select '
-        buffer.write sql_query_fields
-        buffer.write ' from '
-        buffer.write entity_class.repository_table_name
-
-        entity_class.component_attributes.each_with_index do |attr, i|
-          component_table_name = entity_class.component_table_name(attr)
-          component_table_alias = "#{component_table_name}#{i}"
-          buffer.write " inner join #{sql_ident_quote(component_table_name)}"
-          buffer.write " as #{sql_ident_quote(component_table_alias)}"
-          buffer.write ' on '
-          buffer.write sql_ident_quote(
-                         entity_class.repository_table_name,
-                         attr.reference_key
-                       )
-          buffer.write ' = '
-          buffer.write sql_ident_quote(component_table_alias, 'id')
-        end
-
-        buffer.write(' /* where */') if predicates
-
-        order_by = self.class.order_by_attribute_name
-        if one == false && order_by
-          buffer.write(" order by #{sql_ident_quote(order_by)}")
-        end
-
-        buffer.write(' limit 1') if one
-
-        buffer.string
-      end
-
-      def sql_where(predicates)
-        preds = predicates.map { |(ident, _)| "#{db.literal(ident)} = ?" }
-
-        ["where #{preds.join(' and ')}", predicates.values]
-      end
+      protected
 
       def nest_component_attributes(record, component_name)
         record.reduce({}) do |h, (key_, value)|
@@ -233,9 +147,7 @@ module Drn
           .class
           .attributes
           .select(&:serialize?)
-          .each do |attr|
-            h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name]
-          end
+          .each { |attr| h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name] }
 
         record
           .class
@@ -260,9 +172,7 @@ module Drn
         entity_class
           .attributes
           .select(&:serialize?)
-          .each do |attr|
-            h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name]
-          end
+          .each { |attr| h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name] }
         h
       end
 

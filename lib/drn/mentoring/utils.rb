@@ -4,9 +4,7 @@ module Drn
       module_function
 
       def mock_request(path, **options)
-        Rack::MockRequest
-          .env_for(path, **options)
-          .merge('mentoring.app' => Drn::Mentoring.app)
+        Rack::MockRequest.env_for(path, **options).merge('mentoring.app' => Drn::Mentoring.app)
       end
 
       def money(amount, unit: '$')
@@ -101,16 +99,16 @@ module Drn
         Utils.snakecase("#{table_name(entity_name)}_#{attribute_name}")
       end
 
+      def reference_key(attribute_name)
+        "#{Inflection.singularize(attribute_name)}_id"
+      end
+
       def constantize(string)
         Drn::Mentoring.const_get(string)
       end
 
       def pluralize(number, string)
-        if number == 1
-          "#{number} #{string}"
-        else
-          "#{number} #{Inflection.plural string}"
-        end
+        number == 1 ? "#{number} #{string}" : "#{number} #{Inflection.plural string}"
       end
 
       YEAR_IN_SECONDS = 31_104_000
