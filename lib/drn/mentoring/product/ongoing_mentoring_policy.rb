@@ -16,7 +16,7 @@ module Drn
         def disabled?(user)
           return false unless user
 
-          user.products.include?(product)
+          user.product_ids.include?(product.id)
         end
       end
     end

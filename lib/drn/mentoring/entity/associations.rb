@@ -11,14 +11,19 @@ module Drn
           type = Utils.entity_name(name)
           has name, type, **{ required: false }.merge!(options.merge(many: true))
 
+          attr = attribute(name)
+
           define_method name do
-            attr = self.class.attribute(name)
-            pp attr
             attr
               .join_table
               .join(name, id: attr.reference_key)
               .where(attr.entity.reference_key => id)
-              .map { |record| attr.value_class[record] }
+            #.map { |record| attr.value_class[record] }
+          end
+
+          define_method Inflection.plural(attr.reference_key.name) do
+            ref = attr.entity.reference_key
+            attr.join_table.where(ref => id).select_map(attr.reference_key)
           end
 
           exclude_for_storage << name
