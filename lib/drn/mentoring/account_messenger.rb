@@ -10,8 +10,7 @@ module Drn
         mail :signup,
              { user: user },
              to: user,
-             subject:
-               'Thank you for giving us a try! Please complete your registration.'
+             subject: 'Thank you for giving us a try! Please complete your registration.'
       end
 
       private

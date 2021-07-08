@@ -22,11 +22,7 @@ module Drn
       class << self
         def has(name, type = Object, **options)
           attribute =
-            Attribute.new(
-              { entity: self, name: name, type: type, required: true }.merge(
-                options
-              )
-            )
+            Attribute.new({ entity: self, name: name, type: type, required: true }.merge(options))
           @required_attributes ||= []
           @required_attributes << name if attribute.required?
 
@@ -123,9 +119,7 @@ module Drn
 
             h[attribute.name] = value
 
-            if (attribute.optional? && value.nil?) || !attribute.default.nil?
-              next
-            end
+            next if (attribute.optional? && value.nil?) || !attribute.default.nil?
 
             unless attribute.valid_value?(value)
               raise TypeError,
@@ -141,8 +135,7 @@ module Drn
 
         default = self.class.attribute(name).default
 
-        @hash[name] ||=
-          default.respond_to?(:to_proc) ? instance_exec(&default) : default
+        @hash[name] ||= default.respond_to?(:to_proc) ? instance_exec(&default) : default
       end
 
       def to_h
@@ -165,9 +158,7 @@ module Drn
         if (comps = self.class.attributes.select(&:component?)).empty?
           data
         else
-          comps.reduce(data) do |h, comp|
-            h.merge!(comp.reference_key => send(comp.name).id)
-          end
+          comps.reduce(data) { |h, comp| h.merge!(comp.reference_key => send(comp.name).id) }
         end
       end
     end

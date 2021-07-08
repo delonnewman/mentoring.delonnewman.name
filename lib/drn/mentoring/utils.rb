@@ -8,7 +8,7 @@ module Drn
       end
 
       def money(amount, unit: '$')
-        "#{unit}#{sprintf '%.2f', amount}"
+        "#{unit}#{format '%.2f', amount}"
       end
 
       def escape_html(string)
@@ -33,13 +33,12 @@ module Drn
       def escape_javascript(javascript)
         javascript = javascript.to_s
         if javascript.empty?
-          result = ''
+          ''
         else
-          result =
-            javascript.gsub(
-              %r{(\\|<\/|\r\n|\342\200\250|\342\200\251|[\n\r"']|[`]|[$])}u,
-              JS_ESCAPE_MAP
-            )
+          javascript.gsub(
+            %r{(\\|<\/|\r\n|\342\200\250|\342\200\251|[\n\r"']|[`]|[$])}u,
+            JS_ESCAPE_MAP
+          )
         end
       end
       alias j escape_javascript
