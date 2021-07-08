@@ -5,11 +5,11 @@
 # This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
 # For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
 
-name: Ruby
+name: Ruby / PostgreSQL
 
 env:
-  DATABASE_NAME: mentoring_tests
-  DATABASE_URL: "postgresql://localhost/mentoring_tests?username=tester&password=somestrong"
+  DATABASE_NAME: mentoring_test
+  DATABASE_URL: "postgresql://localhost/mentoring_test?username=tester&password=somestrong"
   DOMAIN: "http://localhost:3000"
   STRIPE_KEY: "test"
   STRIPE_PUB_KEY: "test"
