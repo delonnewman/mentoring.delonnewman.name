@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe Drn::Mentoring::Mailer do
   class TestMailer < Drn::Mentoring::Mailer
     def test
-      "testing"
+      'testing'
     end
   end
 

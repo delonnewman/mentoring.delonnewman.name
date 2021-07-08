@@ -27,7 +27,7 @@ gem 'stackprof'
 
 # framework stuff
 gem 'dotenv'
-gem 'hash_delegator', github: 'hash_delegator'
+gem 'hash_delegator'
 gem 'rack-routable', path: './vendor/rack-routable'
 gem 'rack-flash3'
 gem 'erubi'
@@ -42,6 +42,8 @@ gem 'mailjet'
 group :development, :test do
   gem 'rake'
   gem 'rspec'
+  gem 'prettier'
+  gem 'rubocop'
 
   gem 'yard'
   gem 'webrick' # for yard documentation server

@@ -4,7 +4,7 @@ module Drn
   # A web application for managing mentoring services online.
   module Mentoring
     EMPTY_ARRAY = [].freeze
-    EMPTY_HASH  = {}.freeze
+    EMPTY_HASH = {}.freeze
 
     # Load dependencies, environment variables, etc.
     require_relative 'mentoring/environment'
@@ -15,13 +15,9 @@ module Drn
     require_relative 'mentoring/templated'
     require_relative 'mentoring/template_helpers'
     require_relative 'mentoring/template'
-    
-    # Repositories
-    require_relative 'mentoring/repository'
-    require_relative 'mentoring/product_repository'
-    require_relative 'mentoring/user_repository'
 
     # Entities
+    require_relative 'mentoring/repository'
     require_relative 'mentoring/entity'
     require_relative 'mentoring/user_role'
     require_relative 'mentoring/user'

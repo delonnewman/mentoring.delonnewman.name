@@ -3,18 +3,26 @@ module Drn
   module Mentoring
     class Main < Controller
       include Authenticable
-      
+
       use Rack::Session::Cookie, secret: Mentoring.app.session_secret
+
       #use Rack::MiniProfiler
 
       static '/' => 'public'
-      
-      mount '/checkout', Checkout
-      mount '/session',  MentoringSessions
 
-      mount '/admin', AdminController.build(
-              User, UserRegistration, UserRole, Product, ProductRate,
-              MentoringSession, include: Authenticable)
+      mount '/checkout', Checkout
+      mount '/session', MentoringSessions
+
+      mount '/admin',
+            AdminController.build(
+              User,
+              UserRegistration,
+              UserRole,
+              Product,
+              ProductRate,
+              MentoringSession,
+              include: Authenticable
+            )
 
       get '/', authenticate: false do
         render :index
@@ -22,7 +30,7 @@ module Drn
 
       get '/state.js', authenticate: false do
         state = { authenticated: authenticated? }
-        
+
         render js: "Mentoring = {}; Mentoring.state = #{state.to_json}"
       end
 
@@ -32,7 +40,7 @@ module Drn
 
       post '/signup', authenticate: false do
         logger.info "PARAMS: #{params.inspect}"
-        
+
         data = params.slice('username', 'email').transform_keys(&:to_sym)
 
         if (errors = UserRegistration.errors(data)).empty?
@@ -48,7 +56,13 @@ module Drn
       end
 
       get '/activate/:id', authenticate: false do
-        if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key']))
+        if (
+             reg =
+               user_registrations.find_active_by_id_and_key(
+                 params[:id],
+                 params['key']
+               )
+           )
           render :account_activated, with: { registration: reg }
         else
           render :activation_invalid
@@ -56,12 +70,21 @@ module Drn
       end
 
       post '/activate/:id', authenticate: false do
-        data = params.slice('displayname', 'username', 'email', 'password')
-                 .merge(role: 'customer').transform_keys(&:to_sym)
+        data =
+          params
+            .slice('displayname', 'username', 'email', 'password')
+            .merge(role: 'customer')
+            .transform_keys(&:to_sym)
 
         logger.info "Form data: #{data.inspect}"
-        
-        if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key'])).nil?
+
+        if (
+             reg =
+               user_registrations.find_active_by_id_and_key(
+                 params[:id],
+                 params['key']
+               )
+           ).nil?
           render :activation_invalid
         elsif (errors = User.errors(data)).empty?
           User[data].tap do |user|
@@ -80,9 +103,13 @@ module Drn
       end
 
       post '/login' do
-        user = users.find_user_and_authenticate(username: params['username'], password: params['password'])
-        ref  = params['ref'].empty? ? '/' : params['ref']
-        
+        user =
+          users.find_user_and_authenticate(
+            username: params['username'],
+            password: params['password']
+          )
+        ref = params['ref'].empty? ? '/' : params['ref']
+
         if user
           current_user! user
           redirect_to ref
@@ -104,10 +131,8 @@ module Drn
 
       def error(e)
         logger.error "#{e.message}"
-        e.backtrace.each do |trace|
-          logger.error "  #{trace}"
-        end
-        
+        e.backtrace.each { |trace| logger.error "  #{trace}" }
+
         render :error
       end
     end

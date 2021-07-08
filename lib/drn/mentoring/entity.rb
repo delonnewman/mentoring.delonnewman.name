@@ -1,125 +1,32 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
+    require_relative 'entity/attribute'
+    require_relative 'entity/associations'
+    require_relative 'entity/repositories'
+    require_relative 'entity/validation'
+    require_relative 'entity/types'
+
     # Represents a domain entity that will be modeled. Provides dynamic checks and
     # meta objects for relfection which is used to drive productivity and inspection tools.
     class Entity < HashDelegator
       transform_keys(&:to_sym)
+
       extend Forwardable
-
-      CLASSICAL_TYPE = ->(klass) { ->(v) { v.is_a?(klass) } }
-      DEFAULT_TYPE   = CLASSICAL_TYPE[Object]
-      REGEXP_TYPE    = ->(regex) { ->(v) { v.is_a?(String) && !!(regex =~ v) } }
-      UUID_REGEXP    = /\A[0-9A-Fa-f]{8,8}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{12,12}\z/.freeze
-      EMAIL_REGEXP   = /\A[a-zA-Z0-9!#\$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#\$%&'\*+\/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$\z/.freeze
-
-      SPECIAL_TYPES = {
-        boolean: ->(v) { v.is_a?(FalseClass) || v.is_a?(TrueClass) },
-        string:  CLASSICAL_TYPE[String],
-        any:     CLASSICAL_TYPE[BasicObject],
-        uuid:    REGEXP_TYPE[UUID_REGEXP],
-        email:   REGEXP_TYPE[EMAIL_REGEXP],
-        # TODO: add more checks here
-        password: ->(v) { v.is_a?(String) && v.length > 10 || v.is_a?(BCrypt::Password) }
-      }
-
-      # Represents an attribute of a domain entity. Drives dynamic checks and provides
-      # meta objects for reflection.
-      class Attribute < HashDelegator
-        require :entity, :name, :required, :type
-
-        def required?
-          self[:required] == true
-        end
-
-        def display_order
-          alt = 99
-          d = self[:display]
-          return alt if d == true
-          return alt  if not d
-
-          d.fetch(:order) { alt }
-        end
-
-        def display_name
-          d = self[:display]
-          return Utils.titlecase(name) if d == true
-          return Utils.titlecase(name) if not d
-
-          d.fetch(:name) { Utils.titlecase(name.capitalize) }
-        end
-
-        def time?
-          self[:type].is_a?(Class) && (self[:type] == Time || self[:type] < Time)
-        end
-
-        def password?
-          self[:type] == :password
-        end
-
-        def email?
-          self[:type] == :email
-        end
-
-        def optional?
-          !required?
-        end
-
-        def default
-          self[:default]
-        end
-
-        def type
-          t = self[:type]
-
-          return t                 if t.respond_to?(:call)
-          return CLASSICAL_TYPE[t] if t.is_a?(Class)
-          return REGEXP_TYPE[t]    if t.is_a?(Regexp)
-
-          SPECIAL_TYPES[t]
-        end
-
-        def boolean?
-          self[:type] == :boolean || self[:type] == FalseClass || self[:type] == TrueClass
-        end
-
-        def reference_key
-          :"#{name}_id"
-        end
-
-        def serialize?
-          self[:serialize] == true
-        end
-
-        def component?
-          self[:component] == true
-        end
-
-        def mutable?
-          self[:mutable] == true
-        end
-
-        def has_resolver?
-          key?(:resolve_with)
-        end
-
-        DEFAULT_RESOLUTION_MAP = { Integer => :id }.freeze
-
-        def resolver
-          fetch(:resolve_with) { DEFAULT_RESOLUTION_MAP }
-        end
-
-        def entity?
-          self[:type].is_a?(Class) && self[:type] < Entity
-        end
-
-        def valid_value?(value)
-          type.call(value) || (has_resolver? && resolver.keys.any? { |k| value.is_a?(k) }) || (entity? && value.is_a?(Hash))
-        end
-      end
+      extend Associations
+      extend Repositories
+      extend Validation
+      extend Types
 
       class << self
         def has(name, type = Object, **options)
-          attribute = Attribute.new({ entity: self, name: name, type: type, required: true }.merge(options))
+          attribute =
+            Attribute.new(
+              { entity: self, name: name, type: type, required: true }.merge(
+                options
+              )
+            )
           @required_attributes ||= []
           @required_attributes << name if attribute.required?
 
@@ -134,7 +41,8 @@ module Drn
               if attribute.type.call(value)
                 self[name] = value
               else
-                raise TypeError, "#{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+                raise TypeError,
+                      "#{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
               end
             end
           end
@@ -142,48 +50,30 @@ module Drn
           if attribute.component? && (mapping = attribute.resolver).is_a?(Hash)
             # type check the attribute name and mapping for security (see class_eval below)
             unless name.is_a?(Symbol) && name.name =~ /\A\w+\z/
-              raise TypeError, "Attribute names should be symbols without special characters: #{name.inspect}:#{name.class}"
+              raise TypeError,
+                    "Attribute names should be symbols without special characters: #{name.inspect}:#{name.class}"
             end
 
             mapping.each do |key, value|
-              raise TypeError, "Keys in value mappings should be class objects: #{key.inspect}:#{key.class}" unless key.is_a?(Class)
+              unless key.is_a?(Class)
+                raise TypeError,
+                      "Keys in value mappings should be class objects: #{key.inspect}:#{key.class}"
+              end
               unless value.is_a?(Symbol) && value.name =~ /\A\w+\z/
-                raise TypeError, "Values in value mappings should symbols without special characters: #{value.inspect}:#{value.class}"
+                raise TypeError,
+                      "Values in value mappings should symbols without special characters: #{value.inspect}:#{value.class}"
               end
             end
 
-            code = <<~CODE
-              def #{name}
-                value = @hash[#{name.inspect}]
-                type  = self.class.attribute(#{name.inspect})[:type]
-                if value.is_a?(type)
-                  value
-                else
-                  @hash[#{name.inspect}] = type.ensure!(value)
-                end
+            define_method name do
+              value = @hash[name]
+              type = self.class.attribute(name).value_class
+              if value.is_a?(type)
+                value
+              else
+                @hash[name.inspect] = type.ensure!(value)
               end
-            CODE
-
-            class_eval code
-
-            case_body = mapping
-              .map { |(k, v)|
-                "when #{k.name}\n  repository.find_by!(#{v.inspect} => value)" }
-              .join("\n")
-
-            attribute[:type].class_eval <<~CODE
-              def self.ensure!(value)
-                case value
-                #{case_body}\n
-                when self
-                  value
-                when Hash
-                  new(value)
-                else
-                  raise TypeError, \"\#{value.inspect}:\#{value.class} cannot be coerced into \#{self}"
-                end
-              end
-            CODE
+            end
           elsif attribute.default
             define_method name do
               value_for(name)
@@ -196,69 +86,8 @@ module Drn
 
           @attributes ||= {}
           @attributes[name] = attribute
-        end
 
-        def primary_key(name = :id, type = Integer, **options)
-          opts = {
-            required:    false,
-            unique:      true,
-            index:       true,
-            primary_key: true,
-            display:     false,
-            edit:        false
-          }
-
-          opts.merge!(options)
-
-          if type == :uuid
-            opts[:default] = ->{ SecureRandom.uuid }
-            opts[:required] = true
-          end
-
-          reference name, type, **opts
-        end
-
-        def reference(name, type, **options)
-          has name, type, **options.merge(reference: true)
-        end
-
-        def reference_mapping
-          attributes
-            .select { |a| a[:reference] }
-            .reduce({}) { |h, a| h.merge(a[:type] => a.name) }
-        end
-
-        def belongs_to(name, entity_class, **options)
-          has name, entity_class, **options.merge(resolve_with: entity_class.reference_mapping, component: true)
-          exclude_for_storage << name
-        end
-
-        def timestamps
-          has :created_at, Time, edit: false, default: ->{ Time.now }
-          has :updated_at, Time, edit: false, default: ->{ Time.now }
-        end
-
-        def exclude_for_storage
-          @exclude_for_storage ||= []
-        end
-
-        def password
-          has :encrypted_password, String,
-              required: false,
-              display:  false,
-              edit:     false,
-              default:  ->{ BCrypt::Password.create(password) }
-
-          has :password, :password,
-              required: false,
-              display:  false,
-              default:  ->{ BCrypt::Password.new(encrypted_password) }
-
-          exclude_for_storage << :password
-        end
-
-        def email(name = :email, **options)
-          has name, :email, **options
+          name
         end
 
         def attributes(regular = true)
@@ -274,146 +103,8 @@ module Drn
           @attributes.fetch(name)
         end
 
-        def valid?(entity)
-          return false if entity.empty?
-          
-          attributes.reduce(true) do |is_valid, attr|
-            is_valid && attr.required? && !!(value = entity[attr.name]) && attr.valid_value?(value) && !attr.default
-          end
-        end
-
-        # TODO: move this to a validator or form object similar in function to repository
-        def errors(entity)
-          attributes.reduce({}) do |errors, attr|
-            key  = attr.name
-            name = key.to_s.tr('_', ' ').capitalize
-
-            a = []
-
-            if attr.required? && (value = entity[key]).blank? && !attr.default
-              a << attr.fetch(:message) { "#{name} is required" }
-            end
-
-            if value && !attr.valid_value?(value)
-              a << attr.fetch(:message) { "#{name} is not valid" }
-            end
-
-            unique = attr[:unique]
-            repo   = if unique.is_a?(Class) && unique < Entity
-                       unique.repository
-                     elsif unique.is_a?(Repository)
-                       unique
-                     else
-                       repository
-                     end
-
-            if unique && repo.find_by(attr.name => value)
-              a << attr.fetch(:message) { "#{name} is not unique" }
-            end
-            
-            if a.empty?
-              errors
-            else
-              errors.merge!(key => a)
-            end
-          end
-        end
-
         def [](attributes = EMPTY_HASH)
           new(attributes)
-        end
-
-        def ensure!(value)
-          return value if value.is_a?(self)
-
-          new(value)
-        end
-
-        def repository_class_name(class_name = nil)
-          @repository_class_name = class_name if class_name
-          @repository_class_name || "#{self}Repository"
-        end
-
-        def repository_class(klass = nil)
-          @repository_class = klass if klass
-          return @repository_class if @repository_class
-
-          class_name = repository_class_name
-          @repository_class = const_get(class_name) if const_defined?(class_name)
-          @repository_class || Repository
-        end
-
-        def repository_table_name
-          "#{Inflection.plural(Utils.snakecase(self.name.split('::').last))}"
-        end
-
-        # When no arguments are given it will return a repository instance. When the class argument
-        # is given the value will be used to generate repository instances. When the class_name argument
-        # is given the value will be used to fetch the named class as a constant.
-        #
-        # @example
-        #   Product.repository # returns an anonymous repository instance
-        #
-        # @example
-        #   class Product < Entity
-        #     repository do
-        #       def random
-        #         to_a.sample
-        #       end
-        #     end
-        #   end
-        #
-        #   Product.repository # returns an instance of an anonymous repository subclass with the defined methods
-        #
-        # @example
-        #   class ProductRepository < Repository
-        #     def random
-        #       to_a.sample
-        #     end
-        #   end
-        #
-        #   class Product < Entity
-        #   end
-        #
-        #   Product.repository # returns an instance of ProductRepository
-        #
-        # @example
-        #   class ProductRepo < Repository
-        #     def random
-        #       to_a.sample
-        #     end
-        #   end
-        #
-        #   class Product < Entity
-        #     repository class: ProductRepo
-        #   end
-        #
-        #   Product.repository # returns an instance of ProductRepo
-        #
-        # @example
-        #   class Product < Entity
-        #     repository class_name: 'ProductRepo'
-        #   end
-        #
-        #   Product.repository # returns and instance of ProductRepo
-        #
-        # @param options [Hash]
-        # @option class_name [String] the name of a user defined subclass of Repository
-        # @option class [Class] a user defined subclass of Repository
-        # @param block [Proc] a class body for an anonymous Repository subclass
-        #
-        # @return [Repository]
-        def repository(**options, &block)
-          if klass = options[:class]
-            repository_class(klass)
-          elsif class_name = options[:class_name]
-            repository_class_name(class_name)
-          elsif block
-            repository_class Class.new(Repository)
-            repository_class.class_eval(&block)
-          end
-
-          @repository ||= repository_class.new(Drn::Mentoring.app.db[repository_table_name.to_sym], self)
         end
 
         def canonical_name
@@ -423,18 +114,24 @@ module Drn
 
       def initialize(attributes = EMPTY_HASH)
         h = {}
-        self.class.attributes.each do |attribute|
-          name    = attribute.name
-          value   = attributes[name]
+        self
+          .class
+          .attributes
+          .each do |attribute|
+            name = attribute.name
+            value = attributes[name]
 
-          h[attribute.name] = value
+            h[attribute.name] = value
 
-          next if (attribute.optional? && value.nil?) || !attribute.default.nil?
+            if (attribute.optional? && value.nil?) || !attribute.default.nil?
+              next
+            end
 
-          unless attribute.valid_value?(value)
-            raise TypeError, "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+            unless attribute.valid_value?(value)
+              raise TypeError,
+                    "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+            end
           end
-        end
 
         super(h.freeze)
       end
@@ -443,27 +140,27 @@ module Drn
         return self[name] if self[name]
 
         default = self.class.attribute(name).default
-        if default.respond_to?(:to_proc)
-          @hash[name] ||= instance_exec(&default)
-        else
-          @hash[name] ||= default
-        end
+
+        @hash[name] ||=
+          default.respond_to?(:to_proc) ? instance_exec(&default) : default
       end
 
       def to_h
         data = super
 
-        self.class.attributes.select { |a| !a.default.nil? }.each do |attr|
-          data[attr.name] = value_for(attr.name)
-        end
+        self
+          .class
+          .attributes
+          .reject { |a| a.default.nil? }
+          .each { |attr| data[attr.name] = value_for(attr.name) }
 
         data = data.except(*self.class.exclude_for_storage)
 
-        self.class.attributes.select(&:optional?).each do |attr|
-          if (val = value_for(attr.name)).nil?
-            data.delete(attr.name)
-          end
-        end
+        self
+          .class
+          .attributes
+          .select(&:optional?)
+          .each { |attr| data.delete(attr.name) if value_for(attr.name).nil? }
 
         if (comps = self.class.attributes.select(&:component?)).empty?
           data

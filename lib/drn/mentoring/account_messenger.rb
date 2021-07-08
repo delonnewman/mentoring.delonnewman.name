@@ -7,8 +7,9 @@ module Drn
       layout :mailer
 
       def signup(user)
-        mail :signup, { user: user },
-             to:      user,
+        mail :signup,
+             { user: user },
+             to: user,
              subject: 'Thank you for giving us a try! Please complete your registration.'
       end
 

@@ -4,7 +4,7 @@ module Drn
     class Templated
       include Utils
       include Templatable
-      
+
       class << self
         def canonical_name
           Utils.snakecase(name.split('::').last)
@@ -17,9 +17,9 @@ module Drn
       end
 
       %i[layout canonical_name].each do |method|
-        class_eval %{ def #{method}; self.class.#{method} end }
+        class_eval " def #{method}; self.class.#{method} end "
       end
-      
+
       def app
         raise ":app method is not implemented for #{self.class}"
       end

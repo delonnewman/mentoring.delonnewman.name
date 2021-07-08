@@ -1,10 +1,4 @@
 GIT
-  remote: https://github.com/delonnewman/hash_delegator.git
-  revision: b0661844c851c979966b90b849d75519c72f14fe
-  specs:
-    hash_delegator (0.1.0)
-
-GIT
   remote: https://github.com/delonnewman/shotgun.git
   revision: 762eae9e4eac5babdc4e3e0cea1beeeb427638ea
   specs:
@@ -27,6 +21,7 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
+    ast (2.4.2)
     bcrypt (3.1.16)
     concurrent-ruby (1.1.8)
     diff-lcs (1.4.4)
@@ -34,6 +29,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
     erubi (1.10.0)
+    hash_delegator (0.1.2)
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -52,7 +48,11 @@ GEM
     minitest (5.14.4)
     netrc (0.11.0)
     nio4r (2.5.7)
+    parallel (1.20.1)
+    parser (3.0.1.1)
+      ast (~> 2.4.1)
     pg (1.2.3)
+    prettier (1.6.1)
     puma (5.3.1)
       nio4r (~> 2.0)
     rack (2.2.3)
@@ -64,12 +64,15 @@ GEM
       rack (>= 1.2.0)
     rack_csrf (2.6.0)
       rack (>= 1.1.0)
+    rainbow (3.0.0)
     rake (13.0.3)
+    regexp_parser (2.1.1)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+    rexml (3.2.5)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -83,6 +86,18 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    rubocop (1.18.1)
+      parallel (~> 1.10)
+      parser (>= 3.0.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml
+      rubocop-ast (>= 1.7.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.7.0)
+      parser (>= 3.0.1.1)
+    ruby-progressbar (1.11.0)
     sequel (5.43.0)
     stackprof (0.2.17)
     stripe (5.32.1)
@@ -91,6 +106,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.7)
+    unicode-display_width (2.0.0)
     webrick (1.7.0)
     yard (0.9.26)
     zeitwerk (2.4.2)
@@ -103,12 +119,13 @@ DEPENDENCIES
   concurrent-ruby
   dotenv
   erubi
-  hash_delegator!
+  hash_delegator
   inflection
   invokable
   mailjet
   memory_profiler
   pg
+  prettier
   puma
   rack
   rack-contrib
@@ -118,6 +135,7 @@ DEPENDENCIES
   rack_csrf
   rake
   rspec
+  rubocop
   sequel
   shotgun!
   stackprof

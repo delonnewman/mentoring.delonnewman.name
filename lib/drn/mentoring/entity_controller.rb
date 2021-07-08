@@ -1,8 +1,14 @@
 # frozen_string_literal: true
+
 module Drn
   module Mentoring
+    # Dynamically builds a controller with CRUD operations for the given entity class
     class EntityController
-      attr_reader :entity_class, :entity_name, :canonical_name, :controller, :app
+      attr_reader :entity_class,
+                  :entity_name,
+                  :canonical_name,
+                  :controller,
+                  :app
 
       extend Forwardable
       def_delegators :controller, :template_path, :layout_path, :layout
@@ -11,14 +17,21 @@ module Drn
         new(entity_class, **options).build!
       end
 
-      
-      def initialize(entity_class, layout: nil, include: nil, controller_super_class: Controller)
-        @entity_class   = entity_class
-        @entity_name    = @entity_class.canonical_name.freeze
+      def initialize(
+        entity_class,
+        layout: nil,
+        include: nil,
+        controller_super_class: Controller
+      )
+        @entity_class = entity_class
+        @entity_name = @entity_class.canonical_name.freeze
         @canonical_name = Inflection.plural(@entity_name).freeze
 
         @controller = Class.new(controller_super_class)
-        @controller.class_eval("def self.canonical_name; #{@canonical_name.inspect} end", __FILE__)
+        @controller.class_eval(
+          "def self.canonical_name; #{@canonical_name.inspect} end",
+          __FILE__
+        )
         @controller.include(include) if include
         @controller.layout layout if layout
       end
@@ -36,18 +49,22 @@ module Drn
       end
 
       def call(env)
-        @app = env.fetch('mentoring.app') do
-          raise "mentoring.app key should be set in env before calling a controller"
-        end
+        @app =
+          env.fetch('mentoring.app') do
+            raise 'mentoring.app key should be set in env before calling a controller'
+          end
 
         @controller.call(env)
       end
 
-      
       def attributes
-        @attributes ||= entity_class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false }
+        @attributes ||=
+          entity_class
+            .attributes
+            .sort_by(&:display_order)
+            .reject { |a| a[:display] == false }
       end
-      
+
       def path_list
         "/#{canonical_name}"
       end
@@ -72,11 +89,16 @@ module Drn
       end
 
       def define_operation_list
-        name  = canonical_name.to_sym
+        name = canonical_name.to_sym
         klass = @entity_class
-        repo  = klass.repository
+        repo = klass.repository
         @controller.get path_list do
-          render 'admin/index', with: { entity_repository: repo, entity_class: klass, controller_name: name }
+          render 'admin/index',
+                 with: {
+                   entity_repository: repo,
+                   entity_class: klass,
+                   controller_name: name
+                 }
         end
       end
 
@@ -90,20 +112,24 @@ module Drn
       def define_operation_create
         @controller.post path_create do
           data = entity_data(params)
+
           # TODO: need to filter attributes in Entity#to_h
           if (errors = @entity_class.errors(data)).empty?
             entity = @entity_class[data]
             @entity_class.repository.store!(entity)
             redirect_to path_list
           else
-            render 'admin/new', with: { errors: errors, entity_class: @entity_class }
+            render 'admin/new',
+                   with: {
+                     errors: errors,
+                     entity_class: @entity_class
+                   }
           end
         end
       end
 
       def define_operation_show
         klass = @entity_class
-        name  = @entity_name.to_sym
         @controller.get path_show do
           entity = klass.repository.find_by!(id: params[:id])
           render 'admin/show', with: { entity: entity }
@@ -112,7 +138,6 @@ module Drn
 
       def define_operation_edit
         klass = @entity_class
-        name  = @entity_name.to_sym
         @controller.get path_edit do
           entity = klass.repository.find_by!(id: params[:id])
           render 'admin/edit', with: { errors: EMPTY_HASH, entity: entity }
@@ -124,7 +149,7 @@ module Drn
         entity_name = entity_class.canonical_name
         @controller.post path_update do
           app.logger.info "Update #{entity_name} with params: #{params.inspect}"
-          data   = params[entity_name].transform_keys(&:to_sym)
+          data = params[entity_name].transform_keys(&:to_sym)
           entity = klass.repository.find_by!(id: params[:id])
           if (errors = klass.errors(data)).empty?
             # TODO: add Repository#update!

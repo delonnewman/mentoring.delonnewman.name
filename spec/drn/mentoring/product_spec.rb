@@ -1,16 +1,17 @@
 require 'spec_helper'
-
 include Drn::Mentoring
 
 RSpec.describe Product do
   let(:product) do
     Product[
-      name:        'Test',
+      name: 'Test',
       description: 'Testing 1-2-3',
-      image_path:  '/img/test.png',
-      amount:      100,
-      rate:        'per-month',
-      meta:        { stripe_price_id: 123 }
+      image_path: '/img/test.png',
+      amount: 100,
+      rate: 'per-month',
+      meta: {
+        stripe_price_id: 123
+      }
     ]
   end
 
