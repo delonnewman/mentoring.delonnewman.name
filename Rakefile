@@ -3,9 +3,11 @@ Drn::Mentoring.app.load_env!
 
 task default: :spec
 
+TEST_ENV = Drn::Mentoring.app.env == :ci ? 'ci' : 'test'
+
 desc 'Run spec'
 task :spec do
-  sh 'RACK_ENV=test bundle exec rspec --no-color'
+  sh "RACK_ENV=#{TEST_ENV} bundle exec rspec --no-color"
 end
 
 desc 'Open project console'
