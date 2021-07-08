@@ -11,10 +11,10 @@ RSpec.describe Drn::Mentoring::Application do
     end
   end
 
-  context '#init!' do
-    it 'should initialize the application based on the environment' do
-      app = described_class.new(:test).init!
-      expect(app.settings['DATABASE_NAME']).to eq 'mentoring_test'
-    end
-  end
+  # context '#init!' do
+  #   it 'should initialize the application based on the environment' do
+  #     app = described_class.new(:test).init!
+  #     expect(app.settings['DATABASE_NAME']).to eq 'mentoring_test'
+  #   end
+  # end
 end
