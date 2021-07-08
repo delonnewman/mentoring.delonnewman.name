@@ -7,6 +7,16 @@
 
 name: Ruby
 
+env:
+  DATABASE_NAME: mentoring_tests
+  DATABASE_URL: ""
+  DOMAIN: "http://localhost:3000"
+  STRIPE_KEY: "test"
+  STRIPE_PUB_KEY: "test"
+  MENTORING_SESSION_SECRET: "secret"
+  MAILJET_API_KEY: 123
+  MAILJET_SECRET_KEY: 1234
+
 on:
   push:
     branches: [master]
