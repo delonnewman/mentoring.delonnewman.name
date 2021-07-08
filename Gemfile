@@ -5,7 +5,7 @@ git_source :github do |repo|
   "https://github.com/#{repo}.git"
 end
 
-ruby '3.0.1'
+#ruby '3.0.1'
 
 # db
 gem 'pg'
