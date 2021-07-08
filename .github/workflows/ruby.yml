@@ -36,6 +36,13 @@ jobs:
         run: |
           sudo systemctl start postgresql.service
           pg_isready
+      - name: Create scheduler user
+        run: |
+          sudo -u postgres psql --command="CREATE USER tester PASSWORD 'somestrong'" --command="\du"
+      - name: Create timetable database
+        run: |
+          sudo -u postgres createdb --owner=tester $DATABASE_NAME
+          PGPASSWORD=somestrong psql --username=tester --host=localhost --list $DATABASE_NAME
       - name: Set up Ruby
         # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
         # change this to (see https://github.com/ruby/setup-ruby#versioning):
@@ -45,4 +52,4 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run tests
-        run: bundle exec rake db:setup spec
+        run: bundle exec rake db:migrate db:seed spec
