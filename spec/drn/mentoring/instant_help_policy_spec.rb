@@ -8,7 +8,7 @@ RSpec.describe Product::InstantHelpPolicy do
   subject(:policy) do
     described_class.new(
       product,
-      mentoring_sessions: MentoringSession.repository
+      MentoringSession.repository
     )
   end
 

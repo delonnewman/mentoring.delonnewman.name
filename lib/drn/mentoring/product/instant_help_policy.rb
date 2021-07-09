@@ -5,7 +5,7 @@ module Drn
       class InstantHelpPolicy
         attr_reader :product, :mentoring_sessions
 
-        def initialize(product, mentoring_sessions:)
+        def initialize(product, mentoring_sessions)
           @product = product
           @mentoring_sessions = mentoring_sessions
         end
