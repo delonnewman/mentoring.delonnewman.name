@@ -24,6 +24,10 @@ module Drn
         end
       end
 
+      def viewable_by?(current_user)
+        current_user.id == dig(:customer, :id) || current_user.id == dig(:mentor, :id)
+      end
+
       def complete?
         !incomplete?
       end

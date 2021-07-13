@@ -32,6 +32,7 @@ module Drn
     # Mailers
     require_relative 'mentoring/mailer'
     require_relative 'mentoring/account_messenger'
+    require_relative 'mentoring/session_messenger'
 
     # Controllers
     require_relative 'mentoring/controller'

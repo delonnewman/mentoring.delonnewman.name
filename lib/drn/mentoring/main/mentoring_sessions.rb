@@ -19,6 +19,7 @@ module Drn
               mentor: 'delon'
             ]
           mentoring_sessions.store!(session)
+          session_messenger.new_session(session)
 
           redirect_to session_path(session)
         end
@@ -28,10 +29,13 @@ module Drn
           # Display timer
           # Have a link to a Zoom Session
           # Display chat & shared code editor
-          render :show,
-                 with: {
-                   session: mentoring_sessions.find_by!(id: params[:id])
-                 }
+          session = mentoring_sessions.find_by!(id: params[:id])
+
+          if session.viewable_by?(current_user)
+            render :show, with: { session: session }
+          else
+            render :unauthorized
+          end
         end
 
         # update session
