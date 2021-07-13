@@ -165,7 +165,7 @@ module Rack
       def initialize(env)
         @env      = env
         @request  = Rack::Request.new(env)
-        @match    = self.class.routes.match(env)
+        @match    = self.class.routes.match(env) || EMPTY_HASH
         @params   = @request.params.merge(@match[:params]) if @match && @match[:params]
         @response = Rack::Response.new
       end
@@ -177,7 +177,7 @@ module Rack
       attr_reader :match, :response
 
       def options
-        match[:options]
+        match[:options] || EMPTY_HASH
       end
 
       def session
@@ -238,7 +238,7 @@ module Rack
       
       # TODO: add error and not_found to the DSL
       def call
-        return not_found unless @match
+        return not_found if @match.empty?
 
         case @match[:tag]
         when :app
