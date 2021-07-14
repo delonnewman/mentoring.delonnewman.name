@@ -42,6 +42,7 @@ Sequel.migration do
     create_table :users_products do
       uuid :product_id, null: false, index: true
       Integer :user_id, null: false, index: true
+      Time :created_at, index: true
 
       foreign_key [:product_id], :products
       foreign_key [:user_id], :users
