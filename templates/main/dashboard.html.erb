@@ -1,0 +1,5 @@
+<ul>
+    <% products.each do |(product, purchased)| %>
+        <li><%= product %> <% if purchased %><span class="badge badge-primary">purchased</span><% end %></li>
+    <% end %>
+</ul>

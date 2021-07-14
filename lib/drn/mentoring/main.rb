@@ -27,6 +27,13 @@ module Drn
         render :index
       end
 
+      get '/dashboard' do
+        purchased = products.of_customer(current_user).reduce({}) { |h, p| h.merge!(p.id => p) }
+        data = products.map { |p| [p, purchased.include?(p.id)] }
+
+        render :dashboard, with: { products: data }
+      end
+
       get '/state.js', authenticate: false do
         state = { authenticated: authenticated? }
 
