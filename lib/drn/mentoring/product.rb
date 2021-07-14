@@ -16,7 +16,6 @@ module Drn
       has :meta, Hash, serialize: true, default: EMPTY_HASH
       has :sort_order, Integer, default: 0
 
-      has_many :users, join_table: :users_products
       belongs_to :rate
       def_delegator :rate, :subscription?
 

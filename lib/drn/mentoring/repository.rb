@@ -45,12 +45,10 @@ module Drn
               [fields, table, attr.reference_key]
             end
 
-          @dataset =
-            data.reduce(@dataset) do |ds, (fields, table, ref)|
-              ds.join(table, id: ref).select_append(*fields)
-            end
-
           @fields += data.flat_map(&:first)
+
+          @dataset =
+            data.reduce(@dataset) { |ds, (_, table, ref)| ds.join(table, id: ref) }.select(*fields)
         end
 
         @fields.freeze

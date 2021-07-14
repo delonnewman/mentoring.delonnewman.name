@@ -28,7 +28,7 @@ module Drn
       end
 
       get '/dashboard' do
-        purchased = products.of_customer(current_user).reduce({}) { |h, p| h.merge!(p.id => p) }
+        purchased = products.ids_of_customer(current_user).to_set
         data = products.map { |p| [p, purchased.include?(p.id)] }
 
         render :dashboard, with: { products: data }
