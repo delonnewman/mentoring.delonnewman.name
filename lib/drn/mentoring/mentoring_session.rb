@@ -22,6 +22,16 @@ module Drn
         def end!(id)
           update!(id, ended_at: Time.now)
         end
+
+        def for_customer(user)
+          user_id = user.is_a?(User) ? user.id : user
+          dataset.where(customer_id: user_id)
+        end
+
+        def for_mentor(user)
+          user_id = user.is_a?(User) ? user.id : user
+          dataset.where(mentor_id: user_id)
+        end
       end
 
       def viewable_by?(current_user)

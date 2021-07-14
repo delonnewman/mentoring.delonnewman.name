@@ -16,12 +16,52 @@ module Drn
         end
       end
 
-      attr_reader :entity_class, :dataset, :db
+      attr_reader :entity_class, :dataset, :fields, :db, :component_attributes
 
       def initialize(dataset, entity_class)
-        @dataset = dataset
-        @db = dataset.db
         @entity_class = entity_class
+        @db = dataset.db
+
+        @component_attributes = @entity_class.component_attributes
+
+        @fields =
+          entity_class
+            .attributes
+            .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
+            .map { |a| Sequel[table_name][a.name] }
+
+        @dataset = dataset
+
+        unless @component_attributes.empty?
+          data =
+            @component_attributes.map do |attr|
+              table = attr.component_table_name.to_sym
+              fields =
+                attr
+                  .value_class
+                  .attributes
+                  .map { |attr1| Sequel[table][attr1.name].as(:"#{attr.name}_#{attr1.name}") }
+
+              [fields, table, attr.reference_key]
+            end
+
+          @dataset =
+            data.reduce(@dataset) do |ds, (fields, table, ref)|
+              ds.join(table, id: ref).select_append(*fields)
+            end
+
+          @fields += data.flat_map(&:first)
+        end
+
+        @fields.freeze
+      end
+
+      def table_name
+        Utils.table_name(entity_class.canonical_name).to_sym
+      end
+
+      def table
+        db[table_name]
       end
 
       def empty?
@@ -39,8 +79,10 @@ module Drn
             order_by: self.class.order_by_attribute_name
           )
 
-        run sql, tag: tag do |records|
-          records.map { |record| build_entity(record).tap { |product| block&.call(product) } }
+        SqlUtils.run sql, tag: tag do |records|
+          records.map do |record|
+            SqlUtils.build_entity(entity_class, record).tap { |product| block&.call(product) }
+          end
         end
       end
       alias each all
@@ -53,11 +95,11 @@ module Drn
             .query_template(entity_class, db, one: true, predicates: true)
             .sub('/* where */', qstr)
 
-        records = run(query, *binds, tag: "#{entity_class}.repository.find_by")
+        records = SqlUtils.run(query, *binds, tag: "#{entity_class}.repository.find_by")
 
         return nil if records.empty?
 
-        build_entity(records.first)
+        SqlUtils.build_entity(entity_class, records.first)
       end
 
       def find_by!(attributes)
@@ -75,21 +117,22 @@ module Drn
       end
 
       def store!(record)
-        dataset.insert(process_record(record))
+        table.insert(SqlUtils.process_record(entity_class, record))
+
         self
       end
 
       def store_all!(records)
-        dataset.multi_insert(records.map(&method(:process_record)))
+        table.multi_insert(records.map(&SqlUtils.method(:process_record).curry[entity_class]))
+
         self
       end
 
       def delete_where!(predicates)
         qstr, binds = SqlUtils.where(db, predicates)
-        table = entity_class.repository_table_name
-        query = "delete from #{db.literal(Sequel.identifier(table))} #{qstr}"
+        query = "delete from #{db.literal(Sequel.identifier(table_name))} #{qstr}"
 
-        run query, *binds, tag: 'delete_where!'
+        SqlUtils.run query, *binds, tag: 'delete_where!'
 
         self
       end
@@ -100,96 +143,11 @@ module Drn
 
       private
 
+      # delegate logger and db to Drn::Mentoring.app
       %i[logger db].each do |method|
         define_method method do
           Drn::Mentoring.app.send(method)
         end
-      end
-
-      protected
-
-      def nest_component_attributes(record, component_name)
-        record.reduce({}) do |h, (key_, value)|
-          key = key_.is_a?(Symbol) ? key_.name : key_
-          if key.start_with?(component_name.name)
-            h[component_name.to_sym] ||= {}
-            k = key.sub("#{component_name}_", '').to_sym
-            h[component_name.to_sym][k] = value
-          else
-            h[key_] = value
-          end
-          h
-        end
-      end
-
-      def run(query, *args, tag: nil, &block)
-        tag = tag.nil? ? 'SQL' : "SQL #{tag}"
-        logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
-
-        results = []
-        @dataset
-          .db
-          .fetch(query, *args) do |row|
-            row = row.transform_keys(&:to_sym)
-            results << row
-          end
-
-        return EMPTY_ARRAY if results.empty?
-
-        block ? block.call(results) : results
-      end
-
-      # TODO: for performance this would be better as opt-in
-      def process_record(record)
-        record = entity_class.ensure!(record)
-        h = record.to_h.dup
-        record
-          .class
-          .attributes
-          .select(&:serialize?)
-          .each { |attr| h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name] }
-
-        record
-          .class
-          .attributes
-          .select(&:component?)
-          .each do |attr|
-            id_key = attr.reference_key
-            if !record.key?(id_key) && (id_val = record.send(attr.name).id)
-              h[id_key] = id_val
-            elsif attr.required?
-              raise "#{id_key.inspect} is required for storage but is missing"
-            end
-            h.delete(attr.name)
-          end
-
-        h[:updated_at] = Time.now if h.key?(:updated_at)
-
-        h
-      end
-
-      def reconstitute_record(h)
-        entity_class
-          .attributes
-          .select(&:serialize?)
-          .each { |attr| h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name] }
-        h
-      end
-
-      def build_entity(record)
-        record = reconstitute_record(record)
-        entity_class
-          .attributes
-          .select(&:component?)
-          .each do |attr|
-            begin
-              record = nest_component_attributes(record, attr.name)
-            rescue StandardError
-              binding.irb
-            end
-          end
-
-        entity_class[record]
       end
     end
   end

@@ -3,6 +3,91 @@ module Drn
     module SqlUtils
       module_function
 
+      def run(query, *args, tag: nil, &block)
+        tag = tag.nil? ? 'SQL' : "SQL #{tag}"
+        Drn::Mentoring.app.logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
+
+        results = []
+
+        Drn::Mentoring
+          .app
+          .db
+          .fetch(query, *args) do |row|
+            row = row.transform_keys(&:to_sym)
+            results << row
+          end
+
+        return EMPTY_ARRAY if results.empty?
+
+        block ? block.call(results) : results
+      end
+
+      # TODO: for performance this would be better as opt-in
+      def process_record(entity_class, record)
+        record = entity_class.ensure!(record)
+        h = record.to_h.dup
+        record
+          .class
+          .attributes
+          .select(&:serialize?)
+          .each { |attr| h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name] }
+
+        record
+          .class
+          .attributes
+          .select(&:component?)
+          .each do |attr|
+            id_key = attr.reference_key
+            if !record.key?(id_key) && (id_val = record.send(attr.name).id)
+              h[id_key] = id_val
+            elsif attr.required?
+              raise "#{id_key.inspect} is required for storage but is missing"
+            end
+            h.delete(attr.name)
+          end
+
+        h[:updated_at] = Time.now if h.key?(:updated_at)
+
+        h
+      end
+
+      def reconstitute_record(entity_class, h)
+        entity_class
+          .attributes
+          .select(&:serialize?)
+          .each { |attr| h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name] }
+        h
+      end
+
+      def build_entity(entity_class, record)
+        record = reconstitute_record(entity_class, record)
+        entity_class
+          .attributes
+          .select(&:component?)
+          .each do |attr|
+            begin
+              record = nest_component_attributes(record, attr.name)
+            rescue StandardError
+              binding.irb
+            end
+          end
+
+        entity_class[record]
+      end
+      def nest_component_attributes(record, component_name)
+        record.reduce({}) do |h, (key_, value)|
+          key = key_.is_a?(Symbol) ? key_.name : key_
+          if key.start_with?(component_name.name)
+            h[component_name.to_sym] ||= {}
+            k = key.sub("#{component_name}_", '').to_sym
+            h[component_name.to_sym][k] = value
+          else
+            h[key_] = value
+          end
+          h
+        end
+      end
+
       def ident_quote(db, *args)
         case args.size
         when 1

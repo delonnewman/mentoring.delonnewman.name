@@ -26,7 +26,22 @@ module Drn
         def subscribe(product, user)
           product = Product.ensure!(product)
           user = User.ensure!(user)
-          db[:users_products].insert(product_id: product.id, user_id: user.id)
+          db[:users_products].insert(product_id: product.id, user_id: user.id, created_at: Time.now)
+        end
+
+        def of_customer(user)
+          customer_products(user).map(&SqlUtils.method(:build_entity).curry[entity_class])
+        end
+
+        def ids_of_customer(user)
+          customer_products(user).select_map(Sequel[:products][:id])
+        end
+
+        private
+
+        def customer_products(user)
+          user_id = user.is_a?(User) ? user.id : user
+          dataset.join(:users_products, product_id: Sequel[:products][:id]).where(user_id: user_id)
         end
       end
 
