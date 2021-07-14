@@ -45,6 +45,10 @@ group :development, :test do
   gem 'prettier'
   gem 'rubocop'
 
+  gem 'pry'
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
+
   gem 'yard'
   gem 'webrick' # for yard documentation server
 

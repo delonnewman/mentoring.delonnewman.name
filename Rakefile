@@ -7,12 +7,12 @@ TEST_ENV = Drn::Mentoring.app.env == :ci ? 'ci' : 'test'
 
 desc 'Run spec'
 task :spec do
-  sh "RACK_ENV=#{TEST_ENV} bundle exec rspec --no-color"
+  sh "RACK_ENV=#{TEST_ENV} bundle exec rescue rspec"
 end
 
 desc 'Open project console'
 task :console do
-  sh 'irb -Ilib -r./.console.rb'
+  sh 'bundle exec pry -Ilib -r./.console.rb'
 end
 
 desc 'Run development server'

@@ -115,22 +115,21 @@ module Drn
 
       def initialize(attributes = EMPTY_HASH)
         h = {}
-        self
-          .class
-          .attributes
-          .each do |attribute|
-            name = attribute.name
-            value = attributes[name]
+        attrs = self.class.attributes
 
-            h[attribute.name] = value
+        attrs.each do |attribute|
+          name = attribute.name
+          value = attributes[name]
 
-            next if (attribute.optional? && value.nil?) || !attribute.default.nil?
+          h[attribute.name] = value
 
-            unless attribute.valid_value?(value)
-              raise TypeError,
-                    "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
-            end
+          next if (attribute.optional? && value.nil?) || !attribute.default.nil?
+
+          unless attribute.valid_value?(value)
+            raise TypeError,
+                  "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
           end
+        end
 
         super(h.freeze)
       end
@@ -146,17 +145,11 @@ module Drn
       def to_h
         data = super
 
-        self
-          .class
-          .attributes
-          .reject { |a| a.default.nil? }
-          .each { |attr| data[attr.name] = value_for(attr.name) }
+        attrs = self.class.attributes
+        attrs.reject { |a| a.default.nil? }.each { |attr| data[attr.name] = value_for(attr.name) }
 
         data = data.except(*self.class.exclude_for_storage)
-
-        self
-          .class
-          .attributes
+        attrs
           .select(&:optional?)
           .each { |attr| data.delete(attr.name) if value_for(attr.name).nil? }
 

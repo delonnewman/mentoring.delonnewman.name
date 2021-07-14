@@ -5,17 +5,17 @@ module Drn
 
       def run(query, *args, tag: nil, &block)
         tag = tag.nil? ? 'SQL' : "SQL #{tag}"
-        Drn::Mentoring.app.logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
+        app = Drn::Mentoring.app
+
+        app.logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
 
         results = []
 
-        Drn::Mentoring
-          .app
-          .db
-          .fetch(query, *args) do |row|
-            row = row.transform_keys(&:to_sym)
-            results << row
-          end
+        db = app.db
+        db.fetch(query, *args) do |row|
+          row = row.transform_keys(&:to_sym)
+          results << row
+        end
 
         return EMPTY_ARRAY if results.empty?
 
@@ -26,25 +26,22 @@ module Drn
       def process_record(entity_class, record)
         record = entity_class.ensure!(record)
         h = record.to_h.dup
-        record
-          .class
-          .attributes
+
+        attrs = record.class.attributes
+        attrs
           .select(&:serialize?)
           .each { |attr| h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name] }
 
-        record
-          .class
-          .attributes
-          .select(&:component?)
-          .each do |attr|
-            id_key = attr.reference_key
-            if !record.key?(id_key) && (id_val = record.send(attr.name).id)
-              h[id_key] = id_val
-            elsif attr.required?
-              raise "#{id_key.inspect} is required for storage but is missing"
-            end
-            h.delete(attr.name)
+        comps = attrs.select(&:component?)
+        comps.each do |attr|
+          id_key = attr.reference_key
+          if !record.key?(id_key) && (id_val = record.send(attr.name).id)
+            h[id_key] = id_val
+          elsif attr.required?
+            raise "#{id_key.inspect} is required for storage but is missing"
           end
+          h.delete(attr.name)
+        end
 
         h[:updated_at] = Time.now if h.key?(:updated_at)
 

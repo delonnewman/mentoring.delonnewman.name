@@ -136,7 +136,7 @@ module Drn
       end
 
       def delete_all!
-        dataset.delete
+        table.delete
       end
 
       private
