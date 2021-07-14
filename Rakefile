@@ -12,7 +12,7 @@ end
 
 desc 'Open project console'
 task :console do
-  sh 'irb -Ilib -rdrn/mentoring/console'
+  sh 'irb -Ilib -r./.console.rb'
 end
 
 desc 'Run development server'
