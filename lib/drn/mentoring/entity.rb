@@ -102,6 +102,11 @@ module Drn
         def [](attributes = EMPTY_HASH)
           new(attributes)
         end
+        alias call []
+
+        def to_proc
+          lambda { |attributes| call(attributes) }
+        end
 
         def canonical_name
           Utils.snakecase(name.split('::').last)
