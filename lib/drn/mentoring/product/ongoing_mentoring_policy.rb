@@ -11,12 +11,16 @@ module Drn
 
         MAXIMUM_STUDENTS = 3
 
+        def app
+          Drn::Mentoring.app
+        end
+
         # Return true if the user is already subscribed or the mentor
         # is at his maximum number of students.
         def disabled?(user)
           return false unless user
 
-          user.product_ids.include?(product.id)
+          app.products.ids_of_customer(user).include?(product.id)
         end
       end
     end

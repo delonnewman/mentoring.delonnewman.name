@@ -9,7 +9,6 @@ module Drn
 
       has :displayname, String, required: false, display: { name: 'Name', order: 0 }
       belongs_to :role, display: { order: 3 }
-      has_many :products
 
       email display: { order: 2 }
       password
