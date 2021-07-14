@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 module Drn
-  module Mentoring
+  module Framework
     class Controller < Templated
       include Rack::Routable
+      include Core
 
       def status(status)
         response.tap { |r| r.status = status }
@@ -38,21 +39,15 @@ module Drn
         end
       end
 
-      # delegate all immutable instance methods of Application to @app
-      Application
-        .instance_methods(false)
-        .each do |method|
-          next if Application::METHODS_NOT_SHARED.include?(method)
-          define_method method do |*args|
-            @app.send(method, *args)
-          end
-        end
-
       attr_reader :app
 
       def initialize(env)
         super(env)
         @app = env['mentoring.app']
+      end
+
+      def logger
+        app.logger
       end
     end
   end

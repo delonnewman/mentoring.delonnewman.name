@@ -7,7 +7,7 @@ TEST_ENV = Drn::Mentoring.app.env == :ci ? 'ci' : 'test'
 
 desc 'Run spec'
 task :spec do
-  sh "RACK_ENV=#{TEST_ENV} bundle exec rescue rspec"
+  sh "RACK_ENV=#{TEST_ENV} bundle exec rspec"
 end
 
 desc 'Open project console'

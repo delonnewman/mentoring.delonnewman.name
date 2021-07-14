@@ -2,15 +2,15 @@
 # frozen_string_literal: true
 module Drn
   module Mentoring
-    class Main < Controller
-      class Checkout < Controller
-        include Authenticable
+    class Main < Framework::Controller
+      class Checkout < Framework::Controller
+        include Framework::Authenticable
 
         get '/setup' do
           settings = { pub_key: Drn::Mentoring.app.settings['STRIPE_PUB_KEY'] }
 
           settings[:prices] =
-            products.map do |product|
+            app.products.map do |product|
               {
                 product_id: product.id,
                 price_id: product.price_id,
@@ -31,7 +31,7 @@ module Drn
 
         post '/session' do |params, request|
           data = JSON.parse(request.body.read, symbolize_names: true)
-          product = products.find_by!(id: data[:product_id])
+          product = app.products.find_by!(id: data[:product_id])
 
           logger.info "From Product ID: #{data[:product_id].inspect}"
           logger.info "Creating session with #{product.inspect}"

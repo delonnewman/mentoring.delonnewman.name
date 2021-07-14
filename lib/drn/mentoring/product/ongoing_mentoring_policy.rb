@@ -1,6 +1,6 @@
 module Drn
   module Mentoring
-    class Product < Entity
+    class Product < Framework::Entity
       # Represents the policy for enabling the current user to select 'Ongoing Mentoring'.
       class OngoingMentoringPolicy
         attr_reader :product

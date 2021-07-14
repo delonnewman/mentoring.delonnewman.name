@@ -1,6 +1,6 @@
 module Drn
   module Mentoring
-    class UserRole < Entity
+    class UserRole < Framework::Entity
       primary_key :id
       reference :name, String
 

@@ -6,7 +6,7 @@ module Drn
     require_relative 'product/ongoing_mentoring_policy'
 
     # Represents mentoring products
-    class Product < Entity
+    class Product < Framework::Entity
       primary_key :id, :uuid
 
       has :name, String, display: { order: 0 }

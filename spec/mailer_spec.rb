@@ -1,7 +1,8 @@
 require 'spec_helper'
+include Drn::Framework
 
-RSpec.describe Drn::Mentoring::Mailer do
-  class TestMailer < Drn::Mentoring::Mailer
+RSpec.describe Mailer do
+  class TestMailer < Mailer
     def test
       'testing'
     end

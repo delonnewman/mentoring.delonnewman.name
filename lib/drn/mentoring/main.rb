@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 module Drn
   module Mentoring
-    class Main < Controller
-      include Authenticable
+    class Main < Framework::Controller
+      include Framework::Authenticable
       include MainHelpers
 
       use Rack::Session::Cookie, secret: Mentoring.app.session_secret
@@ -13,25 +13,25 @@ module Drn
       mount '/session', MentoringSessions
 
       mount '/admin',
-            AdminController.build(
+            Framework::AdminController.build(
               User,
               UserRegistration,
               UserRole,
               Product,
               ProductRate,
               MentoringSession,
-              include: Authenticable
+              include: Framework::Authenticable
             )
 
       get '/', authenticate: false do
-        render :index
+        render :index, with: { products: app.products }
       end
 
       get '/dashboard' do
-        purchased = products.ids_of_customer(current_user).to_set
-        data = products.map { |p| [p, purchased.include?(p.id)] }
+        purchased = app.products.ids_of_customer(current_user)
+        products = app.products.map { |p| [p, purchased.include?(p.id)] }
 
-        render :dashboard, with: { products: data }
+        render :dashboard, with: { products: products }
       end
 
       get '/state.js', authenticate: false do
@@ -52,8 +52,8 @@ module Drn
         if (errors = UserRegistration.errors(data)).empty?
           UserRegistration[data].tap do |user|
             logger.info "Storing user: #{user.inspect}"
-            user_registrations.store!(user)
-            account_messenger.signup(user).wait!
+            app.user_registrations.store!(user)
+            app.messenger.signup(user).wait!
           end
           redirect_to '/'
         else
@@ -62,7 +62,7 @@ module Drn
       end
 
       get '/activate/:id', authenticate: false do
-        if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key']))
+        if (reg = app.user_registrations.find_active_by_id_and_key(params[:id], params['key']))
           render :account_activated, with: { registration: reg }
         else
           render :activation_invalid
@@ -78,12 +78,12 @@ module Drn
 
         logger.info "Form data: #{data.inspect}"
 
-        if (reg = user_registrations.find_active_by_id_and_key(params[:id], params['key'])).nil?
+        if (reg = app.user_registrations.find_active_by_id_and_key(params[:id], params['key'])).nil?
           render :activation_invalid
         elsif (errors = User.errors(data)).empty?
           User[data].tap do |user|
             logger.info "Storing user: #{user.inspect}"
-            users.store!(user)
+            app.users.store!(user)
             current_user!(user)
           end
           redirect_to '/login'
@@ -98,7 +98,7 @@ module Drn
 
       post '/login' do
         user =
-          users.find_user_and_authenticate(
+          app.users.find_user_and_authenticate(
             username: params['username'],
             password: params['password']
           )

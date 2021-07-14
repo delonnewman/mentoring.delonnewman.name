@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Drn
-  module Mentoring
+  module Framework
     require_relative 'entity/attribute'
     require_relative 'entity/associations'
     require_relative 'entity/repositories'
@@ -13,6 +13,8 @@ module Drn
     class Entity < HashDelegator
       transform_keys(&:to_sym)
 
+      extend Core
+      include Core
       extend Forwardable
       extend Associations
       extend Repositories

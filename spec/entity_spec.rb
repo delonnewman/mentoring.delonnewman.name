@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Drn::Mentoring
+include Drn::Framework
 
 class EntityBasic < Entity
 end

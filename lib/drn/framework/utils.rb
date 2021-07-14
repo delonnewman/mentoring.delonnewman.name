@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     module Utils
       module_function
 

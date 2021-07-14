@@ -1,6 +1,5 @@
 require 'spec_helper'
-
-include Drn::Mentoring
+include Drn::Framework
 
 RSpec.describe Template do
   class Testing < Controller

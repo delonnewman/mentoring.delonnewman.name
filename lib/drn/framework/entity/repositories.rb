@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     class Entity
       module Repositories
         def repository_class_name(class_name = nil)

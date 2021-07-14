@@ -3,7 +3,7 @@
 module Drn
   module Mentoring
     # Represents the state of a mentoring session
-    class MentoringSession < Entity
+    class MentoringSession < Framework::Entity
       primary_key :id, :uuid
 
       has :checkout_session_id, String

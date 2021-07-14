@@ -3,7 +3,7 @@
 module Drn
   module Mentoring
     # Represent users of the system
-    class User < Entity
+    class User < Framework::Entity
       primary_key :id
       reference :username, String, unique: true, display: { order: 1 }
 

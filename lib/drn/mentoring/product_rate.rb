@@ -1,6 +1,6 @@
 module Drn
   module Mentoring
-    class ProductRate < Entity
+    class ProductRate < Framework::Entity
       primary_key :id
       reference :name, String
 

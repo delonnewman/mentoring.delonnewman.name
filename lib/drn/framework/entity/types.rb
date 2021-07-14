@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     class Entity
       module Types
         def timestamp(name)

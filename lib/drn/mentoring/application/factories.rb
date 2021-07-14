@@ -18,12 +18,8 @@ module Drn
         UserRegistration.repository
       end
 
-      def account_messenger
-        @account_messenger ||= AccountMessenger.new(self)
-      end
-
-      def session_messenger
-        @session_messenger ||= SessionMessenger.new(self)
+      def messenger
+        @messenger ||= ApplicationMessenger.new(self)
       end
     end
   end

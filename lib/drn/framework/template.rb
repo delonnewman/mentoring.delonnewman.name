@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     class Template
       include Invokable
       include TemplateHelpers

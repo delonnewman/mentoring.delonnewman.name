@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module Drn
-  module Mentoring
+  module Framework
     class Mailer < Templated
       include Invokable
 

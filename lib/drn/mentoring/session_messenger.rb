@@ -3,7 +3,7 @@
 module Drn
   module Mentoring
     # Manage email communication regarding mentoring sessions
-    class SessionMessenger < Mailer
+    class SessionMessenger < Framework::Mailer
       layout :mailer
 
       def new_session(session)

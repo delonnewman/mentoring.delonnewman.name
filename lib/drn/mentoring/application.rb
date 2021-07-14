@@ -25,6 +25,8 @@ module Drn
     end
 
     # Represents the application state
+    #
+    # TODO: Generalize this and add it to the framework
     class Application
       # Methods that should not be shared in other contexts (see Drn::Mentoring::Controller)
       METHODS_NOT_SHARED = Set[:env, :call, :init!, :main].freeze
@@ -102,37 +104,42 @@ module Drn
         Main.rack.call(env)
       end
 
+      def init!
+        raise 'An application can only be initialized once' if initialized?
+
+        if env == :production
+          puts "Initializing application in #{env} environment"
+        else
+          puts "Initializing application in #{env} environment from #{dotenv_path}"
+        end
+
+        # TODO: componentize these
+        load_env!
+
+        @db = Sequel.connect(settings.fetch('DATABASE_URL'))
+        Stripe.api_key = settings.fetch('STRIPE_KEY')
+        @session_secret = settings.fetch('MENTORING_SESSION_SECRET')
+
+        Mailjet.configure do |config|
+          config.api_key = settings.fetch('MAILJET_API_KEY')
+          config.secret_key = settings.fetch('MAILJET_SECRET_KEY')
+          config.default_from = 'contact@delonnewman.name'
+          config.api_version = 'v3.1'
+        end
+
+        initialized!
+
+        self
+      end
+
       def initialized?
         !!@initialized
       end
 
-      def init!
-        if initialized?
-          raise 'An application can only be initialized once'
-        else
-          if env == :production
-            puts "Initializing application in #{env} environment"
-          else
-            puts "Initializing application in #{env} environment from #{dotenv_path}"
-          end
+      private
 
-          # TODO: componentize these
-          load_env!
-
-          @db = Sequel.connect(settings.fetch('DATABASE_URL'))
-          Stripe.api_key = settings.fetch('STRIPE_KEY')
-          @session_secret = settings.fetch('MENTORING_SESSION_SECRET')
-
-          Mailjet.configure do |config|
-            config.api_key = settings.fetch('MAILJET_API_KEY')
-            config.secret_key = settings.fetch('MAILJET_SECRET_KEY')
-            config.default_from = 'contact@delonnewman.name'
-            config.api_version = 'v3.1'
-          end
-
-          @initialized = true
-        end
-        self
+      def initialized!
+        @initialized = true
       end
     end
   end

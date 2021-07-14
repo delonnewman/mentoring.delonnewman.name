@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     module Trait
       def required(*methods)
         @required_methods = methods

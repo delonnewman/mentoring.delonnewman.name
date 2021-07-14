@@ -1,6 +1,6 @@
 module Drn
   module Mentoring
-    class Product < Entity
+    class Product < Framework::Entity
       # Represents the policies for the "Instant" products
       class InstantHelpPolicy
         attr_reader :product, :mentoring_sessions

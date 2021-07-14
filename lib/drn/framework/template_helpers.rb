@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     module TemplateHelpers
       extend Trait
       required :app

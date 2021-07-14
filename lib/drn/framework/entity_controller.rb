@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Drn
-  module Mentoring
+  module Framework
     # Dynamically builds a controller with CRUD operations for the given entity class
     class EntityController
       attr_reader :entity_class,

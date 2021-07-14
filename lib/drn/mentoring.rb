@@ -10,15 +10,7 @@ module Drn
     require_relative 'mentoring/environment'
     init!
 
-    # Templating
-    require_relative 'mentoring/templatable'
-    require_relative 'mentoring/templated'
-    require_relative 'mentoring/template_helpers'
-    require_relative 'mentoring/template'
-
     # Entities
-    require_relative 'mentoring/repository'
-    require_relative 'mentoring/entity'
     require_relative 'mentoring/user_role'
     require_relative 'mentoring/user'
     require_relative 'mentoring/product_rate'
@@ -29,16 +21,8 @@ module Drn
     # Factory Methods
     require_relative 'mentoring/application/factories'
 
-    # Mailers
-    require_relative 'mentoring/mailer'
-    require_relative 'mentoring/account_messenger'
-    require_relative 'mentoring/session_messenger'
-
-    # Controllers
-    require_relative 'mentoring/controller'
-    require_relative 'mentoring/authenticable'
-    require_relative 'mentoring/entity_controller'
-    require_relative 'mentoring/admin_controller'
+    # Messengers
+    require_relative 'mentoring/application_messenger'
 
     # Main Application
     require_relative 'mentoring/main/checkout'

@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Drn::Mentoring
+include Drn::Framework
 
 RSpec.describe Entity::Attribute do
   # describe '#join_table_name' do

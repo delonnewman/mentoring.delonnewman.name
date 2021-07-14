@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 module Drn
-  module Mentoring
+  module Framework
     # Represents the storage and retrival of a given entity class.
     class Repository
       include Enumerable
+
+      include Core
 
       class << self
         def order_by(attribute_name)
@@ -33,25 +35,17 @@ module Drn
         @dataset = dataset
 
         unless @component_attributes.empty?
-          data =
-            @component_attributes.map do |attr|
-              table = attr.component_table_name.to_sym
-              fields =
-                attr
-                  .value_class
-                  .attributes
-                  .map { |attr1| Sequel[table][attr1.name].as(:"#{attr.name}_#{attr1.name}") }
-
-              [fields, table, attr.reference_key]
-            end
-
-          @fields += data.flat_map(&:first)
+          data = SqlUtils.component_attribute_query_info(entity_class)
+          @fields += data.flat_map { |x| x[:fields] }
 
           @dataset =
-            data.reduce(@dataset) { |ds, (_, table, ref)| ds.join(table, id: ref) }.select(*fields)
+            data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }.select(*fields)
+
         end
 
         @fields.freeze
+
+        @dataset = @dataset.order(self.class.order_by_attribute_name) if self.class.order_by_attribute_name
       end
 
       def table_name
@@ -68,36 +62,20 @@ module Drn
 
       def all(&block)
         tag = "#{entity_class}.repository.all"
-        sql =
-          SqlUtils.query_template(
-            entity_class,
-            db,
-            one: false,
-            predicates: false,
-            order_by: self.class.order_by_attribute_name
-          )
+        logger.info "SQL #{tag}: #{dataset.sql}"
 
-        SqlUtils.run sql, tag: tag do |records|
-          records.map do |record|
-            SqlUtils.build_entity(entity_class, record).tap { |product| block&.call(product) }
-          end
+        dataset.each do |row|
+          entity = SqlUtils.build_entity(entity_class, row)
+          block&.call(entity)
         end
       end
       alias each all
 
       def find_by(predicates)
-        preds = predicates.transform_keys(&SqlUtils.query_attribute_map(entity_class))
-        qstr, binds = SqlUtils.where(db, preds)
-        query =
-          SqlUtils
-            .query_template(entity_class, db, one: true, predicates: true)
-            .sub('/* where */', qstr)
+        record = dataset.first(SqlUtils.preprocess_predicates(predicates, table_name))
+        return nil unless record
 
-        records = SqlUtils.run(query, *binds, tag: "#{entity_class}.repository.find_by")
-
-        return nil if records.empty?
-
-        SqlUtils.build_entity(entity_class, records.first)
+        SqlUtils.build_entity(entity_class, record)
       end
 
       def find_by!(attributes)

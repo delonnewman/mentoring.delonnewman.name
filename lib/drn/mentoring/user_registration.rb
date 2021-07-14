@@ -1,6 +1,6 @@
 module Drn
   module Mentoring
-    class UserRegistration < Entity
+    class UserRegistration < Framework::Entity
       primary_key :id, :uuid, display: { order: 0 }
 
       has :username,

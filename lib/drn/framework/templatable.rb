@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     module Templatable
       def template_cache
         @template_cache ||= {}

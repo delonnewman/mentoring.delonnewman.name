@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module Drn
-  module Mentoring
+  module Framework
     class Templated
       include Utils
       include Templatable

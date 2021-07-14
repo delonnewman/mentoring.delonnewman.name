@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     class Entity
       # Methods used for Entity associations
       module Associations

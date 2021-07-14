@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     module Authenticable
       extend Trait
       required :request, :app, :options, :redirect_to
@@ -28,8 +28,7 @@ module Drn
       end
 
       def call
-        if current_user || request.path_info == '/login' ||
-             options[:authenticate] == false
+        if current_user || request.path_info == '/login' || options[:authenticate] == false
           super
         else
           redirect_to '/login'

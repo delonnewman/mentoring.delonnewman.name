@@ -1,5 +1,5 @@
 module Drn
-  module Mentoring
+  module Framework
     class Entity
       module Validation
         def valid?(entity)

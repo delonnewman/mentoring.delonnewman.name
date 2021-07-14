@@ -5,6 +5,8 @@
   },
   "devDependencies": {
     "@prettier/plugin-ruby": "^1.6.1",
-    "prettier": "^2.3.2"
+    "esbuild": "^0.12.15",
+    "prettier": "^2.3.2",
+    "sass": "^1.35.2"
   }
 }

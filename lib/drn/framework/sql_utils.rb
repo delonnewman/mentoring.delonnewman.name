@@ -1,7 +1,50 @@
 module Drn
-  module Mentoring
+  module Framework
     module SqlUtils
       module_function
+
+      # Return a predicate hash with fully qualified identifiers
+      #
+      # @param predicates [Hash<Symbol, Object>]
+      # @param table_name [Symbol]
+      #
+      # @return [Hash<Sequel::SQL::QualifiedIdentifier, Object>]
+      def preprocess_predicates(predicates, table_name)
+        predicates.transform_keys do |key|
+          if key.is_a?(Sequel::SQL::QualifiedIdentifier)
+            key
+          else
+            Sequel[table_name][key]
+          end
+        end
+      end
+
+      # @return [Array<{ fields: Array<Sequel::SQL::QualifiedIdentifier> table: Sequel::SQL::QualifiedIdentifier, ref: Sequel::SQL::QualifiedIdentifier }]
+      def component_attribute_query_info(entity_class, prefix = nil)
+        entity_class.component_attributes.flat_map do |attr|
+          table = attr.component_table_name.to_sym
+          attr_name = prefix ? :"#{prefix}[#{attr.name}]" : attr.name
+          table_alias = Sequel[table].as(attr_name)
+          value_class = attr.value_class
+          ref_scope = prefix || entity_class.repository_table_name.to_sym
+
+          fields =
+            value_class
+              .attributes
+              .reject { |a| value_class.exclude_for_storage.include?(a.name) || a.component? }
+              .map { |attr1| Sequel[attr_name][attr1.name].as(:"#{attr_name}[#{attr1.name}]") }
+
+          results = [{ fields: fields,
+                       table: table_alias,
+                       ref: Sequel[ref_scope][attr.reference_key] }]
+
+          if (comps = value_class.component_attributes).empty?
+            results
+          else
+            results + component_attribute_query_info(value_class, attr_name)
+          end
+        end
+      end
 
       def run(query, *args, tag: nil, &block)
         tag = tag.nil? ? 'SQL' : "SQL #{tag}"
@@ -17,7 +60,7 @@ module Drn
           results << row
         end
 
-        return EMPTY_ARRAY if results.empty?
+        return Core::EMPTY_ARRAY if results.empty?
 
         block ? block.call(results) : results
       end
@@ -48,41 +91,18 @@ module Drn
         h
       end
 
-      def reconstitute_record(entity_class, h)
+      def reconstitute_record(entity_class, hash)
         entity_class
           .attributes
           .select(&:serialize?)
-          .each { |attr| h = h.merge(attr.name => YAML.load(h[attr.name])) if h[attr.name] }
-        h
+          .each { |attr| hash = hash.merge(attr.name => YAML.load(hash[attr.name])) if hash[attr.name] }
+
+        hash
       end
 
       def build_entity(entity_class, record)
-        record = reconstitute_record(entity_class, record)
-        entity_class
-          .attributes
-          .select(&:component?)
-          .each do |attr|
-            begin
-              record = nest_component_attributes(record, attr.name)
-            rescue StandardError
-              binding.irb
-            end
-          end
-
+        record = StringUtils.parse_nested_hash_keys(reconstitute_record(entity_class, record))
         entity_class[record]
-      end
-      def nest_component_attributes(record, component_name)
-        record.reduce({}) do |h, (key_, value)|
-          key = key_.is_a?(Symbol) ? key_.name : key_
-          if key.start_with?(component_name.name)
-            h[component_name.to_sym] ||= {}
-            k = key.sub("#{component_name}_", '').to_sym
-            h[component_name.to_sym][k] = value
-          else
-            h[key_] = value
-          end
-          h
-        end
       end
 
       def ident_quote(db, *args)

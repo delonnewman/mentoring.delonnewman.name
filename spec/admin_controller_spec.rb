@@ -1,4 +1,4 @@
 require 'spec_helper'
 
-RSpec.describe Drn::Mentoring::AdminController do
+RSpec.describe Drn::Framework::AdminController do
 end

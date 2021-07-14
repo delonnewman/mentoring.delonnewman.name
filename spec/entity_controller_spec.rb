@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-include Drn::Mentoring
+include Drn::Framework
 
 class MockAuthController < Controller
   include Authenticable
