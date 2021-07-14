@@ -101,6 +101,10 @@ module Drn
           return Utils.constantize(t) if t.is_a?(String)
         end
 
+        def component_table_name
+          Utils.table_name(value_class.canonical_name)
+        end
+
         def boolean?
           self[:type] == :boolean || self[:type] == FalseClass || self[:type] == TrueClass
         end
