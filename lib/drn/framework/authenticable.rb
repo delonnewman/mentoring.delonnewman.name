@@ -23,8 +23,19 @@ module Drn
         @current_user = nil
       end
 
-      def authenticated?
-        !!current_user
+      # If no arguments are given return true if a user is authenticated
+      # otherwise return false. If a role is specified with "as" return
+      # true if the user is authenticated and is assigned to the given role
+      # if the user is not assigned to the role return false, otherwise
+      # return nil.
+      #
+      # @option as [String] a role name to test
+      #
+      # @return [Boolean, nil]
+      def authenticated?(as: nil)
+        return !!current_user if as.nil?
+
+        current_user&.role?(as)
       end
 
       def call

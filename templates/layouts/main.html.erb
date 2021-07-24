@@ -31,7 +31,7 @@
             </a>
           </li>
         <% end %>
-	<% if current_user&.admin? %>
+	<% if authenticated?(as: 'admin') %>
           <li class="nav-item">
             <a class="nav-link" title="Admin" href="/admin">
               Admin
@@ -39,7 +39,7 @@
           </li>
 	<% end %>
       </ul>
-      <% if current_user %>
+      <% if authenticated? %>
         <span class="navbar-text mr-3">
           Hello <%= current_user.first_name %>
         </span>
@@ -57,9 +57,13 @@
       <% end %>
         </div>
     </nav>
-    <main role="main">
+    <main role="main" class="min-vh-100">
       <%= __content__ %>
     </main>
+
+    <div class="mx-auto mt-5" style="width:600px">
+        <img src="/img/blu.png" style="height:500px">
+    </div>
     <footer class="text-muted bg-dark" style="padding-top:3rem; padding-bottom:3rem">
         <div class="container">
             <p>Copyright &copy; 2021 Delon R. Newman</p>

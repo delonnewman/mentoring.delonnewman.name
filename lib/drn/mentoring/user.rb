@@ -41,7 +41,11 @@ module Drn
       end
 
       def admin?
-        role.name == 'admin'
+        role?('admin')
+      end
+
+      def role?(name)
+        role.name == name
       end
     end
   end
