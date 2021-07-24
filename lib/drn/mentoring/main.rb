@@ -103,7 +103,7 @@ module Drn
             password: params['password']
           )
 
-        ref = params['ref'].empty? ? '/dashboard' : params['ref']
+        ref = params['ref'].blank? ? '/dashboard' : params['ref']
 
         if user
           current_user! user
