@@ -44,6 +44,7 @@ group :development, :test do
   gem 'rspec'
   gem 'prettier'
   gem 'rubocop'
+  gem 'capybara'
 
   gem 'pry'
   gem 'pry-rescue'

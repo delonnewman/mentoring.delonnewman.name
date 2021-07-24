@@ -21,10 +21,20 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
+    addressable (2.8.0)
+      public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
     bcrypt (3.1.16)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
+    capybara (3.35.3)
+      addressable
+      mini_mime (>= 0.1.3)
+      nokogiri (~> 1.8)
+      rack (>= 1.6.0)
+      rack-test (>= 0.6.3)
+      regexp_parser (>= 1.5, < 3.0)
+      xpath (~> 3.2)
     coderay (1.1.3)
     concurrent-ruby (1.1.8)
     debug_inspector (1.1.0)
@@ -51,9 +61,14 @@ GEM
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.0225)
+    mini_mime (1.1.0)
+    mini_portile2 (2.5.3)
     minitest (5.14.4)
     netrc (0.11.0)
     nio4r (2.5.7)
+    nokogiri (1.11.7)
+      mini_portile2 (~> 2.5.0)
+      racc (~> 1.4)
     parallel (1.20.1)
     parser (3.0.1.1)
       ast (~> 2.4.1)
@@ -68,8 +83,10 @@ GEM
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
+    public_suffix (4.0.6)
     puma (5.3.1)
       nio4r (~> 2.0)
+    racc (1.5.2)
     rack (2.2.3)
     rack-contrib (2.3.0)
       rack (~> 2.0)
@@ -77,6 +94,8 @@ GEM
       rack
     rack-mini-profiler (2.3.2)
       rack (>= 1.2.0)
+    rack-test (1.1.0)
+      rack (>= 1.0, < 3)
     rack_csrf (2.6.0)
       rack (>= 1.1.0)
     rainbow (3.0.0)
@@ -123,6 +142,8 @@ GEM
     unf_ext (0.0.7.7)
     unicode-display_width (2.0.0)
     webrick (1.7.0)
+    xpath (3.2.0)
+      nokogiri (~> 1.8)
     yard (0.9.26)
     zeitwerk (2.4.2)
 
@@ -131,6 +152,7 @@ PLATFORMS
 
 DEPENDENCIES
   bcrypt
+  capybara
   concurrent-ruby
   dotenv
   erubi

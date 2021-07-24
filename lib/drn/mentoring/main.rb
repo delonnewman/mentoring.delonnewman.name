@@ -55,7 +55,7 @@ module Drn
             app.user_registrations.store!(user)
             app.messenger.signup(user).wait!
           end
-          redirect_to '/'
+          redirect_to '/dashboard'
         else
           render :signup, with: { errors: errors }
         end
@@ -103,7 +103,7 @@ module Drn
             password: params['password']
           )
 
-        ref = params['ref'].empty? ? '/' : params['ref']
+        ref = params['ref'].empty? ? '/dashboard' : params['ref']
 
         if user
           current_user! user

@@ -5,14 +5,14 @@ include Drn::Mentoring
 rates = [
   ProductRate[
     name: 'per-month',
-    description: 'per month',
+    description: '/ month',
     subscription: true],
   ProductRate[
     name: 'per-hour',
-    description: 'per hour'],
+    description: '/ hour'],
   ProductRate[
     name: 'per-minute',
-    description: 'per minute']]
+    description: '/ minute']]
 
 pp rates
 
