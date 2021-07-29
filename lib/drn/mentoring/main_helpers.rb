@@ -28,6 +28,20 @@ module Drn
           </div>
         HTML
       end
+
+      def product_price(product)
+        return '<div></div>' if app.env == :production
+
+        %{ <div class="price">
+             <span class="font-weight-bold" style="font-size: 1.5em">#{money product.price}</span>
+             <span style="font-size: 1.1em" class="text-muted">#{product.rate.description}</span>
+           </div> }
+      end
+
+      def product_button(product)
+        disabled = 'disabled' if app.env == :production || product.disabled?(current_user)
+        %{ <button id="btn-#{product.id}" class="btn btn-primary btn-select-product" #{disabled}>Select</button> }
+      end
     end
   end
 end

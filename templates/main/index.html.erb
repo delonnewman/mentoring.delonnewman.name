@@ -65,12 +65,8 @@
         <%= mentor_availability product, current_user %>
       </div>
       <div class="card-footer d-flex justify-content-between">
-        <div class="price">
-          <span class="font-weight-bold" style="font-size: 1.5em"><%= money product.price %></span>
-          <span style="font-size: 1.1em" class="text-muted"><%= product.rate.description %></span>
-        </div>
-        <% disabled = 'disabled' if product.disabled?(current_user) %>
-        <button id="btn-<%= product.id %>" class="btn btn-primary btn-select-product" <%= disabled %>>Select</button>
+        <%= product_price product %>
+        <%= product_button product %>
       </div>
     </section>
   <% end %>
