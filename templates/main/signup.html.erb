@@ -1,19 +1,27 @@
-<div style="width: 40rem" class="mx-auto mt-5">
-  <h1 class="mb-4">
-    Sign Up
-    <small class="text-muted">Learn How to Code</small>
-  </h1>
-  <form action="/signup" method="post">
-    <div class="form-group">
-      <label for="username">Username</label>
-      <%= text_field :username %>
+<div class="container">
+    <style>
+     @media (min-width:760px) {
+         .signup-form {
+             width: 30rem;
+         }
+     }
+     .signup-form > h1 {
+         line-height: 27pt;
+     }
+    </style>
+    <div class="signup-form mx-auto mt-5">
+        <h1 class="mb-4">
+            Sign Up<br>
+            <small class="text-muted">Learn How to Code</small>
+        </h1>
+        <form action="/signup" method="post">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <%= text_field :email %>
+            </div>
+            <div class="float-right">
+                <button class="btn btn-primary">Sign up</button>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-      <label for="email">Email</label>
-      <%= text_field :email %>
-    </div>
-    <div class="float-right">
-      <button class="btn btn-primary">Sign up</button>
-    </div>
-  </form>
 </div>

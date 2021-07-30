@@ -1,114 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Learn How to Code--Mentoring in Computer Programming">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/fontawesome.min.css">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Learn How to Code--Mentoring in Computer Programming">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/fontawesome.min.css">
 
-    <title>Learn How to Code--Mentoring in Computer Programming</title>
-  </head>
+        <title>Learn How to Code&mdash;Mentoring in Computer Programming</title>
+        <style>
+         @media (max-width: 960px) {
+             .nav-item {
+                 margin-right: 10px;
+             }
+         }
+        </style>
+    </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="/">
-            <i class="fas fa-code"></i>
-            <span class="text-uppercase">D&eacute;lon R. Newman</span>
-            <span class="font-italic">Mentoring</span>
-        </a>
-        <div class="container-sm">
-      <ul class="navbar-nav mr-auto">
-        <% if current_user %>
-          <li class="nav-item">
-            <a class="nav-link" title="Home" href="/dashboard">
-              <i class="fas fa-home"></i>
-            </a>
-          </li>
-        <% end %>
-	<% if authenticated?(as: 'admin') %>
-          <li class="nav-item">
-            <a class="nav-link" title="Admin" href="/admin">
-              Admin
-            </a>
-          </li>
-	<% end %>
-      </ul>
-      <% if authenticated? %>
-        <span class="navbar-text mr-3">
-          Hello <%= current_user.first_name %>
-        </span>
-        <a class="btn btn-outline-secondary btn-sm" data-method="post" href="/logout">
-          <i class="fas fa-sign-out-alt"></i>
-          Sign out
-        </a>
-      <% else %>
-        <a class="btn btn-link btn-sm mr-2" href="/login">
-          Sign in
-        </a>
-        <a class="btn btn-outline-secondary btn-sm" href="/signup">
-          Sign up
-        </a>
-      <% end %>
-        </div>
-    </nav>
-    <main role="main" class="min-vh-100">
-      <%= __content__ %>
-    </main>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a class="navbar-brand" href="/">
+              <i class="fas fa-code"></i>
+              <span class="text-uppercase">D&eacute;lon R. Newman</span>
+              <span class="font-italic">Mentoring</span>
+          </a>
+          <div class="container-sm">
+              <ul class="navbar-nav flex-sm-row mr-auto">
+                  <% if current_user %>
+                      <li class="nav-item">
+                          <a class="nav-link" title="Home" href="/dashboard">
+                              <i class="fas fa-home"></i>
+                          </a>
+                      </li>
+                  <% end %>
+	          <% if authenticated?(as: :admin) %>
+                      <li class="nav-item">
+                          <a class="nav-link" title="Admin" href="/admin">
+                              Admin
+                          </a>
+                      </li>
+	          <% end %>
+              </ul>
+              <% if authenticated? %>
+                  <span class="navbar-text mr-3">
+                      Hello <%= current_user.first_name %>
+                  </span>
+                  <a class="btn btn-outline-secondary btn-sm" data-method="post" href="/logout">
+                      <i class="fas fa-sign-out-alt"></i>
+                      Sign out
+                  </a>
+              <% else %>
+                  <a class="btn btn-link btn-sm mr-2" href="/login">
+                      Sign in
+                  </a>
+                  <a class="btn btn-outline-secondary btn-sm" href="/signup">
+                      Sign up
+                  </a>
+              <% end %>
+          </div>
+      </nav>
+      <main role="main" class="min-vh-100">
+          <%= __content__ %>
+      </main>
 
-    <div class="mx-lg-auto mt-5 blu">
-        <img src="/img/blu.png" class="image-fluid" style="max-width: 100%; height: auto">
-    </div>
-    <footer class="text-muted bg-dark" style="padding-top:3rem; padding-bottom:3rem">
-        <div class="container d-md-flex justify-content-md-around align-items-center">
-            <div>
-                <blockquote class="blockquote text-right" style="max-width: 600px">
-                    <p class="mb-0">
-                        People think that computer science is the art of geniuses but the actual reality is the opposite,
-                        just many people doing things that build on each other, like a wall of mini stones.
-                    </p>
-                    <footer class="blockquote-footer"><a href="https://www-cs-faculty.stanford.edu/~knuth/">Donald Knuth</a></footer>
-                </blockquote>
-            </div>
-            <div style="font-size:0.8em" class="ml-md-4">
-                <p>Copyright &copy; 2021 Delon R. Newman</p>
-                <div class="mb-2" style="min-width:300px">
-                    <em>Instant Help</em><br>
-                    Photo by <a href="https://www.flickr.com/photos/armydre2008/">frankeileon</a>
-                    on <a href="https://www.flickr.com/photos/armydre2008/3338538777/in/photolist-661Tgp-jzfUBZ-6627mt-7aCeV9-6mFYzF-FJW4Nh-ae5saS-2kwUeSh-4Fpkz7-2kLQKza-7naP4L-79Jpes-aeKVwx-d38cp3-sQbC4-7fgcQt-an5PfN-85Zj8f-2j6LiCc-nsYWz-4um7qt-2betcL4-q7oFu-2DVmCo-4J3WQ5-3gr3H-4KTTPL-2j9yCU8-JnWz1b-2jAL7jX-2kzdrsJ-2kPghFp-2kCgd6H-2kH9bZY-4Cx8Rv-2jbum3p-2jbx1uD-5KUsqG-6X6LEU-B4CjyM-2juDj3m-7zzkWS-mzHu87-Tds6ds-swx6b-7nypwW-7VRE7a-99UTjV-2kCeAxA-2knQf1F">Flickr</a>
-                </div>
-                <div class="mb-2">
-                    <em>Instant Conversation</em><br>
-                    Photo by <a href="https://unsplash.com/@jurigianfra">jurigianfra</a>
-                    on <a href="https://unsplash.com/photos/rTFS5bQrXZk">Unsplash</a>
-                </div>
-                <div class="mb-2">
-                    <em>Ongoing Mentoring</em><br>
-                    Photo by <a href="https://unsplash.com/@heylagostechie">heylagostechie</a>
-                    on <a href="https://unsplash.com/photos/IgUR1iX0mqM">Unsplash</a>
-                </div>
-                <div class="mt-4">
-                    <a title="Email Delon" class="btn rounded-circle btn-secondary" href="mailto:&#099;&#111;&#110;&#116;&#097;&#099;&#116;&#064;&#100;&#101;&#108;&#111;&#110;&#110;&#101;&#119;&#109;&#097;&#110;&#046;&#110;&#097;&#109;&#101;">
-                        <i class="fa fa-envelope"></i>
-                    </a>
-                    <a href="https://github.com/delonnewman" title="Delon's GitHub profile" class="btn rounded-circle btn-secondary">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="https://www.flickr.com/photos/drnewman/" title="Delon's Flickr page" class="btn rounded-circle btn-secondary">
-                        <i class="fab fa-flickr"></i>
-                    </a>
-                    <a href="https://unsplash.com/@delonnewman" title="Delon's Unsplash profile" class="btn rounded-circle btn-secondary">
-                        <i class="fab fa-unsplash"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="/state.js"></script>
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <% if authenticated? %><script src="https://js.stripe.com/v3/"></script><% end %>
-    <script src="/js/application.js"></script>
-    <!-- script async type="text/javascript" id="mini-profiler" src="/mini-profiler-resources/includes.js?v=12b4b45a3c42e6e15503d7a03810ff33" data-version="12b4b45a3c42e6e15503d7a03810ff33" data-path="/mini-profiler-resources/" data-current-id="redo66j4g1077kto8uh3" data-ids="redo66j4g1077kto8uh3" data-horizontal-position="left" data-vertical-position="top" data-trivial="false" data-children="false" data-max-traces="10" data-controls="false" data-authorized="true" data-toggle-shortcut="Alt+P" data-start-hidden="false" data-collapse-results="true"></script -->
+      <div class="mx-lg-auto mt-5 blu">
+          <img src="/img/blu.png" class="image-fluid" style="max-width: 100%; height: auto">
+      </div>
+      <footer class="text-muted bg-dark" style="padding-top:3rem; padding-bottom:3rem">
+          <div class="container d-md-flex justify-content-md-around align-items-center">
+              <div>
+                  <blockquote class="blockquote text-right" style="max-width: 600px">
+                      <p class="mb-0">
+                          People think that computer science is the art of geniuses but the actual reality is the opposite,
+                          just many people doing things that build on each other, like a wall of mini stones.
+                      </p>
+                      <footer class="blockquote-footer"><a href="https://www-cs-faculty.stanford.edu/~knuth/">Donald Knuth</a></footer>
+                  </blockquote>
+              </div>
+              <div style="font-size:0.8em" class="ml-md-4">
+                  <p>Copyright &copy; 2021 Delon R. Newman</p>
+                  <div class="mb-2" style="min-width:300px">
+                      <em>Instant Help</em><br>
+                      Photo by <a href="https://www.flickr.com/photos/armydre2008/">frankeileon</a>
+                      on <a href="https://www.flickr.com/photos/armydre2008/3338538777/in/photolist-661Tgp-jzfUBZ-6627mt-7aCeV9-6mFYzF-FJW4Nh-ae5saS-2kwUeSh-4Fpkz7-2kLQKza-7naP4L-79Jpes-aeKVwx-d38cp3-sQbC4-7fgcQt-an5PfN-85Zj8f-2j6LiCc-nsYWz-4um7qt-2betcL4-q7oFu-2DVmCo-4J3WQ5-3gr3H-4KTTPL-2j9yCU8-JnWz1b-2jAL7jX-2kzdrsJ-2kPghFp-2kCgd6H-2kH9bZY-4Cx8Rv-2jbum3p-2jbx1uD-5KUsqG-6X6LEU-B4CjyM-2juDj3m-7zzkWS-mzHu87-Tds6ds-swx6b-7nypwW-7VRE7a-99UTjV-2kCeAxA-2knQf1F">Flickr</a>
+                  </div>
+                  <div class="mb-2">
+                      <em>Instant Conversation</em><br>
+                      Photo by <a href="https://unsplash.com/@jurigianfra">jurigianfra</a>
+                      on <a href="https://unsplash.com/photos/rTFS5bQrXZk">Unsplash</a>
+                  </div>
+                  <div class="mb-2">
+                      <em>Ongoing Mentoring</em><br>
+                      Photo by <a href="https://unsplash.com/@heylagostechie">heylagostechie</a>
+                      on <a href="https://unsplash.com/photos/IgUR1iX0mqM">Unsplash</a>
+                  </div>
+                  <div class="mt-4">
+                      <a title="Email Delon" class="btn rounded-circle btn-secondary" href="mailto:&#099;&#111;&#110;&#116;&#097;&#099;&#116;&#064;&#100;&#101;&#108;&#111;&#110;&#110;&#101;&#119;&#109;&#097;&#110;&#046;&#110;&#097;&#109;&#101;">
+                          <i class="fa fa-envelope"></i>
+                      </a>
+                      <a href="https://github.com/delonnewman" title="Delon's GitHub profile" class="btn rounded-circle btn-secondary">
+                          <i class="fab fa-github"></i>
+                      </a>
+                      <a href="https://www.flickr.com/photos/drnewman/" title="Delon's Flickr page" class="btn rounded-circle btn-secondary">
+                          <i class="fab fa-flickr"></i>
+                      </a>
+                      <a href="https://unsplash.com/@delonnewman" title="Delon's Unsplash profile" class="btn rounded-circle btn-secondary">
+                          <i class="fab fa-unsplash"></i>
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </footer>
+      <script src="/state.js"></script>
+      <script src="/js/jquery.min.js"></script>
+      <script src="/js/bootstrap.min.js"></script>
+      <% if authenticated? %><script src="https://js.stripe.com/v3/"></script><% end %>
+      <script src="/js/application.js"></script>
+      <!-- script async type="text/javascript" id="mini-profiler" src="/mini-profiler-resources/includes.js?v=12b4b45a3c42e6e15503d7a03810ff33" data-version="12b4b45a3c42e6e15503d7a03810ff33" data-path="/mini-profiler-resources/" data-current-id="redo66j4g1077kto8uh3" data-ids="redo66j4g1077kto8uh3" data-horizontal-position="left" data-vertical-position="top" data-trivial="false" data-children="false" data-max-traces="10" data-controls="false" data-authorized="true" data-toggle-shortcut="Alt+P" data-start-hidden="false" data-collapse-results="true"></script -->
   </body>
 </html>

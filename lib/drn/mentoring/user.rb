@@ -45,6 +45,7 @@ module Drn
       end
 
       def role?(name)
+        name = name.is_a?(Symbol) ? name.name : name
         role.name == name
       end
     end
