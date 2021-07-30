@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
+    # Helpers for Main controller
     module MainHelpers
       def mentor_availability(product, user)
         return nil unless product.policy.respond_to?(:mentor_availability)
 
         times = product.policy.mentor_availability
-        not_available = product.disabled?(user)
+        not_available = app.env == :production || product.disabled?(user)
 
         data =
           times.map do |wday, t|
@@ -32,10 +35,12 @@ module Drn
       def product_price(product)
         return '<div></div>' if app.env == :production
 
-        %{ <div class="price">
-             <span class="font-weight-bold" style="font-size: 1.5em">#{money product.price}</span>
-             <span style="font-size: 1.1em" class="text-muted">#{product.rate.description}</span>
-           </div> }
+        <<~HTML
+          <div class="price">
+            <span class="font-weight-bold" style="font-size: 1.5em">#{money product.price}</span>
+            <span style="font-size: 1.1em" class="text-muted">#{product.rate.description}</span>
+          </div>
+        HTML
       end
 
       def product_button(product)
