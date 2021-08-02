@@ -32,20 +32,44 @@ module Drn
         HTML
       end
 
-      def product_price(product)
-        return '<div></div>' if app.env == :production
-
-        <<~HTML
-          <div class="price">
-            <span class="font-weight-bold" style="font-size: 1.5em">#{money product.price}</span>
-            <span style="font-size: 1.1em" class="text-muted">#{product.rate.description}</span>
-          </div>
-        HTML
+      def subscriber?(products)
+        products.any? do |(product, purchased)|
+          product.subscription? && purchased
+        end
       end
 
-      def product_button(product)
+      def product_price(product, subscriber: false, size: nil)
+        return '<div></div>' if app.env == :production
+
+        discount = subscriber ? product.price / 2 : product.price
+        product_size = size.nil? ? '1.5em' : '1.1em'
+        desc_size = size.nil? ? '1.1em' : '0.9em'
+
+        if discount == product.price
+          <<~HTML
+            <div class="price">
+              <span class="font-weight-bold" style="font-size:#{product_size}">#{money product.price}</span>
+              <span style="font-size:#{desc_size}" class="text-muted">#{product.rate.description}</span>
+            </div>
+          HTML
+        else
+          <<~HTML
+            <div class="price">
+              <span class="font-weight-bold" style="font-size:#{product_size}">
+                <s class="text-muted">#{money product.price}</s>
+                #{money discount}
+              </span>
+              <span style="font-size:#{desc_size}" class="text-muted">#{product.rate.description}</span>
+            </div>
+          HTML
+        end
+      end
+
+      def product_button(product, size: nil)
         disabled = 'disabled' if app.env == :production || product.disabled?(current_user)
-        %{ <button id="btn-#{product.id}" class="btn btn-primary btn-select-product" #{disabled}>Select</button> }
+        btn_class = size.nil? ? nil : "btn-#{size}"
+
+        %{ <button id="btn-#{product.id}" class="btn btn-primary btn-select-product #{btn_class}" #{disabled}>Select</button> }
       end
     end
   end

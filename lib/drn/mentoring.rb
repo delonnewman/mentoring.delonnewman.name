@@ -25,6 +25,7 @@ module Drn
     require_relative 'mentoring/application_messenger'
 
     # Main Application
+    require_relative 'mentoring/main/products'
     require_relative 'mentoring/main/checkout'
     require_relative 'mentoring/main/mentoring_sessions'
     require_relative 'mentoring/main_helpers'

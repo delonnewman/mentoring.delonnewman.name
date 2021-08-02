@@ -1,9 +1,28 @@
-<div class="container mt-4">
-    <ul class="list-group">
-        <% products.each do |(product, purchased)| %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <%= product %> <% if purchased %><span class="badge badge-primary">purchased</span><% end %>
-            </li>
-        <% end %>
-    </ul>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <ul class="list-group list-group-flush">
+                <% products.each do |(product, purchased)| %>
+                    <li class="list-group-item media d-flex justify-content-between align-items-center">
+                        <img src="<%= product.image_path %>" style="height:50px" class="mr-3">
+                        <div class="media-body">
+                            <h5 class="mb-0"><%= product %></h5>
+                            <% if purchased %>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge badge-primary">purchased</span>
+                                    <button class="btn btn-danger btn-sm">Cancel</button>
+                                </div>
+                            <% else %>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <%= product_price product, size: 'sm', subscriber: subscriber?(products) %>
+                                    <%= product_button product, size: 'sm' %>
+                                </div>
+                            <% end %>
+                        </div>
+                    </li>
+                <% end %>
+            </ul>
+        </div>
+        <div class="col-md-8"></div>
+    </div>
 </div>

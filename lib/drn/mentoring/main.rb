@@ -12,6 +12,7 @@ module Drn
 
       mount '/checkout', Checkout
       mount '/session', MentoringSessions
+      mount '/products', Products
 
       mount '/admin',
             Framework::AdminController.build(

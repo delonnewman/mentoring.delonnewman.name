@@ -42,7 +42,7 @@ module Drn
           # the actual Session ID is returned in the query parameter when your customer
           # is redirected to the success page.
           begin
-            logger.info "#{self}"
+            logger.info self
 
             # TODO: Take customer id from session and add to user account & associate product with customer
             session = Stripe::Checkout::Session.create(session_data(product))
@@ -120,7 +120,7 @@ module Drn
         # Helpers
         def success_url(product)
           if product.subscription?
-            "http://#{Drn::Mentoring.app.settings['DOMAIN']}?session_id={CHECKOUT_SESSION_ID}"
+            "http://#{Drn::Mentoring.app.settings['DOMAIN']}/products/#{product.id}/subscribe?session_id={CHECKOUT_SESSION_ID}"
           else
             "http://#{Drn::Mentoring.app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
           end
