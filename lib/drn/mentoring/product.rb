@@ -28,11 +28,11 @@ module Drn
           db[:users_products].insert(product_id: product.id, user_id: user.id, created_at: Time.now)
         end
 
-        def of_customer(user)
+        def products_by_customer(user)
           customer_products(user).map(&SqlUtils.method(:build_entity).curry[entity_class])
         end
 
-        def ids_of_customer(user)
+        def product_ids_by_customer(user)
           customer_products(user).select_map(Sequel[:products][:id])
         end
 

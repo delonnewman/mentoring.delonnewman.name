@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Drn
   module Mentoring
     class Main < Framework::Controller
@@ -28,7 +29,7 @@ module Drn
       end
 
       get '/dashboard' do
-        purchased = app.products.ids_of_customer(current_user)
+        purchased = app.products.product_ids_by_customer(current_user)
         products = app.products.map { |p| [p, purchased.include?(p.id)] }
 
         render :dashboard, with: { products: products }
@@ -49,6 +50,7 @@ module Drn
 
         data = params.slice('username', 'email').transform_keys(&:to_sym)
 
+        # TODO: move validation to Repository
         if (errors = UserRegistration.errors(data)).empty?
           UserRegistration[data].tap do |user|
             logger.info "Storing user: #{user.inspect}"
@@ -125,7 +127,7 @@ module Drn
       end
 
       def error(e)
-        logger.error "#{e.message}"
+        logger.error e.message
         e.backtrace.each { |trace| logger.error "  #{trace}" }
 
         render :error
