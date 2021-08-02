@@ -1,5 +1,9 @@
-<ul>
-    <% products.each do |(product, purchased)| %>
-        <li><%= product %> <% if purchased %><span class="badge badge-primary">purchased</span><% end %></li>
-    <% end %>
-</ul>
+<div class="container mt-4">
+    <ul class="list-group">
+        <% products.each do |(product, purchased)| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <%= product %> <% if purchased %><span class="badge badge-primary">purchased</span><% end %>
+            </li>
+        <% end %>
+    </ul>
+</div>
