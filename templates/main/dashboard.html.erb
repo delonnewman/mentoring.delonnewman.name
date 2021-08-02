@@ -4,9 +4,12 @@
             <ul class="list-group list-group-flush">
                 <% products.each do |(product, purchased)| %>
                     <li class="list-group-item media d-flex justify-content-between align-items-center">
-                        <img src="<%= product.image_path %>" style="height:50px" class="mr-3 rounded">
+                        <img src="<%= product.image_path %>"
+                             alt="<%= product.name %> Image"
+                             style="height:50px" class="mr-3 align-self-start rounded">
                         <div class="media-body">
                             <h5 class="mb-0"><%= product %></h5>
+                            <p style="font-size:0.8em"><%= product.description %></p>
                             <% if purchased %>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="badge badge-primary">purchased</span>
