@@ -36,6 +36,11 @@ module Drn
           customer_products(user).select_map(Sequel[:products][:id])
         end
 
+        def products_and_purchased_by_customer(user)
+          purchased = product_ids_by_customer(user)
+          map { |p| [p, purchased.include?(p.id)] }
+        end
+
         private
 
         def customer_products(user)

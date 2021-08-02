@@ -45,7 +45,7 @@ module Drn
         product_size = size.nil? ? '1.5em' : '1.1em'
         desc_size = size.nil? ? '1.1em' : '0.9em'
 
-        if discount == product.price
+        if not subscriber
           <<~HTML
             <div class="price">
               <span class="font-weight-bold" style="font-size:#{product_size}">#{money product.price}</span>
@@ -56,7 +56,7 @@ module Drn
           <<~HTML
             <div class="price">
               <span class="font-weight-bold" style="font-size:#{product_size}">
-                <s class="text-muted">#{money product.price}</s>
+                <s class="text-muted" style="font-size:0.8em">#{money product.price}</s>
                 #{money discount}
               </span>
               <span style="font-size:#{desc_size}" class="text-muted">#{product.rate.description}</span>
