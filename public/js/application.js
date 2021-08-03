@@ -163,8 +163,6 @@
     }
 
     function fmtTime(t) {
-        console.log("t", t);
-
         var hours = t.getHours();
         var minutes = padZeros(t.getMinutes(), 2);
         var ampm = hours >= 12 ? "PM" : "AM";
@@ -194,11 +192,19 @@
         $elem.parent().append(times);
     });
 
+    function setCurrentTime($elem, offset) {
+        return () => {
+            var d = atOffset(offset);
+            $elem.text(weekday(d) + " " + fmtTime(d));
+        };
+    }
+
     $("#mentor-current-time").each(function () {
         var $elem = $(this);
         var offset = parseInt($elem.find(".offset").text());
-        var d = atOffset(offset);
+        var setTime = setCurrentTime($elem, offset);
 
-        $elem.text(weekday(d) + " " + fmtTime(d));
+        setTime();
+        setInterval(setTime, 30000); // update time every 30 seconds
     });
 }.call(window, jQuery));
