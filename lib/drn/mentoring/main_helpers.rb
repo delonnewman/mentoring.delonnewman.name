@@ -49,7 +49,7 @@ module Drn
         return '<div></div>' if app.env == :production
 
         discount = subscriber ? product.price / 2 : product.price
-        product_size = size.nil? ? '1.5em' : '1.1em'
+        product_size = size.nil? ? '1.3em' : '0.9em'
         desc_size = size.nil? ? '1.1em' : '0.9em'
 
         if not subscriber
