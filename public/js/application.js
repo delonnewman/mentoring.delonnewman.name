@@ -120,29 +120,6 @@
         }
     }
 
-    function inDayLightSavings() {
-        var d = new Date();
-
-        return (
-            (d.getMonth() >= 2 || (d.getMonth() === 2 && d.getDate() >= 14)) &&
-                (d.getMonth() < 10 || (d.getMonth() === 10 && d.getDate() < 7))
-        );
-    }
-
-    const OFFSET_FROM_GMT = inDayLightSavings() ? 360 : 420; // TODO: workout for daylight savings
-
-    function atHour(hour, offset) {
-        var d = new Date();
-        d = new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour);
-
-        if (offset !== OFFSET_FROM_GMT) {
-            var diff = (OFFSET_FROM_GMT - offset) / 60;
-            d.setUTCHours(d.getUTCHours() + diff);
-        }
-
-        return d;
-    }
-
     function atOffset(offset) {
         var t = new Date();
         return new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours(), t.getMinutes()) + (offset * 60 * 60 * 1000));
@@ -174,23 +151,6 @@
 
         return str(h, ":", minutes, " ", ampm);
     }
-
-    $("input.mentor-availability").each(function () {
-        var $elem = $(this);
-        var offset = new Date().getTimezoneOffset();
-
-        var times = JSON.parse($elem.val())
-            .map((t) => {
-                var start = fmtTime(atHour(t.start, offset));
-                var end = fmtTime(atHour(t.end, offset));
-                return str("<div>", t.day, " ", start, " - ", end, "</div>");
-            })
-            .join("\n");
-
-        console.log(times);
-
-        $elem.parent().append(times);
-    });
 
     function setCurrentTime($elem, offset) {
         return () => {

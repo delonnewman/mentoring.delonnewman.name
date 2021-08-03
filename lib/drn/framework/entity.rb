@@ -141,7 +141,7 @@ module Drn
 
         default = self.class.attribute(name).default
 
-        @hash[name] ||= default.respond_to?(:to_proc) ? instance_exec(&default) : default
+        @hash[name] ||= default.is_a?(Proc) ? instance_exec(&default) : default
       end
 
       def to_h

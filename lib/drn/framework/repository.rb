@@ -84,7 +84,6 @@ module Drn
 
       def update!(id, data)
         dataset.where(id: id).update(data)
-        find_by!(id: id)
       end
 
       def create!(record)
@@ -115,6 +114,14 @@ module Drn
 
       def delete_all!
         table.delete
+      end
+
+      protected
+
+      def where(predicates)
+        dataset.where(predicates).map do |row|
+          SqlUtils.build_entity(entity_class, row)
+        end
       end
 
       private

@@ -8,8 +8,8 @@ rates = [
     description: '/ month',
     subscription: true],
   ProductRate[
-    name: 'per-hour',
-    description: '/ hour'],
+    name: 'per-half-hour',
+    description: '/ half-hour'],
   ProductRate[
     name: 'per-minute',
     description: '/ minute']]
@@ -48,8 +48,8 @@ products = [
                  "available (by video conference) paid out by the " \
                  "hour, first 5 minutes are free.",
     image_path: '/img/conversation.jpg',
-    amount: 10000,
-    rate: 'per-hour',
+    amount: 5000,
+    rate: 'per-half-hour',
     sort_order: 2,
     meta: { stripe_price_id: 'price_1IfaKRJeITBgtWkkiRidT1tN' }
   ]
@@ -61,7 +61,6 @@ Product.repository.store_all!(products) if Product.repository.empty?
 
 roles = [
   UserRole[name: 'admin'],
-  UserRole[name: 'mentor'],
   UserRole[name: 'customer']
 ]
 
@@ -73,7 +72,79 @@ users = [
     displayname: 'Delon Newman',
     email: 'contact@delonnewman.name',
     role: 'admin',
-    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO'],
+    mentor: true,
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO',
+    meta: {
+      'profile.image_path' => '/img/delon.jpg',
+      'profile.location' => 'Albuquerque, NM, USA',
+      'profile.timezoneOffset' => 6,
+      'profile.interests' => [
+        'programming languages',
+        'system design',
+        'data-driven systems',
+        'web development',
+        'ruby',
+        'javascript',
+        'clojure'
+      ],
+      'profile.links' => [
+        {
+          'url' => 'mailto:&#099;&#111;&#110;&#116;&#097;&#099;&#116;&#064;&#100;&#101;&#108;&#111;&#110;&#110;&#101;&#119;&#109;&#097;&#110;&#046;&#110;&#097;&#109;&#101;',
+          'title' => 'Email Delon',
+          'icon' => 'fas fa-envelope'
+        },
+        {
+          'url' => 'https://delonnewman.name',
+          'title' => "Delon's personal website",
+          'icon' => 'fas fa-link'
+        },
+        {
+          'url' => 'https://github.com/delonnewman',
+          'title' => "Deon's GitHub profile",
+          'icon' => 'fab fa-github'
+        },
+      ],
+      'profile.bio' => <<~BIO,
+         <p class="lead">
+             Delon got his start professionally at 18 years old (in 1999) writing a data conversion script in Perl for his
+             mother's client in the manufacturing industry. Since then he's worked for various companies, but primarily he's
+             been a freelancer and consultant.
+         </p>
+         <p>
+             He's used a variety of technologies including Perl, C, C#, <abbr title="Visual Basic for Applications">VBA</abbr>,
+             Java, Python, Bash, PHP, Emacs Lisp, <abbr title="Structured Query Language">SQL</abbr> and Datalog, but mostly
+             works with Ruby, JavaScript and Clojure.
+         </p>
+         <p>
+             He loves learning and helping others learn. He's a self-professed math and science geek, but he also loves music
+             (especially Jazz), poetry, photography and hiking with his beautiful wife and their dog Blu.
+         </p>
+         <p>
+             If you'd like to learn more about Delon's background please visit his
+             <a href="https://delonnewman.name">personal website</a> to see his resume or his
+             <a href="https://github.com/delonnewman">GitHub profile</a> to see some of his open source work and experiments.
+         </p>
+      BIO
+      'profile.availability' => {
+        1 => {
+          start: 10,
+          end: 17
+        },
+        3 => {
+          start: 13,
+          end: 17
+        },
+        4 => {
+          start: 10,
+          end: 17
+        },
+        5 => {
+          start: 10,
+          end: 17
+        }
+      }
+    },
+  ],
   User[
     username: 'luna',
     displayname: 'Jackie Newman',

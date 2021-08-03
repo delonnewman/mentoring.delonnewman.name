@@ -6,9 +6,12 @@ module Drn
     class User < Framework::Entity
       primary_key :id
       reference :username, String, unique: true, display: { order: 1 }
+      has :mentor, :boolean, required: false, display: { name: 'Is Mentor' }
 
       has :displayname, String, required: false, display: { name: 'Name', order: 0 }
       belongs_to :role, display: { order: 3 }
+
+      has :meta, Hash, serialize: true, default: EMPTY_HASH
 
       email display: { order: 2 }
       password
@@ -29,6 +32,10 @@ module Drn
             raise 'Invalid user or password' if user.nil?
           end
         end
+
+        def mentors
+          where(mentor: true)
+        end
       end
 
       def name
@@ -41,7 +48,7 @@ module Drn
       end
 
       def admin?
-        role?('admin')
+        role?(:admin)
       end
 
       def role?(name)

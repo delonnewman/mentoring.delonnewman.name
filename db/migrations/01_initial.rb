@@ -35,6 +35,8 @@ Sequel.migration do
       Integer :role_id, null: false, index: true
       Time :created_at, index: true
       Time :updated_at, index: true
+      FalseClass :mentor, index: true, default: false
+      String :meta
 
       foreign_key [:role_id], :user_roles
     end

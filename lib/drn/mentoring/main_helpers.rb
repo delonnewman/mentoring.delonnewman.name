@@ -4,32 +4,39 @@ module Drn
   module Mentoring
     # Helpers for Main controller
     module MainHelpers
-      def mentor_availability(product, user)
-        return nil unless product.policy.respond_to?(:mentor_availability)
-
-        times = product.policy.mentor_availability
-        not_available = app.env == :production || product.disabled?(user)
-
-        data =
-          times.map do |wday, t|
-            day = Date::DAYNAMES[wday]
-            t.merge(day: day)
-          end
-
-        class_name = not_available ? 'mentor-availability' : 'mentor-available'
-        title = not_available ? 'Your mentor is available on:' : 'Your mentor is available'
+      def mentor_availability(mentor)
+        rows = mentor.meta['profile.availability'].map do |(wday, range)|
+          "<tr><th>#{Date::DAYNAMES[wday]}</th><td>#{fmt_hour range[:start]} &mdash; #{fmt_hour range[:end]}</td></tr>"
+        end
 
         <<~HTML
-          <div style="font-size: 0.9em" class="mt-3 text-muted">
-            <strong>#{title}</strong>
-            <input
-             type="hidden"
-             class="#{class_name}"
-             id="mentor-availability-#{product.id}"
-             value="#{h data.to_json}"
-            >
-          </div>
+          <style>
+            @media (min-width:960px) {
+              .table-availability {
+                 width: 300px;
+              }
+            }
+
+            .table-availability td {
+               white-space: nowrap;
+            }
+          </style>
+          <table class="table table-sm table-borderless table-availability">
+            #{rows.join('')}
+          </table>
         HTML
+      end
+
+      def fmt_hour(hour)
+        if hour == 12
+          "12:00 PM"
+        elsif hour == 0 || hour == 24
+          "12:00 AM"
+        elsif hour < 12
+          "#{hour}:00 AM"
+        else
+          "#{hour - 12}:00 PM"
+        end
       end
 
       def subscriber?(products)

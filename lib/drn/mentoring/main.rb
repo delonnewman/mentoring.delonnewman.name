@@ -26,11 +26,17 @@ module Drn
             )
 
       get '/', authenticate: false do
-        render :index, with: { products: app.products.products_and_purchased_by_customer(current_user) }
+        render :index, with: {
+                 products: app.products.products_and_purchased_by_customer(current_user),
+                 mentor: app.users.find_by!(username: 'delon')
+               }
       end
 
       get '/dashboard' do
-        render :dashboard, with: { products: app.products.products_and_purchased_by_customer(current_user) }
+        render :dashboard, with: {
+                 products: app.products.products_and_purchased_by_customer(current_user),
+                 mentors: app.users.mentors
+               }
       end
 
       get '/state.js', authenticate: false do
