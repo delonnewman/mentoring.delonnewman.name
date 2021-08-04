@@ -21,7 +21,7 @@ module Drn
                white-space: nowrap;
             }
           </style>
-          <table class="table table-sm table-borderless table-availability">
+          <table class="table table-sm table-borderless table-availability text-right">
             #{rows.join('')}
           </table>
         HTML
