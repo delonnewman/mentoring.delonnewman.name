@@ -84,7 +84,6 @@
     // Initialize unobtrusive posts
     $("[data-method=post]").each(function () {
         var $elem = $(this);
-        console.log($elem);
         $elem.on("click", function () {
             // TODO: collect other data attributes to pass as data
             $.ajax({

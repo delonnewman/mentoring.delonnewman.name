@@ -40,7 +40,7 @@ module Drn
         MAILJET_SECRET_KEY
       ].freeze
 
-      attr_reader :env, :logger, :root, :db, :session_secret, :settings
+      attr_reader :env, :logger, :root, :db, :session_secret, :settings, :chat_server
 
       def initialize(env)
         @env = env
@@ -126,6 +126,12 @@ module Drn
           config.default_from = 'contact@delonnewman.name'
           config.api_version = 'v3.1'
         end
+
+        @chat_server = WonderLlama::Client.new(
+          host: settings.fetch('ZULIP_HOST'),
+          email: settings.fetch('ZULIP_BOT_EMAIL'),
+          api_key: settings.fetch('ZULIP_API_KEY')
+        )
 
         initialized!
 

@@ -34,10 +34,13 @@ gem 'erubi'
 gem 'inflection'
 gem 'concurrent-ruby'
 gem 'invokable'
+gem 'faye'
+gem 'oj'
 
 # vendor
 gem 'stripe'
 gem 'mailjet'
+gem 'wonder-llama', require: 'wonder_llama', path: '../wonder-llama' # Zulip Chat
 
 group :development, :test do
   gem 'rake'
