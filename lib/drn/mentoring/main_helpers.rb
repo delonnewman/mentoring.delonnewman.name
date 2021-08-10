@@ -76,7 +76,14 @@ module Drn
         disabled = 'disabled' if app.env == :production || product.disabled?(current_user)
         btn_class = size.nil? ? nil : "btn-#{size}"
 
-        %{ <button id="btn-#{product.id}" class="btn btn-primary btn-select-product #{btn_class}" #{disabled}>Select</button> }
+        <<~HTML
+          <button
+            id="btn-#{product.id}"
+            class="btn btn-primary btn-select-product #{btn_class}" #{disabled}
+          >
+            Select
+          </button>
+        HTML
       end
     end
   end
