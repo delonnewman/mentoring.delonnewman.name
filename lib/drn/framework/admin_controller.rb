@@ -47,6 +47,17 @@ module Drn
         self
       end
 
+      def routes
+        @controllers.each_value.reduce(nil) do |routes, controller|
+          controller_routes = controller.routes.to_a
+          if routes.nil?
+            controller_routes
+          else
+            routes + controller_routes
+          end
+        end
+      end
+
       def call(env)
         @app =
           env.fetch('mentoring.app') do

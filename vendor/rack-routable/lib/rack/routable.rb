@@ -15,7 +15,7 @@ module Rack
   #     use Rack::Session
   #
   #     static '/' => 'public'
-  # 
+  #
   #     # block routes
   #     get '/hello' do
   #       'Hello'
@@ -79,7 +79,7 @@ module Rack
     module ClassMethods
       # A "macro" method to specify paths that should be used to serve static files.
       # They will be served from the "public" directory within the applications root_path.
-      # 
+      #
       # @param paths [Array<String>]
       def static(mapping)
         url  = mapping.first[0]
@@ -105,8 +105,8 @@ module Rack
 
       # A "macro" method for specifying the root_path of the application.
       # If called as a class method it will return the value that will be used
-      # when instatiating.
-      # 
+      # when instantiating.
+      #
       # @param dir [String]
       # @return [String, nil]
       def root_path(dir = nil)
@@ -133,7 +133,7 @@ module Rack
       METHODS = %i[get post delete put head link unlink].to_set.freeze
 
       # Return the routing table for the class.
-      # 
+      #
       # @return [Routes]
       def routes
         @routes ||= Routes.new
@@ -188,40 +188,43 @@ module Rack
         CGI.escapeHTML(*args)
       end
       alias h escape_html
-      
+
+      NOT_FOUND_TMPL = <<~HTML
+        <!doctype html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <style>
+               table { width: 100% }
+            </style>
+          </head>
+          <body>
+             %BODY%
+          </body>
+        </html>
+      HTML
+
       def not_found
         io = StringIO.new
         io.puts "<h1>Not Found</h1>"
 
         unless ENV['RACK_ENV'] == 'production'
-          io.puts "<pre>#{h @match.inspect}</pre>"
-          io.puts "<pre>#{h self.class.inspect}</pre>"
-          io.puts "<pre>#{h self.class.canonical_name}</pre>"
-          io.puts "<pre>#{h self.class.routes.inspect}</pre>"
           io.puts "<h2>Valid Routes</h2>"
           io.puts "<table><tbody>"
-          self.class.routes.each do |method, path, app|
-            if method == :mount && app.is_a?(Rack::Routable)
-              app.class.routes.each do |method, app_path|
-                io.puts "<tr><td>#{method}</td><td>#{path + app_path} => #{app_path}</td>"
-              end
-            elsif method == :mount
-              io.puts "<tr><td>#{method}</td><td>#{path}</td>"
-            else
-              io.puts "<tr><td>#{method}</td><td>#{path}</td>"
-            end
+          self.class.routes.each do |route|
+            io.puts "<tr><td>#{h route.method}</td><td>#{h route.path}</td>"
           end
           io.puts "</tbody></table>"
-  
+
           io.puts "<h2>Environment</h2>"
           io.puts "<table><tbody>"
           env.each do |key, value|
-            io.puts "<tr><td>#{key}</td><td>#{value.inspect}</td>"
+            io.puts "<tr><td>#{h key}</td><td><pre>#{h value.pretty_inspect}</pre></td>"
           end
           io.puts "</tbody></table>"
         end
-        
-        [404, DEFAULT_HEADERS.dup, [io.string]]
+
+        [404, DEFAULT_HEADERS.dup, [NOT_FOUND_TMPL.sub('%BODY%', io.string)]]
       end
 
       def error(e)
@@ -235,7 +238,7 @@ module Rack
       end
 
       public
-      
+
       # TODO: add error and not_found to the DSL
       def call
         return not_found if @match.empty?
@@ -256,8 +259,8 @@ module Rack
                     raise e
                   end
                 end
-  
-          if res.is_a?(Array) && res.size == 3 && res[0].is_a?(Integer) 
+
+          if res.is_a?(Array) && res.size == 3 && res[0].is_a?(Integer)
             res
           elsif res.is_a?(Response)
             res.finish

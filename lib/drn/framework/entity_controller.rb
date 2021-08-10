@@ -17,12 +17,7 @@ module Drn
         new(entity_class, **options).build!
       end
 
-      def initialize(
-        entity_class,
-        layout: nil,
-        include: nil,
-        controller_super_class: Controller
-      )
+      def initialize(entity_class, layout: nil, include: nil, controller_super_class: Controller)
         @entity_class = entity_class
         @entity_name = @entity_class.canonical_name.freeze
         @canonical_name = Inflection.plural(@entity_name).freeze
@@ -46,6 +41,10 @@ module Drn
         define_operation_delete
 
         self
+      end
+
+      def routes
+        @controller.routes
       end
 
       def call(env)
