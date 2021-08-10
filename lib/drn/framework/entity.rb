@@ -22,6 +22,23 @@ module Drn
       extend Types
 
       class << self
+        @@app = nil
+
+        def inherited(klass)
+          return if klass.name.nil? || @@app.nil?
+
+          method_name = Utils.plural(klass.name)
+
+          app.define_singleton_method method_name do
+            klass.repository
+          end
+
+          class_name = klass.name.split('::').last
+          app.define_singleton_method class_name do
+            klass
+          end
+        end
+
         def has(name, type = Object, **options)
           attribute =
             Attribute.new({ entity: self, name: name, type: type, required: true }.merge(options))

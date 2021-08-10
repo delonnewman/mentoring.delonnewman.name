@@ -40,3 +40,7 @@ require_relative 'framework/authenticable'
 require_relative 'framework/controller'
 require_relative 'framework/entity_controller'
 require_relative 'framework/admin_controller'
+
+require_relative 'framework/component'
+require_relative 'framework/environment'
+require_relative 'framework/application'

@@ -90,6 +90,10 @@ module Drn
         Inflection.singular(camelcase(string))
       end
 
+      def plural(string)
+        Inflection.plural(string)
+      end
+
       def table_name(entity_name)
         Inflection.plural(Utils.snakecase(entity_name.split('::').last))
       end

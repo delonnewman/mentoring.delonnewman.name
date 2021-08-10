@@ -34,6 +34,7 @@ gem 'erubi'
 gem 'inflection'
 gem 'concurrent-ruby'
 gem 'invokable'
+gem 'builder'
 
 # vendor
 gem 'stripe'
