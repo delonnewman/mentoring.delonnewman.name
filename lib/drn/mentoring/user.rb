@@ -38,6 +38,17 @@ module Drn
         end
       end
 
+      def availability_schedule
+        meta.fetch('profile.availability') { EMPTY_HASH }
+      end
+
+      def available?(now = Time.now)
+        day = availability_schedule[now.wday]
+        return false unless day
+
+        now.hour >= day[:start] && now.hour <= day[:end]
+      end
+
       def name
         displayname || username
       end

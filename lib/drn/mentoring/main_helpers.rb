@@ -4,8 +4,8 @@ module Drn
   module Mentoring
     # Helpers for Main controller
     module MainHelpers
-      def mentor_availability(mentor)
-        rows = mentor.meta['profile.availability'].map do |(wday, range)|
+      def mentor_availability_schedule(mentor)
+        rows = mentor.availability_schedule.map do |(wday, range)|
           "<tr><th>#{Date::DAYNAMES[wday]}</th><td>#{fmt_hour range[:start]} &mdash; #{fmt_hour range[:end]}</td></tr>"
         end
 
@@ -27,11 +27,24 @@ module Drn
         HTML
       end
 
+      def mentor_availability_status(mentor)
+        return mentor_available if mentor.available?
+      end
+
+      def mentor_available
+        <<~HTML
+          <span class="mr-1" style="font-size:0.8em; color: green">
+            <i class="fas fa-circle"></i>
+          </span>
+          Available
+        HTML
+      end
+
       def fmt_hour(hour)
         if hour == 12
-          "12:00 PM"
-        elsif hour == 0 || hour == 24
-          "12:00 AM"
+          '12:00 PM'
+        elsif hour.zero? || hour == 24
+          '12:00 AM'
         elsif hour < 12
           "#{hour}:00 AM"
         else

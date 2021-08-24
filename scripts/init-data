@@ -130,8 +130,8 @@ users = [
           start: 10,
           end: 17
         },
-        3 => {
-          start: 13,
+        2 => {
+          start: 10,
           end: 17
         },
         4 => {

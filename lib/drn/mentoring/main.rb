@@ -13,7 +13,6 @@ module Drn
       mount '/checkout', Checkout
       mount '/session', MentoringSessions
       mount '/products', Products
-      mount '/chat', ChatService
 
       mount '/admin',
             Framework::AdminController.build(
@@ -77,11 +76,9 @@ module Drn
       end
 
       post '/activate/:id', authenticate: false do
-        data =
-          params
-            .slice('displayname', 'username', 'email', 'password')
-            .merge(role: 'customer')
-            .transform_keys(&:to_sym)
+        data = params.slice('displayname', 'username', 'email', 'password')
+                     .merge(role: 'customer')
+                     .transform_keys(&:to_sym)
 
         logger.info "Form data: #{data.inspect}"
 
@@ -104,11 +101,7 @@ module Drn
       end
 
       post '/login' do
-        user =
-          app.users.find_user_and_authenticate(
-            username: params['username'],
-            password: params['password']
-          )
+        user = app.users.find_user_and_authenticate(username: params['username'], password: params['password'])
 
         ref = params['ref'].blank? ? '/dashboard' : params['ref']
 
