@@ -2,9 +2,10 @@
 module Rack
   module Routable
     class Route
-      attr_reader :method, :path, :options, :action
+      attr_reader :router, :method, :path, :options, :action
 
-      def initialize(method, path, options, action)
+      def initialize(router, method, path, options, action)
+        @router = router
         @method = method
         @path = path
         @options = options
@@ -12,7 +13,7 @@ module Rack
       end
 
       def with_prefix(prefix)
-        self.class.new(method, prefix + path, options, action)
+        self.class.new(router, method, prefix + path, options, action)
       end
     end
 
@@ -23,8 +24,11 @@ module Rack
     class Routes
       include Enumerable
 
-      def initialize
+      attr_reader :router
+
+      def initialize(router)
         @table = {}
+        @router = router
       end
 
       # Iterate over each route in the routes table passing it's information along
@@ -36,7 +40,7 @@ module Rack
       def each_route(&block)
         @table.each do |method, routes|
           routes.each do |data|
-            route = Route.new(method, data[2], data[3], data[1])
+            route = Route.new(router, method, data[2], data[3], data[1])
             if method == :mount && route.action.respond_to?(:routes)
               route.action.routes.each do |app_route|
                 r = app_route.with_prefix(route.path)

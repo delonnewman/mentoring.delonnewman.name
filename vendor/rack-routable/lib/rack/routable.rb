@@ -136,7 +136,7 @@ module Rack
       #
       # @return [Routes]
       def routes
-        @routes ||= Routes.new
+        @routes ||= Routes.new(self)
       end
 
       # A "macro" method for defining a route for the application.
@@ -195,11 +195,58 @@ module Rack
           <head>
             <meta charset="utf-8">
             <style>
-               table { width: 100% }
+               body {
+                 font-family: sans-serif
+               }
+
+               main {
+                 width: 80%;
+                 margin-right: auto;
+                 margin-left: auto;
+               }
+
+               table {
+                 font-family: sans-serif;
+                 border-spacing: 0;
+                 border-collapse: collapse;
+               }
+
+               .routes table {
+                 font-family: monospace;
+               }
+
+               .routes table, .routes table tr {
+                 border: solid 1px #e0e0e0;
+               }
+
+               .routes table td, .routes table th {
+                  padding: 5px 10px;
+               }
+
+               .environment {
+                 margin-top: 20px;
+                 max-width: 100vw;
+               }
+
+               .environment > h2 {
+                  margin-bottom: 0;
+               }
+
+               .environment table td > pre {
+                 max-height: 50px;
+                 overflow: scroll;
+               }
+
+               .environment table th {
+                 text-align: right;
+                 padding-right: 10px;
+               }
             </style>
           </head>
           <body>
+            <main>
              %BODY%
+            </main>
           </body>
         </html>
       HTML
@@ -209,19 +256,21 @@ module Rack
         io.puts "<h1>Not Found</h1>"
 
         unless ENV['RACK_ENV'] == 'production'
-          io.puts "<h2>Valid Routes</h2>"
-          io.puts "<table><tbody>"
+          io.puts "<div class=\"routes\"><h2>Valid Routes</h2>"
+          io.puts "<table>"
+          io.puts "<thead><tr><th>Method</th><th>Path</th><th>Router</th></thead>"
+          io.puts "<tbody>"
           self.class.routes.each do |route|
-            io.puts "<tr><td>#{h route.method}</td><td>#{h route.path}</td>"
+            io.puts "<tr><td>#{h route.method}</td><td>#{h route.path}</td><td>#{h route.router.to_s}</td></tr>"
           end
-          io.puts "</tbody></table>"
+          io.puts "</tbody></table></div>"
 
-          io.puts "<h2>Environment</h2>"
+          io.puts "<div class=\"environment\"><h2>Environment</h2>"
           io.puts "<table><tbody>"
           env.each do |key, value|
-            io.puts "<tr><td>#{h key}</td><td><pre>#{h value.pretty_inspect}</pre></td>"
+            io.puts "<tr><th>#{h key}</th><td><pre>#{h value.pretty_inspect}</pre></td>"
           end
-          io.puts "</tbody></table>"
+          io.puts "</tbody></table></div>"
         end
 
         [404, DEFAULT_HEADERS.dup, [NOT_FOUND_TMPL.sub('%BODY%', io.string)]]
