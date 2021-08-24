@@ -248,8 +248,6 @@ module Rack
           @match[:value].call(@match[:env])
         when :action
           res = begin
-                  # NOTE: consider calling with instance_exec do some benchmarking
-                  # to see how this would effect performance.
                   instance_exec(params, @request, &@match[:value])
                 rescue => e
                   if ENV.fetch('RACK_ENV') { :development }.to_sym == :production

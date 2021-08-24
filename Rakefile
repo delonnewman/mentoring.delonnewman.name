@@ -17,7 +17,7 @@ end
 
 desc 'Run development server'
 task :server do
-  sh 'bundle exec shotgun -p 3000'
+  sh 'bundle exec shotgun -o 0.0.0.0 -p 3000'
 end
 
 desc 'Make Source Code Prettier'
@@ -27,7 +27,7 @@ end
 
 namespace :db do
   desc 'Setup database (i.e. create, migrate and seed)'
-  task setup: [:'db:create', :'db:migrate', :'db:seed']
+  task setup: %i[db:create db:migrate db:seed]
 
   desc 'Seed Database'
   task :seed do
@@ -81,5 +81,16 @@ namespace :assets do
   desc 'Pull asset dependencies'
   task :deps do
     sh 'npm install'
+  end
+
+  desc 'Compile assets for deployment'
+  task compile: %w[./public/js/chat.js]
+
+  file './public/js/chat.js' do
+    if Drn::Mentoring.app.env == :production
+      sh 'npx esbuild apps/chat/client.js --bundle --minify --target=chrome58,firefox57,safari11,edge16 --outfile=./public/js/chat.js'
+    else
+      sh 'npx esbuild apps/chat/client.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=./public/js/chat.js'
+    end
   end
 end

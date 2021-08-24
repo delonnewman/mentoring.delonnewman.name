@@ -34,7 +34,8 @@ gem 'erubi'
 gem 'inflection'
 gem 'concurrent-ruby'
 gem 'invokable'
-gem 'faye'
+gem 'nio4r'
+gem 'websocket-driver'
 gem 'oj'
 
 # vendor
@@ -48,6 +49,7 @@ group :development, :test do
   gem 'prettier'
   gem 'rubocop'
   gem 'capybara'
+  gem 'cucumber'
 
   gem 'pry'
   gem 'pry-rescue'
