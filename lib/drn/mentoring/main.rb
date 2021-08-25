@@ -33,10 +33,7 @@ module Drn
       end
 
       get '/dashboard' do
-        render :dashboard, with: {
-                 products: app.products.products_and_purchased_by_customer(current_user),
-                 mentors: app.users.mentors
-               }
+        render :dashboard, with: Dashboard.new(app, current_user)
       end
 
       get '/state.js', authenticate: false do

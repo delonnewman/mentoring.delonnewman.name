@@ -33,6 +33,7 @@ module Drn
             .map { |a| Sequel[table_name][a.name] }
 
         @dataset = dataset
+        @simple_dataset = dataset
 
         unless @component_attributes.empty?
           data = SqlUtils.component_attribute_query_info(entity_class)
@@ -83,33 +84,24 @@ module Drn
       end
 
       def update!(id, data)
-        dataset.where(id: id).update(data)
+        @simple_dataset.where(id: id).update(data)
       end
 
       def create!(record)
-        store!(record)
-        entity_class[record]
+        id = store!(record)
+        entity_class[record.merge(id: id)]
       end
 
       def store!(record)
         table.insert(SqlUtils.process_record(entity_class, record))
-
-        self
       end
 
       def store_all!(records)
         table.multi_insert(records.map(&SqlUtils.method(:process_record).curry[entity_class]))
-
-        self
       end
 
       def delete_where!(predicates)
-        qstr, binds = SqlUtils.where(db, predicates)
-        query = "delete from #{db.literal(Sequel.identifier(table_name))} #{qstr}"
-
-        SqlUtils.run query, *binds, tag: 'delete_where!'
-
-        self
+        @simple_dataset.where(predicates).delete
       end
 
       def delete_all!
@@ -122,6 +114,10 @@ module Drn
         dataset.where(predicates).map do |row|
           SqlUtils.build_entity(entity_class, row)
         end
+      end
+
+      def build_entity(hash)
+        SqlUtils.build_entity(entity_class, hash)
       end
 
       private

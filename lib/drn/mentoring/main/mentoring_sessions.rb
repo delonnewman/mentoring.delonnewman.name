@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
     class Main < Framework::Controller
@@ -11,15 +13,16 @@ module Drn
 
         # create session
         post '/' do |params|
-          # create database record session_id:UUID, stripe_session_id:String, started_at:Time, ended_at:Time
-          session =
-            MentoringSession[
-              checkout_session_id: params['checkout_session_id'],
-              customer: current_user,
-              mentor: 'delon'
-            ]
-          app.mentoring_sessions.store!(session)
-          app.messenger.new_session(session).wait!
+          meeting = app.create_zoom_meeting!(customer: current_user, mentor: app.default_mentor)
+
+          session = app.mentoring_sessions.create!(
+            checkout_session_id: params['checkout_session_id'],
+            customer: current_user,
+            mentor: app.default_mentor,
+            zoom_meeting_id: meeting.id
+          )
+
+          app.messenger.notify!(session, about: :new_session)
 
           redirect_to session_path(session)
         end
@@ -32,7 +35,7 @@ module Drn
           session = app.mentoring_sessions.find_by!(id: params[:id])
 
           if session.viewable_by?(current_user)
-            render :show, with: { session: session }
+            render :show, with: { session: session, zoom_meeting: app.zoom_meeting(session) }
           else
             render :unauthorized
           end
@@ -51,6 +54,7 @@ module Drn
           # calculate quantity from started_at and ended_at
           # mentor okays the checkout
           session = app.mentoring_sessions.end!(params[:id])
+          app.delete_zoom_meeting!(session)
           redirect_to session_path(session)
         end
 

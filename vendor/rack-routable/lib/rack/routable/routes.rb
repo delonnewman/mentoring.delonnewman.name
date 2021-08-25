@@ -92,9 +92,7 @@ module Rack
       # @param env [Hash] a Rack environment
       #
       # @return [{ tag: Symbol, value: #call, params: Hash, options: Hash, env:? Hash }]
-      def match(env)
-        method = env['REQUEST_METHOD']
-
+      def match(env, method = env['REQUEST_METHOD'])
         path   = env['PATH_INFO']
         path   = path.start_with?('/') ? path[1, path.size] : path
         parts  = path.split(/\/+/)

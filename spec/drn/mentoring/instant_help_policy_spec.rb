@@ -9,7 +9,7 @@ RSpec.describe Product::InstantHelpPolicy do
 
   describe '#disabled?' do
     it 'returns true if there are any active mentoring sessions' do
-      MentoringSession.repository.create!(
+      MentoringSession.repository.store!(
         checkout_session_id: "testing-#{SecureRandom.uuid}",
         customer: customer,
         mentor_id: mentor.id

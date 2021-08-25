@@ -98,6 +98,22 @@ module Drn
           </button>
         HTML
       end
+
+      def session_name(session, current_user)
+        "Session with #{display_user other_user(current_user, session.mentor, session.customer)}"
+      end
+
+      def display_user(user, current_user = nil)
+        return 'You' if user.id == current_user&.id
+
+        user.first_name
+      end
+
+      def other_user(current_user, user1, user2)
+        return user2 if current_user.id == user1.id
+
+        user1
+      end
     end
   end
 end

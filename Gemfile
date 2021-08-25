@@ -41,7 +41,8 @@ gem 'oj'
 # vendor
 gem 'stripe'
 gem 'mailjet'
-gem 'wonder-llama', require: 'wonder_llama', path: '../wonder-llama' # Zulip Chat
+gem 'wonder-llama', require: 'wonder_llama', github: 'delonnewman/wonder-llama' # Zulip Chat
+gem 'zoom_rb'
 
 group :development, :test do
   gem 'rake'

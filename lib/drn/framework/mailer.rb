@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Drn
   module Framework
     class Mailer < Templated
@@ -14,28 +15,26 @@ module Drn
         app.logger
       end
 
+      def notify!(*args, about:)
+        public_send(about, *args).wait!
+      end
+
       protected
 
-      def mail(
-        name,
-        view = EMPTY_HASH,
-        to:,
-        from: 'contact@delonnewman.name',
-        subject:
-      )
+      DEFAULT_FROM = 'contact@delonnewman.name'
+
+      def mail(name, view = EMPTY_HASH, to:, subject:, from: DEFAULT_FROM)
         content = render_template(name, view)
 
-        msg = [
-          {
-            'From' => {
-              'Email' => from,
-              'Name' => "Delon Newman's Email Bot"
-            },
-            'To' => [{ 'Email' => to.email, 'Name' => to.username }],
-            'Subject' => subject,
-            'HTMLPart' => content
-          }
-        ]
+        msg = [{
+                 'From' => {
+                   'Email' => from,
+                   'Name' => "Delon R. Newman Mentoring Bot"
+                 },
+                 'To' => [{ 'Email' => to.email, 'Name' => to.username }],
+                 'Subject' => subject,
+                 'HTMLPart' => content
+               }]
 
         logger.info "Sending message: #{msg.inspect}"
 

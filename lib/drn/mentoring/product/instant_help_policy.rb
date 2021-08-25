@@ -45,7 +45,7 @@ module Drn
           day = availability[now.wday]
           return true unless day
 
-          now.hour < day[:start] || now.hour > day[:end]
+          now.hour <= day[:start] || now.hour >= day[:end]
         end
       end
     end

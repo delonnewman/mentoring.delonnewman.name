@@ -164,10 +164,18 @@ module Rack
 
       def initialize(env)
         @env      = env
-        @request  = Rack::Request.new(env)
-        @match    = self.class.routes.match(env) || EMPTY_HASH
+        @request  = Request.new(env)
+        @match    = self.class.routes.match(env, @request.request_method) || EMPTY_HASH
         @params   = @request.params.merge(@match[:params]) if @match && @match[:params]
         @response = Rack::Response.new
+      end
+
+      class Request < Rack::Request
+        def request_method
+          params.fetch('routable.http.method') do
+            super()
+          end.upcase
+        end
       end
 
       protected

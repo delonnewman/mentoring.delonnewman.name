@@ -7,6 +7,7 @@ module Drn
       primary_key :id, :uuid
 
       has :checkout_session_id, String
+      has :zoom_meeting_id, Integer, required: false
       has :started_at, Time, default: -> { Time.now }
       has :ended_at, Time, required: false
 
@@ -21,16 +22,12 @@ module Drn
       repository do
         def end!(id)
           update!(id, ended_at: Time.now)
+          find_by!(id: id)
         end
 
-        def for_customer(user)
+        def active_sessions_for_user(user)
           user_id = user.is_a?(User) ? user.id : user
-          dataset.where(customer_id: user_id)
-        end
-
-        def for_mentor(user)
-          user_id = user.is_a?(User) ? user.id : user
-          dataset.where(mentor_id: user_id)
+          dataset.where(customer_id: user_id).or(mentor_id: user_id).where(ended_at: nil).map(&method(:build_entity))
         end
       end
 

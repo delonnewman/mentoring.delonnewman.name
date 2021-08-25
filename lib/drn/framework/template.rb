@@ -58,7 +58,7 @@ module Drn
         content = eval(code, binding, path.to_s)
 
         if @layout
-          @layout.call(view.merge(__content__: content, view: view))
+          @layout.call(view.is_a?(Hash) ? view.merge(__content__: content, view: view) : { __content__: content, view: view })
         else
           content
         end

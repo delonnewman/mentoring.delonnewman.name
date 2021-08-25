@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rack/contrib/try_static'
 
 module Drn
@@ -40,7 +41,8 @@ module Drn
         MAILJET_SECRET_KEY
       ].freeze
 
-      attr_reader :env, :logger, :root, :db, :session_secret, :settings, :chat_service
+      attr_reader :env, :logger, :root, :db, :session_secret, :settings,
+                  :zulip_client, :zoom_client, :default_mentor_username
 
       def initialize(env)
         @env = env
@@ -127,11 +129,22 @@ module Drn
           config.api_version = 'v3.1'
         end
 
-        @chat_service = WonderLlama::Client.new(
+        @zulip_client = WonderLlama::Client.new(
           host: settings.fetch('ZULIP_HOST'),
           email: settings.fetch('ZULIP_BOT_EMAIL'),
           api_key: settings.fetch('ZULIP_API_KEY')
         )
+
+        Zoom.configure do |config|
+          config.api_key = settings.fetch('ZOOM_API_KEY')
+          config.api_secret = settings.fetch('ZOOM_API_SECRET')
+        end
+
+        @zoom_client = Zoom.new
+
+        @default_mentor_username = 'delon'
+
+        require 'pry' if env == :development
 
         initialized!
 

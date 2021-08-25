@@ -21,7 +21,7 @@ module Drn
       private
 
       def session_url(session)
-        "https://#{app.settings['DOMAIN']}/activate/#{session.id}"
+        "https://#{app.settings['DOMAIN']}/session/#{session.id}"
       end
 
       def activation_url(user)

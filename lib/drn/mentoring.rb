@@ -19,12 +19,14 @@ module Drn
     require_relative 'mentoring/user_registration'
 
     # Factory Methods
+    require_relative 'mentoring/zoom_meeting'
     require_relative 'mentoring/application/factories'
 
     # Messengers
     require_relative 'mentoring/application_messenger'
 
     # Main Application
+    require_relative 'mentoring/dashboard'
     require_relative 'mentoring/main/products'
     require_relative 'mentoring/main/checkout'
     require_relative 'mentoring/main/mentoring_sessions'

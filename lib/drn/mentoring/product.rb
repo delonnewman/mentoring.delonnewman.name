@@ -41,6 +41,18 @@ module Drn
           map { |p| [p, purchased.include?(p.id)] }
         end
 
+        def subscribers
+          db[:products]
+            .join(:product_rates, id: :rate_id)
+            .join(:users_products, product_id: Sequel[:products][:id])
+            .join(:users, id: Sequel[:users_products][:user_id])
+            .join(:user_roles, id: Sequel[:users][:role_id])
+            .where(Sequel[:product_rates][:subscription] => true)
+            .select_all(:users)
+            .select_append(Sequel[:user_roles][:id].as('role[id]'), Sequel[:user_roles][:name].as('role[name]'))
+            .map { |record| Framework::SqlUtils.build_entity(User, record) }
+        end
+
         private
 
         def customer_products(user)
