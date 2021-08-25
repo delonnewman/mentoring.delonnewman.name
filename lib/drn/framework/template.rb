@@ -39,12 +39,20 @@ module Drn
         @layout = Template.new(templated, layout, nil) if layout
       end
 
+      def render(*args)
+        @templated.render_template(*args)
+      end
+
+      def include_file(path)
+        @app.root.join(path).read
+      end
+
       def method_missing(method, *args, **kwargs)
         @templated.send(method, *args, **kwargs)
       end
 
-      def respond_to?(method, include_all = false)
-        super || @templated.respond_to?(method, include_all)
+      def respond_to_missing?(method)
+        super || @templated.respond_to?(method)
       end
 
       def call(view)
@@ -65,11 +73,9 @@ module Drn
       end
 
       def code
-        if app.env == :production && @code
-          @code
-        else
-          @code = Erubi::Engine.new(path.read).src
-        end
+        return @code if app.env == :production && @code
+
+        @code = Erubi::Engine.new(path.read).src
       end
     end
   end

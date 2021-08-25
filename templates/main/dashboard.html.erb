@@ -1,7 +1,22 @@
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-2 mt-md-4">
     <div class="row">
         <div class="<%= current_user.mentor? ? 'col-lg-9' : 'col-lg-7' %>">
-            <% unless view.sessions.empty? %>
+            <% if view.sessions.empty? %>
+                <style>
+                 #dashboard-no-sessions {
+                     background: url(/img/laptop-house.svg) no-repeat center;
+                     margin: 0 auto;
+                     min-width: 70%;
+                     max-width: 500px;
+                     height: 300px;
+                     text-align: center;
+                 }
+                </style>
+                <div class="no-sessions pt-5 mt-md-4 text-muted" id="dashboard-no-sessions">
+                    No sessions found. If your mentor is available you can start one by selecting an
+                    <em>Instant Help</em> or <em>Instant Conversation</em>.
+                </div>
+            <% else %>
                 <div class="d-sm-flex">
                     <% view.sessions.each do |session| %>
                         <div class="card mr-sm-3 mb-3" style="width:350px">
@@ -43,20 +58,26 @@
                 <h5 class="text-muted border-bottom text-uppercase">Your Mentor</h5>
                 <ul class="list-group list-group-flush">
                     <% view.mentors.each do |mentor| %>
-                        <li class="list-group-item media d-flex justify-content-between">
-                            <img src="<%= mentor.meta['profile.image_path'] %>"
-                                 style="width:60px"
-                                 class="mr-3 align-self-start rounded-circle">
+                        <li class="list-group-item media">
+                            <div class="d-flex">
+                                <img src="<%= mentor.meta['profile.image_path'] %>"
+                                     style="width:80px"
+                                     class="mr-3 align-self-start rounded-circle">
+                                <div>
+                                    <h5 class="mb-2"><%= mentor %></h5>
+                                    <dl>
+                                        <dt class="text-muted"><i class="fas fa-clock"></i> Current Time</dt>
+                                        <dd id="mentor-current-time">
+                                            <span class="offset" style="visibility:hidden">
+                                                <%= mentor.meta['profile.timezoneOffset'] %>
+                                            </span>
+                                            -
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
                             <div class="media-body">
-                                <h5><%= mentor %></h5>
                                 <dl class="mt-3">
-                                    <dt class="text-muted"><i class="fas fa-clock"></i> Current Time</dt>
-                                    <dd id="mentor-current-time">
-                                        <span class="offset" style="visibility:hidden">
-                                            <%= mentor.meta['profile.timezoneOffset'] %>
-                                        </span>
-                                        -
-                                    </dd>
                                     <dt class="text-muted mb-2 mt-3"><i class="fas fa-calendar-week"></i> Availability</dt>
                                     <dd>
                                         <%= mentor_availability_schedule mentor %>
