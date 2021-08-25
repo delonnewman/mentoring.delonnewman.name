@@ -5,6 +5,7 @@ module Drn
     class Main < Framework::Controller
       include Framework::Authenticable
       include MainHelpers
+      include Framework::TimeUtils
 
       use Rack::Session::Cookie, secret: Mentoring.app.session_secret
 

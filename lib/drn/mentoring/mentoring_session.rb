@@ -6,7 +6,7 @@ module Drn
     class MentoringSession < Framework::Entity
       primary_key :id, :uuid
 
-      has :checkout_session_id, String
+      has :checkout_session_id, String, required: false
       has :zoom_meeting_id, Integer, required: false
       has :started_at, Time, default: -> { Time.now }
       has :ended_at, Time, required: false
@@ -18,6 +18,7 @@ module Drn
       # if the field is not required it should be an outer join.
       belongs_to :mentor, type: User, default: 'delon'
       belongs_to :customer, type: User
+      belongs_to :product, type: Product
 
       repository do
         def end!(id)
@@ -25,9 +26,13 @@ module Drn
           find_by!(id: id)
         end
 
-        def active_sessions_for_user(user)
+        def active_and_recently_ended_sessions_for_user(user)
           user_id = user.is_a?(User) ? user.id : user
-          dataset.where(customer_id: user_id).or(mentor_id: user_id).where(ended_at: nil).map(&method(:build_entity))
+
+          dataset
+            .where(customer_id: user_id).or(mentor_id: user_id)
+            .where(ended_at: nil).or { ended_at > Date.today.to_time }
+            .map(&method(:build_entity))
         end
       end
 
@@ -42,6 +47,12 @@ module Drn
 
       def incomplete?
         ended_at.nil?
+      end
+
+      def duration
+        return nil unless ended?
+
+        ((ended_at - started_at) / 60).round
       end
     end
   end

@@ -68,9 +68,7 @@ module Drn
           return_url = Drn::Mentoring.app.settings['DOMAIN']
 
           session =
-            Stripe::BillingPortal::Session.create(
-              { customer: checkout_session['customer'], return_url: return_url }
-            )
+            Stripe::BillingPortal::Session.create(customer: checkout_session['customer'], return_url: return_url)
 
           render json: { url: session.url }
         end
@@ -110,9 +108,7 @@ module Drn
           data = event['data']
           data_object = data['object']
 
-          if event_type == 'checkout.session.completed'
-            puts '🔔  Payment succeeded!'
-          end
+          puts '🔔  Payment succeeded!' if event_type == 'checkout.session.completed'
 
           render json: { status: 'success' }
         end
@@ -122,7 +118,7 @@ module Drn
           if product.subscription?
             "http://#{Drn::Mentoring.app.settings['DOMAIN']}/products/#{product.id}/subscribe?session_id={CHECKOUT_SESSION_ID}"
           else
-            "http://#{Drn::Mentoring.app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}"
+            "http://#{Drn::Mentoring.app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}&product_id=#{product.id}"
           end
         end
 

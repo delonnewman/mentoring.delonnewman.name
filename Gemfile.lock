@@ -100,7 +100,6 @@ GEM
       activesupport (>= 3.1.0)
       rack (>= 1.4.0)
       rest-client (>= 2.0.0)
-    memory_profiler (1.0.0)
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
@@ -139,8 +138,6 @@ GEM
       rack (~> 2.0)
     rack-flash3 (1.0.5)
       rack
-    rack-mini-profiler (2.3.2)
-      rack (>= 1.2.0)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rack_csrf (2.6.0)
@@ -180,7 +177,6 @@ GEM
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     sequel (5.43.0)
-    stackprof (0.2.17)
     stripe (5.32.1)
     sys-uname (1.2.2)
       ffi (~> 1.1)
@@ -217,7 +213,6 @@ DEPENDENCIES
   inflection
   invokable
   mailjet
-  memory_profiler
   nio4r
   oj
   pg
@@ -229,7 +224,6 @@ DEPENDENCIES
   rack
   rack-contrib
   rack-flash3
-  rack-mini-profiler
   rack-routable!
   rack_csrf
   rake
@@ -237,13 +231,15 @@ DEPENDENCIES
   rubocop
   sequel
   shotgun!
-  stackprof
   stripe
   webrick
   websocket-driver
   wonder-llama!
   yard
   zoom_rb
+
+RUBY VERSION
+   ruby 3.0.1p64
 
 BUNDLED WITH
    2.2.16

@@ -5,10 +5,11 @@ module Drn
     class Main < Framework::Controller
       class MentoringSessions < Framework::Controller
         include Framework::Authenticable
+        include Framework::TimeUtils
 
         get '/new' do |params|
           # start / cancel buttons with some instructions
-          render :new, with: { checkout_session_id: params['session_id'] }
+          render :new, with: { checkout_session_id: params['session_id'], product_id: params['product_id'] }
         end
 
         # create session
@@ -19,7 +20,8 @@ module Drn
             checkout_session_id: params['checkout_session_id'],
             customer: current_user,
             mentor: app.default_mentor,
-            zoom_meeting_id: meeting.id
+            zoom_meeting_id: meeting.id,
+            product: app.products.find_by!(id: params['product_id'])
           )
 
           app.messenger.notify!(session, about: :new_session)

@@ -1,6 +1,6 @@
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="col-md-4">
+        <div class="<%= current_user.mentor? ? 'col-md-3' : 'col-md-4' %>">
             <% if !current_user.mentor? %>
                 <ul class="list-group list-group-flush mb-5 border-bottom">
                     <% view.products.each do |(product, purchased)| %>
@@ -62,9 +62,11 @@
                                 <%= subscriber %>
                             </h6>
                             <div class="d-flex justify-content-end">
-                                <a class="btn btn-secondary btn-sm mr-2" href="#">
-                                    New Session
-                                </a>
+                                <form action="/session" method="post">
+                                    <button class="btn btn-secondary btn-sm mr-2">
+                                        New Session
+                                    </button>
+                                </form>
                                 <a class="btn btn-secondary btn-sm" title="Email <%= subscriber %>"
                                    href="mailto:<%= subscriber.email %>">
                                     <i class="fas fa-paper-plane"></i>
@@ -75,19 +77,33 @@
                 <% end %>
             <% end %>
         </div>
-        <div class="col-md-8">
+        <div class="<%= current_user.mentor? ? 'col-md-9' : 'col-md-8' %>">
             <% unless view.sessions.empty? %>
-                <% view.sessions.each do |session| %>
-                    <div class="card" style="width:350px">
-                        <div class="card-body">
-                            <h5 class="card-title"><%= session_name session, current_user %></h5>
-                            <p class="card-text text-muted">started <%= time_ago_in_words session.started_at %></p>
-                            <div class="d-flex justify-content-end">
-                                <a class="card-link" href="/session/<%= session.id %>">View</a>
+                <div class="d-flex">
+                    <% view.sessions.each do |session| %>
+                        <div class="card mr-3" style="width:350px">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <%= session.product %> Session
+                                </h5>
+                                <p class="card-text text-muted">
+                                    <%= other_user(current_user, session.mentor, session.customer) %>
+                                    <br>
+                                    <% if session.ended? %>
+                                        <small>Ended <%= time_ago_in_words session.ended_at %></small>
+                                    <% else %>
+                                        <small>Started <%= time_ago_in_words session.started_at %></small>
+                                    <% end %>
+                                    <br>
+                                    <%= fmt_time session.started_at %> to <%= fmt_time session.ended_at %>
+                                </p>
+                                <div class="d-flex justify-content-end">
+                                    <a class="card-link" href="/session/<%= session.id %>">View</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <% end %>
+                    <% end %>
+                </div>
             <% end %>
         </div>
     </div>

@@ -18,7 +18,7 @@ module Drn
       end
 
       def sessions
-        app.mentoring_sessions.active_sessions_for_user(user)
+        app.mentoring_sessions.active_and_recently_ended_sessions_for_user(user)
       end
 
       def subscribers

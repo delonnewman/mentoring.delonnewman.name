@@ -5,7 +5,7 @@ git_source :github do |repo|
   "https://github.com/#{repo}.git"
 end
 
-#ruby '3.0.1'
+ruby '3.0.1'
 
 # db
 gem 'pg'
@@ -21,9 +21,9 @@ gem 'bcrypt'
 gem 'rack_csrf'
 
 # performance
-gem 'rack-mini-profiler'
-gem 'memory_profiler'
-gem 'stackprof'
+# gem 'rack-mini-profiler'
+# gem 'memory_profiler'
+# gem 'stackprof'
 
 # framework stuff
 gem 'dotenv'

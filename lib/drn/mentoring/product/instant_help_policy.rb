@@ -39,6 +39,7 @@ module Drn
         # @option now [Time]
         # @option availability [Hash<Integer, { start: Integer, end: Integer }>]
         def disabled?(_, now: Time.now, availability: mentor_availability)
+          return false
           return true unless mentoring_sessions.empty?
           return false if Drn::Mentoring.app.env == :development
 

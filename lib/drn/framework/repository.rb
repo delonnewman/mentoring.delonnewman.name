@@ -89,7 +89,7 @@ module Drn
 
       def create!(record)
         id = store!(record)
-        entity_class[record.merge(id: id)]
+        find_by!(id: id)
       end
 
       def store!(record)

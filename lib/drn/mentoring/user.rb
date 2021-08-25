@@ -49,6 +49,12 @@ module Drn
         now.hour >= day[:start] && now.hour <= day[:end]
       end
 
+      def status
+        return :not_available unless available?
+
+        :available
+      end
+
       def name
         displayname || username
       end

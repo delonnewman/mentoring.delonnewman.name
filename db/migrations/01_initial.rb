@@ -58,9 +58,11 @@ Sequel.migration do
       Integer :mentor_id, null: false, index: true
       Integer :customer_id, null: false, index: true
       bigint :zoom_meeting_id, null: false, index: true
+      uuid :product_id, null: false, index: true
 
       foreign_key [:mentor_id], :users
       foreign_key [:customer_id], :users
+      foreign_key [:product_id], :products
     end
 
     create_table :user_registrations do

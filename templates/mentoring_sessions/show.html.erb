@@ -1,17 +1,26 @@
-<a href="/dashboard">
-    <i class="fas fa-chevron-left"></i>
-    Dashboard
-</a>
+<div class="d-flex justify-content-between border-bottom pb-1 mb-2">
+    <a href="/dashboard">
+        <i class="fas fa-chevron-left"></i>
+        Dashboard
+    </a>
+    <div class="text-muted">
+        <strong><%= session.product %> Session</strong>
+        @ <%= money session.product.price %> / <%= session.product.rate %>
+    </div>
+</div>
 
-<% if !session.ended? %>
-    <div class="d-flex justify-content-between">
-        <div class="text-muted" id="session-time">
+<div class="d-flex justify-content-between">
+    <div class="text-muted" id="session-time">
+        <div>
             <% if session.ended? %>
-                Session Ended <%= time_ago_in_words session.ended_at %>
+                Ended <%= time_ago_in_words session.ended_at %>,
+                <%= fmt_time session.started_at %> &mdash; <%= fmt_time session.ended_at %>
             <% else %>
-                Session Started <%= time_ago_in_words session.started_at %>
+                Started <%= time_ago_in_words session.started_at %>
             <% end %>
         </div>
+    </div>
+    <% if !session.ended? %>
         <div>
             <% if current_user.id == session.mentor.id %>
                 <a class="btn btn-secondary" href="<%= zoom_meeting.start_url %>">Start Zoom</a>
@@ -23,12 +32,7 @@
             <input type="hidden" name="routable.http.method" value="delete">
             <button class="btn btn-danger">End Session</button>
         </form>
-    </div>
-<% else %>
-    <div class="d-flex justify-content-between">
-        <div class="text-muted" id="session-time">
-            Session Ended <%= time_ago_in_words session.ended_at %>
-        </div>
-        <div></div>
-    </div>
-<% end %>
+    <% else %>
+        <%= session.duration %> minutes
+    <% end %>
+</div>
