@@ -4,6 +4,7 @@ Sequel.migration do
     create_table :product_rates do
       primary_key :id
       String :name, null: false, index: true, unique: true
+      String :unit, null: false, index: true
       FalseClass :subscription, null: false, index: true, default: false
       String :description, null: false
     end

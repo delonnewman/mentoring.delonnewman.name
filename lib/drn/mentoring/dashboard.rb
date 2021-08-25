@@ -1,12 +1,17 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
     # A view object that represents a users dashboard
     class Dashboard
-      attr_reader :app, :user
+      require_relative 'session_card'
+
+      attr_reader :app, :user, :session_card
 
       def initialize(app, user)
         @app = app
         @user = user
+        @session_card = SessionCard.new(app, self)
       end
 
       def products
@@ -18,7 +23,11 @@ module Drn
       end
 
       def sessions
-        app.mentoring_sessions.active_and_recently_ended_sessions_for_user(user)
+        if user.mentor?
+          app.mentoring_sessions.active_and_recently_ended_sessions_where(mentor_id: user.id)
+        else
+          app.mentoring_sessions.active_and_recently_ended_sessions_where(customer_id: user.id)
+        end
       end
 
       def subscribers

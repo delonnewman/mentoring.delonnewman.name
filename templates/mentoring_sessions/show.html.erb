@@ -5,7 +5,7 @@
     </a>
     <div class="text-muted">
         <strong><%= session.product %> Session</strong>
-        @ <%= money session.product.price %> / <%= session.product.rate %>
+        @ <%= session.product.price_rate %>
     </div>
 </div>
 
@@ -33,6 +33,6 @@
             <button class="btn btn-danger">End Session</button>
         </form>
     <% else %>
-        <%= session.duration %> minutes
+        <%= session.duration %> &mdash; <%= session.cost %>
     <% end %>
 </div>

@@ -1,33 +1,46 @@
 <div class="container-fluid mt-4">
     <div class="row">
-        <div class="<%= current_user.mentor? ? 'col-md-3' : 'col-md-4' %>">
-            <% if !current_user.mentor? %>
-                <ul class="list-group list-group-flush mb-5 border-bottom">
-                    <% view.products.each do |(product, purchased)| %>
-                        <li class="list-group-item media d-flex justify-content-between align-items-center">
-                            <img src="<%= product.image_path %>"
-                                 alt="<%= product.name %> Image"
-                                 style="height:50px" class="mr-3 align-self-start rounded">
-                            <div class="media-body">
-                                <h5 class="mb-0"><%= product %></h5>
-                                <p style="font-size:0.8em"><%= product.description %></p>
-                                <% if purchased %>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="badge badge-primary">purchased</span>
-                                        <button class="btn btn-danger btn-sm">Cancel</button>
-                                    </div>
-                                <% else %>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <%= product_price product, size: 'sm', subscriber: subscriber?(view.products) %>
-                                        <%= product_button product, size: 'sm' %>
-                                    </div>
-                                <% end %>
+        <div class="<%= current_user.mentor? ? 'col-md-9' : 'col-md-7' %>">
+            <% unless view.sessions.empty? %>
+                <div class="d-flex">
+                    <% view.sessions.each do |session| %>
+                        <div class="card mr-3" style="width:350px">
+                            <div class="card-body">
+                                <h5 class="card-title mb-0">
+                                    <%= session.product %> Session
+                                </h5>
+                                <p class="card-text text-muted">
+                                    <small>
+                                    <% if session.ended? %>
+                                        Ended with <%= view.session_card.displayed_user(session) %>
+                                        <%= time_ago_in_words session.ended_at %>
+                                    <% else %>
+                                        Started with <%= view.session_card.displayed_user(session) %>
+                                        <%= time_ago_in_words session.started_at %>
+                                    <% end %>
+                                    </small>
+                                    <% unless session.ended? %>
+                                        <br>
+                                        <%= fmt_time session.started_at %> &mdash; <%= fmt_time session.ended_at, '' %>
+                                    <% end %>
+                                    <% if session.ended? %>
+                                        <br>
+                                        <%= session.duration %> &mdash; <%= session.cost %>
+                                    <% end %>
+                                </p>
+                                <div class="d-flex justify-content-end">
+                                    <a class="card-link" href="/session/<%= session.id %>">View</a>
+                                </div>
                             </div>
-                        </li>
+                        </div>
                     <% end %>
-                </ul>
+                </div>
+            <% end %>
+        </div>
 
-                <h4>Your Mentor</h4>
+        <div class="<%= current_user.mentor? ? 'col-md-3' : 'col-md-5' %>">
+            <% if !current_user.mentor? %>
+                <h5 class="text-muted border-bottom text-uppercase">Your Mentor</h5>
                 <ul class="list-group list-group-flush">
                     <% view.mentors.each do |mentor| %>
                         <li class="list-group-item media d-flex justify-content-between">
@@ -49,6 +62,31 @@
                                         <%= mentor_availability_schedule mentor %>
                                     </dd>
                                 </dl>
+                            </div>
+                        </li>
+                    <% end %>
+                </ul>
+
+                <ul class="list-group list-group-flush mb-5 border-bottom">
+                    <% view.products.each do |(product, purchased)| %>
+                        <li class="list-group-item media d-flex justify-content-between align-items-center">
+                            <img src="<%= product.image_path %>"
+                                 alt="<%= product.name %> Image"
+                                 style="height:50px" class="mr-3 align-self-start rounded">
+                            <div class="media-body">
+                                <h5 class="mb-0"><%= product %></h5>
+                                <p style="font-size:0.8em"><%= product.description %></p>
+                                <% if purchased %>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge badge-primary">purchased</span>
+                                        <button class="btn btn-danger btn-sm">Cancel</button>
+                                    </div>
+                                <% else %>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <%= product_price product, size: 'sm', subscriber: subscriber?(view.products) %>
+                                        <%= product_button product, size: 'sm' %>
+                                    </div>
+                                <% end %>
                             </div>
                         </li>
                     <% end %>
@@ -75,35 +113,6 @@
                         </div>
                     </div>
                 <% end %>
-            <% end %>
-        </div>
-        <div class="<%= current_user.mentor? ? 'col-md-9' : 'col-md-8' %>">
-            <% unless view.sessions.empty? %>
-                <div class="d-flex">
-                    <% view.sessions.each do |session| %>
-                        <div class="card mr-3" style="width:350px">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <%= session.product %> Session
-                                </h5>
-                                <p class="card-text text-muted">
-                                    <%= other_user(current_user, session.mentor, session.customer) %>
-                                    <br>
-                                    <% if session.ended? %>
-                                        <small>Ended <%= time_ago_in_words session.ended_at %></small>
-                                    <% else %>
-                                        <small>Started <%= time_ago_in_words session.started_at %></small>
-                                    <% end %>
-                                    <br>
-                                    <%= fmt_time session.started_at %> to <%= fmt_time session.ended_at %>
-                                </p>
-                                <div class="d-flex justify-content-end">
-                                    <a class="card-link" href="/session/<%= session.id %>">View</a>
-                                </div>
-                            </div>
-                        </div>
-                    <% end %>
-                </div>
             <% end %>
         </div>
     </div>

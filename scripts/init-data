@@ -6,13 +6,16 @@ rates = [
   ProductRate[
     name: 'per-month',
     description: '/ month',
+    unit: 'month',
     subscription: true],
   ProductRate[
     name: 'per-half-hour',
-    description: '/ half-hour'],
+    description: '/ half-hour',
+    unit: 'half_hour'],
   ProductRate[
     name: 'per-minute',
-    description: '/ minute']]
+    description: '/ minute',
+    unit: 'minute']]
 
 pp rates
 

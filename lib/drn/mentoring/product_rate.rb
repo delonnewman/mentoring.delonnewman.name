@@ -4,6 +4,7 @@ module Drn
       primary_key :id
       reference :name, String
 
+      has :unit, String
       has :description, String, required: false
       has :subscription, :boolean, default: false
 

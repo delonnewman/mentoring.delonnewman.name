@@ -7,6 +7,8 @@ module Drn
 
     # Represents mentoring products
     class Product < Framework::Entity
+      include Framework::NumericUtils
+
       primary_key :id, :uuid
 
       has :name, String, display: { order: 0 }
@@ -67,8 +69,12 @@ module Drn
         policy&.disabled?(*args)
       end
 
+      def price_rate
+        dollars(amount / 100).per(rate.unit)
+      end
+
       def price
-        amount.to_f / 100
+        amount / 100
       end
 
       def price_id

@@ -4,6 +4,9 @@ module Drn
   module Mentoring
     # Represents the state of a mentoring session
     class MentoringSession < Framework::Entity
+      include Framework::TimeUtils
+      include Framework::NumericUtils
+
       primary_key :id, :uuid
 
       has :checkout_session_id, String, required: false
@@ -26,12 +29,11 @@ module Drn
           find_by!(id: id)
         end
 
-        def active_and_recently_ended_sessions_for_user(user)
-          user_id = user.is_a?(User) ? user.id : user
-
+        def active_and_recently_ended_sessions_where(predicates)
           dataset
-            .where(customer_id: user_id).or(mentor_id: user_id)
-            .where(ended_at: nil).or { ended_at > Date.today.to_time }
+            .where(ended_at: nil)
+            .or { ended_at > Date.today.to_time }
+            .where(predicates)
             .map(&method(:build_entity))
         end
       end
@@ -52,7 +54,15 @@ module Drn
       def duration
         return nil unless ended?
 
-        ((ended_at - started_at) / 60).round
+        seconds(ended_at - started_at).as(:minutes)
+      end
+
+      def cost
+        if duration <= ~minutes(5)
+          dollars(0)
+        else
+          product.price_rate * duration
+        end
       end
     end
   end

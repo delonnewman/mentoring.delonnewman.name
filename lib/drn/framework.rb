@@ -21,6 +21,7 @@ require_relative 'framework/trait'
 require_relative 'framework/utils'
 require_relative 'framework/utils/string_utils'
 require_relative 'framework/utils/time_utils'
+require_relative 'framework/utils/numeric_utils'
 require_relative 'framework/sql_utils'
 
 # Templating

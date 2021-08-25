@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Drn
   module Framework
+    # A collection of utility functions
     module Utils
       module_function
 
@@ -17,16 +20,16 @@ module Drn
       alias h escape_html
 
       JS_ESCAPE_MAP = {
-        '\\' => '\\\\',
-        '</' => '<\/',
+        '\\'   => '\\\\',
+        '</'   => '<\/',
         "\r\n" => '\n',
-        "\n" => '\n',
-        "\r" => '\n',
-        '"' => '\\"',
-        "'" => "\\'",
-        '`' => "\\`",
-        '$' => "\\$"
-      }
+        "\n"   => '\n',
+        "\r"   => '\n',
+        '"'    => '\\"',
+        "'"    => "\\'",
+        '`'    => '\\`',
+        '$'    => '\\$'
+      }.freeze
 
       private_constant :JS_ESCAPE_MAP
 
