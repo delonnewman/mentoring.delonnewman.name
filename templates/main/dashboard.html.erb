@@ -13,8 +13,11 @@
                  }
                 </style>
                 <div class="no-sessions pt-5 mt-md-4 text-muted" id="dashboard-no-sessions">
-                    No sessions found. If your mentor is available you can start one by selecting an
-                    <em>Instant Help</em> or <em>Instant Conversation</em>.
+                    No sessions found.
+                    <% unless current_user.mentor? %>
+                        If your mentor is available you can start one by selecting an
+                        <em>Instant Help</em> or <em>Instant Conversation</em>.
+                    <% end %>
                 </div>
             <% else %>
                 <div class="d-sm-flex">
