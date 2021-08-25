@@ -129,11 +129,11 @@ module Drn
           config.api_version = 'v3.1'
         end
 
-        @zulip_client = WonderLlama::Client.new(
-          host: settings.fetch('ZULIP_HOST'),
-          email: settings.fetch('ZULIP_BOT_EMAIL'),
-          api_key: settings.fetch('ZULIP_API_KEY')
-        )
+        # @zulip_client = WonderLlama::Client.new(
+        #   host: settings.fetch('ZULIP_HOST'),
+        #   email: settings.fetch('ZULIP_BOT_EMAIL'),
+        #   api_key: settings.fetch('ZULIP_API_KEY')
+        # )
 
         Zoom.configure do |config|
           config.api_key = settings.fetch('ZOOM_API_KEY')
