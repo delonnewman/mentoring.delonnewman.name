@@ -3,6 +3,7 @@
 require 'rack/contrib/try_static'
 
 module Drn
+  # A mentoring website (see https://mentoring.delonnewman.name)
   module Mentoring
     module_function
 
@@ -103,6 +104,10 @@ module Drn
 
       def layout_path(name)
         template_path('layouts', name)
+      end
+
+      def routes
+        Main.routes
       end
 
       # Rack interface

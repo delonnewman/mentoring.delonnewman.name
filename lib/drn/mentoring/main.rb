@@ -59,7 +59,7 @@ module Drn
             app.user_registrations.store!(user)
             app.messenger.signup(user).wait!
           end
-          redirect_to '/dashboard'
+          redirect_to app.routes.dashboard_path
         else
           render :signup, with: { errors: errors }
         end
@@ -88,7 +88,7 @@ module Drn
             app.users.store!(user)
             current_user!(user)
           end
-          redirect_to '/login'
+          redirect_to app.routes.login_path
         else
           render :account_activated, { registration: reg }
         end
@@ -101,7 +101,7 @@ module Drn
       post '/login' do
         user = app.users.find_user_and_authenticate(username: params['username'], password: params['password'])
 
-        ref = params['ref'].blank? ? '/dashboard' : params['ref']
+        ref = params['ref'].blank? ? app.routes.dashboard_path : params['ref']
 
         if user
           current_user! user
@@ -116,9 +116,9 @@ module Drn
         logout!
 
         if request.content_type == 'application/javascript'
-          render json: { redirect: '/' }
+          render json: { redirect: app.routes.root_path }
         else
-          redirect_to '/'
+          redirect_to app.routes.root_path
         end
       end
 

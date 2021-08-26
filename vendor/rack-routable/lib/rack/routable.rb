@@ -192,6 +192,10 @@ module Rack
         request.session
       end
 
+      def routes
+        self.class.routes
+      end
+
       def escape_html(*args)
         CGI.escapeHTML(*args)
       end

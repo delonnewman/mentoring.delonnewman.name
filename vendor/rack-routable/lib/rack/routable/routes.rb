@@ -1,19 +1,59 @@
 # frozen_string_literal: true
+
 module Rack
   module Routable
     class Route
-      attr_reader :router, :method, :path, :options, :action
+      attr_reader :router, :method, :path, :options, :action, :parsed_path
 
-      def initialize(router, method, path, options, action)
+      def initialize(router, method, path, options, action, parsed_path)
         @router = router
         @method = method
         @path = path
         @options = options
         @action = action
+        @parsed_path = parsed_path
+      end
+
+      def path_method_prefix
+        return 'root' if path == '/'
+
+        parts = []
+        path.split('/').each do |part|
+          parts << part.gsub(/\W+/, '_') unless part.start_with?(':') || part.empty?
+        end
+        parts.join('_')
+      end
+
+      def path_method_name
+        "#{path_method_prefix}_path"
+      end
+
+      def url_method_name
+        "#{path_method_prefix}_url"
+      end
+
+      def route_path(*args)
+        vars = @path.scan(/(:\w+)/)
+
+        if vars.length != args.length
+          raise ArgumentError, "wrong number of arguments expected #{vars.length} got #{args.length}"
+        end
+
+        return @path if vars.length.zero?
+
+        path = nil
+        vars.each_with_index do |str, i|
+          path = @path.sub(str[0], args[i].to_s)
+        end
+        path
+      end
+
+      def route_url(root, *args)
+        "#{root}/#{route_path(*args)}"
       end
 
       def with_prefix(prefix)
-        self.class.new(router, method, prefix + path, options, action)
+        self.class.new(router, method, prefix + path, options, action, parsed_path)
       end
     end
 
@@ -39,8 +79,7 @@ module Rack
       # @return [Routes] this object
       def each_route(&block)
         @table.each do |method, routes|
-          routes.each do |data|
-            route = Route.new(router, method, data[2], data[3], data[1])
+          routes.each do |route|
             if method == :mount && route.action.respond_to?(:routes)
               route.action.routes.each do |app_route|
                 r = app_route.with_prefix(route.path)
@@ -68,7 +107,12 @@ module Rack
         # TODO: Add Symbol#name for older versions of Ruby
         method = method.name.upcase
         @table[method] ||= []
-        @table[method] << [parse_path(path), action, path, options]
+        route = Route.new(self, method, path, options, action, parse_path(path))
+        @table[method] << route
+
+        define_singleton_method route.path_method_name do |*args|
+          route.route_path(*args)
+        end
 
         self
       end
@@ -82,7 +126,14 @@ module Rack
       # @return [Routes] this object
       def mount!(prefix, app, options = EMPTY_HASH)
         @table[:mount] ||= []
-        @table[:mount] << [parse_path(prefix)[:path], app, prefix, options]
+        @table[:mount] << Route.new(self, :mount, prefix, options, app, parse_path(prefix)[:path])
+
+        app.routes.each do |route|
+          route = route.with_prefix(prefix)
+          define_singleton_method route.path_method_name do |*args|
+            route.route_path(*args)
+          end
+        end
 
         self
       end
@@ -99,22 +150,23 @@ module Rack
 
 
         if (routes = @table[method])
-          routes.each do |(route, action, _, options)|
-            if (params = match_path(parts, route))
-              return { tag: :action, value: action, params: params, options: options }
+          routes.each do |route| #|(route, action, _, options)|
+            if (params = match_path(parts, route.parsed_path))
+              return { tag: :action, value: route.action, params: params, options: route.options }
             end
           end
         end
 
         if (mounted = @table[:mount])
-          mounted.each do |(prefix, app, _, options)|
+          mounted.each do |route| #|(prefix, app, _, options)|
+            prefix = route.parsed_path
             if path_start_with?(parts, prefix)
               app_path = "/#{parts[prefix.size, parts.size].join('/')}"
               return {
                 tag: :app,
-                value: app,
+                value: route.action,
                 env: env.merge('PATH_INFO' => app_path, 'rack-routable.original-path' => path),
-                options: options
+                options: route.options
               }
             end
           end
