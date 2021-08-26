@@ -54,8 +54,10 @@ Sequel.migration do
     create_table :mentoring_sessions do
       uuid :id, null: false, index: true, primary_key: true
       String :checkout_session_id
+      FalseClass :from_subscription, null: false, default: false
       Time :started_at, null: false, index: true
       Time :ended_at, index: true
+      Time :paid_at, index: true
       Integer :mentor_id, null: false, index: true
       Integer :customer_id, null: false, index: true
       bigint :zoom_meeting_id, null: false, index: true

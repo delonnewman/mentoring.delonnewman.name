@@ -172,35 +172,8 @@ pp users
 
 User.repository.store_all!(users) if User.repository.empty?
 
-#statuses = [
-#  MentoringSessionStatus[name: 'started'],
-#  MentoringSessionStatus[name: 'ended']
-#]
-#
-#MentoringSessionStatus.repository.store_all!(statuses) if MentoringSessionStatus.repository.empty?
-#product_list = Stripe::Product.list
-#existing = product_list.map(&:name).to_set
-#
-#
-#products.each do |data|
-#  product =
-#    if existing.include?(data[:name])
-#      product_list.find { |p| p.name == data[:name] }
-#    else
-#      print "Creating product #{data[:name]}..."
-#      Stripe::Product.create(data.except(:price)).tap do
-#        puts "Done."
-#      end
-#    end
-#
-#  if Stripe::Price.list(product: product.id).empty?
-#    print "Creating price for #{product.name}..."
-#    begin
-#      Stripe::Price.create(data[:price].merge(product: product.id))
-#    rescue => e
-#      print "Error: #{e.message}, rolling back..."
-#      Stripe::Product.delete(product.id)
-#    end
-#    puts "Done."
-#  end
-#end
+# if app.env == :development || app.env == :test
+#   customers = %w[the-man-in-black june-carter]
+
+#   MentoringSession[mentor: 'delon', customer: customers.sample]
+# end

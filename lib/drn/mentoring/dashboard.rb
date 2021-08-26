@@ -23,15 +23,15 @@ module Drn
       end
 
       def sessions
-        if user.mentor?
-          app.mentoring_sessions.active_and_recently_ended_sessions_where(mentor_id: user.id)
-        else
-          app.mentoring_sessions.active_and_recently_ended_sessions_where(customer_id: user.id)
-        end
+        @sessions ||=
+          begin
+            predicate = user.mentor? ? { mentor_id: user.id } : { customer_id: user.id }
+            app.mentoring_sessions.active_and_recently_ended_sessions_where(predicate)
+          end
       end
 
       def subscribers
-        app.products.subscribers
+        @subscribers ||= app.products.subscribers
       end
     end
   end

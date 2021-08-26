@@ -212,7 +212,7 @@ module Drn
         u = magnitude == 1 ? singular_unit : unit
         t = tolerance.zero? ? nil : '~'
 
-        "#{t}#{magnitude.to_f.round(1)} #{u.tr('_', ' ')}"
+        "#{t}#{magnitude.to_f.round(1)} #{u.name.tr('_', ' ')}"
       end
     end
   end

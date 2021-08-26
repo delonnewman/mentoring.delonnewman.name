@@ -51,6 +51,7 @@ group :development, :test do
   gem 'rubocop'
   gem 'capybara'
   gem 'cucumber'
+  gem 'faker'
 
   gem 'pry'
   gem 'pry-rescue'

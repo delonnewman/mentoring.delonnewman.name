@@ -116,26 +116,28 @@
                     <% end %>
                 </ul>
             <% else %>
-                <h5>Subscribers</h5>
-                <% view.subscribers.each do |subscriber| %>
-                    <div class="card" style="width:250px">
-                        <div class="card-body">
-                            <h6 class="card-title">
-                                <%= subscriber %>
-                            </h6>
-                            <div class="d-flex justify-content-end">
-                                <form action="/session" method="post">
-                                    <button class="btn btn-secondary btn-sm mr-2">
-                                        New Session
-                                    </button>
-                                </form>
-                                <a class="btn btn-secondary btn-sm" title="Email <%= subscriber %>"
-                                   href="mailto:<%= subscriber.email %>">
-                                    <i class="fas fa-paper-plane"></i>
-                                </a>
+                <% unless view.subscribers.empty? %>
+                    <h5>Subscribers</h5>
+                    <% view.subscribers.each do |subscriber| %>
+                        <div class="card" style="width:250px">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <%= subscriber %>
+                                </h6>
+                                <div class="d-flex justify-content-end">
+                                    <form action="/session" method="post">
+                                        <button class="btn btn-secondary btn-sm mr-2">
+                                            New Session
+                                        </button>
+                                    </form>
+                                    <a class="btn btn-secondary btn-sm" title="Email <%= subscriber %>"
+                                       href="mailto:<%= subscriber.email %>">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <% end %>
                 <% end %>
             <% end %>
         </div>
