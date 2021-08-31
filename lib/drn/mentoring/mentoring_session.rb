@@ -9,18 +9,14 @@ module Drn
 
       primary_key :id, :uuid
 
+      has :zoom_meeting_id,     Integer
       has :checkout_session_id, String,   required: false
-      has :zoom_meeting_id,     Integer,  required: false
       has :started_at,          Time,     default: -> { Time.now }
       has :ended_at,            Time,     required: false
       has :paid_at,             Time,     required: false
+      has :billed_at,           Time,     required: false
       has :from_subscription,   :boolean, required: false
 
-      # TODO: add a way to establish a looser relationship or
-      # to select the fields that will be loaded (maybe both?).
-      #
-      # Also need to add to repository aspects of component attributes
-      # if the field is not required it should be an outer join.
       belongs_to :mentor,   type: User
       belongs_to :customer, type: User
       belongs_to :product,  type: Product
@@ -45,17 +41,27 @@ module Drn
         !unpaid?
       end
 
+      def billed?
+        !billed_at.nil?
+      end
+
       def duration
         return nil unless ended?
 
-        seconds(ended_at - started_at).as(:minutes)
+        fetch :duration do
+          seconds(ended_at - started_at).as(:minutes)
+        end
       end
 
       def cost
-        if duration <= ~minutes(5)
-          dollars(0)
-        else
-          product.price_rate * duration
+        return nil if duration.nil?
+
+        fetch :cost do
+          if duration <= ~minutes(5)
+            dollars(0)
+          else
+            product.price_rate * duration
+          end
         end
       end
 

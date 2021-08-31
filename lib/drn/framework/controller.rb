@@ -5,11 +5,17 @@ module Drn
       include Rack::Routable
       include Core
 
+      def json
+        @json ||= JSONResponse.new(response)
+      end
+
       def status(status)
         response.tap { |r| r.status = status }
       end
 
       def render(name = nil, **options)
+        return name if name.is_a?(Rack::Response)
+
         if name.nil?
           if (content = options.delete(:json))
             response.tap do |res|

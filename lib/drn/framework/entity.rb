@@ -22,9 +22,8 @@ module Drn
       extend Types
 
       class << self
-        def has(name, type = Object, **options)
-          attribute =
-            Attribute.new({ entity: self, name: name, type: type, required: true }.merge(options))
+        def has(name, type = Object, **options, &block)
+          attribute = Attribute.new({ entity: self, name: name, type: type, required: !block }.merge(options))
           @required_attributes ||= []
           @required_attributes << name if attribute.required?
 
@@ -36,30 +35,27 @@ module Drn
 
           if attribute.mutable?
             define_method :"#{name}=" do |value|
-              if attribute.type.call(value)
-                self[name] = value
-              else
-                raise TypeError,
-                      "#{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+              unless attribute.type.call(value)
+                raise TypeError, "#{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
               end
+
+              self[name] = value
             end
           end
 
           if attribute.component? && (mapping = attribute.resolver).is_a?(Hash)
             # type check the attribute name and mapping for security (see class_eval below)
             unless name.is_a?(Symbol) && name.name =~ /\A\w+\z/
-              raise TypeError,
-                    "Attribute names should be symbols without special characters: #{name.inspect}:#{name.class}"
+              raise TypeError, "Attribute names should be symbols without special characters: #{name.inspect}:#{name.class}"
             end
 
             mapping.each do |key, value|
               unless key.respond_to?(:call)
-                raise TypeError,
-                      "Keys in value mappings should be callable objects: #{key.inspect}:#{key.class}"
+                raise TypeError, "Keys in value mappings should be callable objects: #{key.inspect}:#{key.class}"
               end
+
               unless value.is_a?(Symbol) && value.name =~ /\A\w+\z/
-                raise TypeError,
-                      "Values in value mappings should symbols without special characters: #{value.inspect}:#{value.class}"
+                raise TypeError, "Values in value mappings should symbols without special characters: #{value.inspect}:#{value.class}"
               end
             end
 
@@ -71,6 +67,11 @@ module Drn
               else
                 @hash[name.inspect] = type.ensure!(value)
               end
+            end
+          elsif block
+            exclude_for_storage << name
+            define_method name do
+              instance_exec(self[name], &block)
             end
           elsif attribute.default
             define_method name do
@@ -101,13 +102,13 @@ module Drn
           @attributes.fetch(name)
         end
 
-        def [](attributes = EMPTY_HASH)
-          new(attributes)
+        def [](init_value)
+          ensure!(init_value)
         end
         alias call []
 
         def to_proc
-          lambda { |attributes| call(attributes) }
+          ->(attributes) { call(attributes) }
         end
 
         def canonical_name
@@ -128,8 +129,7 @@ module Drn
           next if (attribute.optional? && value.nil?) || !attribute.default.nil?
 
           unless attribute.valid_value?(value)
-            raise TypeError,
-                  "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+            raise TypeError, "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
           end
         end
 

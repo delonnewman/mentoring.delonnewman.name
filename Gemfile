@@ -56,6 +56,7 @@ group :development, :test do
   gem 'pry'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
+  gem 'racksh'
 
   gem 'yard'
   gem 'webrick' # for yard documentation server

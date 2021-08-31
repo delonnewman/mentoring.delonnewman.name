@@ -89,10 +89,10 @@ module Drn
         def type
           t = self[:type]
 
-          return t if t.respond_to?(:call)
-          return ClassType[t] if t.is_a?(Class)
+          return ClassType[t]           if t.is_a?(Class)
+          return t                      if t.respond_to?(:call)
           return ClassType[value_class] if t.is_a?(String)
-          return RegExpType[t] if t.is_a?(Regexp)
+          return RegExpType[t]          if t.is_a?(Regexp)
 
           SPECIAL_TYPES[t]
         end
@@ -131,6 +131,7 @@ module Drn
           self[:mutable] == true
         end
 
+        # NOTE: reference mapping should be reviewed
         def resolver
           value_class&.reference_mapping
         end

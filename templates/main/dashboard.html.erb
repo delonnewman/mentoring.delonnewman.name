@@ -20,37 +20,38 @@
                     <% end %>
                 </div>
             <% else %>
-                <div class="d-sm-flex">
+                <div id="sessions">
                     <% view.sessions.each do |session| %>
-                        <div class="card mr-sm-3 mb-3" style="width:350px">
-                            <div class="card-body">
-                                <h5 class="card-title mb-0">
-                                    <%= session.product %> Session
-                                </h5>
-                                <p class="card-text text-muted">
-                                    <small>
-                                    <% if session.ended? %>
-                                        Ended with <%= view.session_card.displayed_user(session) %>
-                                        <%= time_ago_in_words session.ended_at %>
-                                    <% else %>
-                                        Started with <%= view.session_card.displayed_user(session) %>
-                                        <%= time_ago_in_words session.started_at %>
-                                    <% end %>
-                                    </small>
-                                    <% unless session.ended? %>
-                                        <br>
-                                        <%= fmt_time session.started_at %> &mdash; <%= fmt_time session.ended_at, '' %>
-                                    <% end %>
-                                    <% if session.ended? %>
-                                        <br>
-                                        <%= session.duration %> &mdash; <%= session.cost %>
-                                    <% end %>
-                                </p>
-                                <div class="d-flex justify-content-end">
-                                    <a class="card-link" href="/session/<%= session.id %>">View</a>
+                            <div class="card mx-auto ml-md-0 mr-md-3 mb-3 d-inline-block" style="width:320px">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-0">
+                                        <%= session.product %> Session
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        <small>
+                                            <% if session.ended? %>
+                                                Ended with <%= view.session_card.displayed_user(session) %>
+                                                <%= time_ago_in_words session.ended_at %>
+                                            <% else %>
+                                                Started with <%= view.session_card.displayed_user(session) %>
+                                                <%= time_ago_in_words session.started_at %>
+                                            <% end %>
+                                        </small>
+                                        <% unless session.ended? %>
+                                            <br>
+                                            <%= fmt_time session.started_at %> &mdash; <%= fmt_time session.ended_at, '' %>
+                                        <% end %>
+                                        <% if session.ended? %>
+                                            <br>
+                                            <%= session.duration %>
+                                            <% if session.billed? %>&mdash; Billed <%= session.cost %><% end %>
+                                        <% end %>
+                                    </p>
+                                    <div class="d-flex justify-content-end">
+                                        <a class="card-link" href="/session/<%= session.id %>">View</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                     <% end %>
                 </div>
             <% end %>

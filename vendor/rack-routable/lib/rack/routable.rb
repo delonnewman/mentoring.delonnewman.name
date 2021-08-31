@@ -266,6 +266,7 @@ module Rack
       def not_found
         io = StringIO.new
         io.puts "<h1>Not Found</h1>"
+        io.puts "#{request.request_method} - #{request.path}"
 
         unless ENV['RACK_ENV'] == 'production'
           io.puts "<div class=\"routes\"><h2>Valid Routes</h2>"

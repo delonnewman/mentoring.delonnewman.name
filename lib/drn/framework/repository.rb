@@ -26,11 +26,9 @@ module Drn
 
         @component_attributes = @entity_class.component_attributes
 
-        @fields =
-          entity_class
-            .attributes
-            .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
-            .map { |a| Sequel[table_name][a.name] }
+        @fields = entity_class.attributes
+                              .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
+                              .map { |a| Sequel[table_name][a.name] }
 
         @dataset = dataset
         @simple_dataset = dataset
@@ -39,9 +37,8 @@ module Drn
           data = SqlUtils.component_attribute_query_info(entity_class)
           @fields += data.flat_map { |x| x[:fields] }
 
-          @dataset =
-            data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }.select(*fields)
-
+          @dataset = data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }
+                         .select(*fields)
         end
 
         @fields.freeze
@@ -83,7 +80,30 @@ module Drn
         find_by(attributes) or raise "Could not find record with: #{attributes.inspect}"
       end
 
-      def update!(id, data)
+      def update!(id, updates)
+        data = updates.each_with_object({}) do |(key, value), h|
+          attr = entity_class.attribute(key)
+          next if attr.nil? || (value.nil? && attr.optional?)
+
+          unless attr.valid_value?(value)
+            raise TypeError, "For #{entity_class}##{key} #{value.inspect}:#{value.class} is not a valid #{attr[:type]}"
+          end
+
+          if attr.component?
+            h[attr.reference_key] = value.fetch(:id)
+            next
+          end
+
+          h[key] =
+            if attr.serialize?
+              YAML.dump(value)
+            else
+              value
+            end
+        end
+
+        logger.info "UPDATE: #{data.inspect}"
+
         @simple_dataset.where(id: id).update(data)
       end
 

@@ -38,7 +38,7 @@ module Drn
                        table: table_alias,
                        ref: Sequel[ref_scope][attr.reference_key] }]
 
-          if (comps = value_class.component_attributes).empty?
+          if value_class.component_attributes.empty?
             results
           else
             results + component_attribute_query_info(value_class, attr_name)
@@ -65,24 +65,32 @@ module Drn
         block ? block.call(results) : results
       end
 
+      def process_serialization(entity_class, record)
+
+      end
+
       # TODO: for performance this would be better as opt-in
       def process_record(entity_class, record)
         record = entity_class.ensure!(record)
         h = record.to_h.dup
 
-        attrs = record.class.attributes
+        attrs = entity_class.attributes
+
         attrs
           .select(&:serialize?)
           .each { |attr| h.merge!(attr.name => YAML.dump(h[attr.name])) if h[attr.name] }
 
         comps = attrs.select(&:component?)
+
         comps.each do |attr|
           id_key = attr.reference_key
+
           if !record.key?(id_key) && (id_val = record.send(attr.name).id)
             h[id_key] = id_val
           elsif attr.required?
             raise "#{id_key.inspect} is required for storage but is missing"
           end
+
           h.delete(attr.name)
         end
 

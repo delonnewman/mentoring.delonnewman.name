@@ -33,6 +33,11 @@ module Drn
           end
         end
 
+        def add_stripe_customer_id!(id:, stripe_id:)
+          user = find_by!(id: id)
+          update!(id, meta: user.meta.merge('stripe.customer_id' => stripe_id))
+        end
+
         def mentors
           where(mentor: true)
         end
@@ -59,6 +64,18 @@ module Drn
         displayname || username
       end
       alias to_s name
+
+      def stripe_description
+        "#{name} (mentoring customer)"
+      end
+
+      def stripe_customer_id
+        meta.fetch('stripe.customer_id')
+      end
+
+      def stripe_customer_id?
+        !!meta['stripe.customer_id']
+      end
 
       def first_name
         displayname.split(/\s+/).first || username

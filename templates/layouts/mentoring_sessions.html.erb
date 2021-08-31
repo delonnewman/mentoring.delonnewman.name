@@ -1,18 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Learn How to Code--Mentoring in Computer Programming">
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/fontawesome.min.css" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/fontawesome.min.css">
 
-    <title>Learn How to Code--Mentoring in Computer Programming</title>
+    <title>Learn How to Code&mdash;Mentoring in Computer Programming</title>
   </head>
   <body>
     <main class="container-fluid mt-2">
       <%= __content__ %>
     </main>
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script>
+     (function($){
+         function isBlank(value, fn) {
+             const blank = value == null || value.length === 0
+             if (fn) fn.call(this)
+             return blank
+         }
+
+         function isPresent(value, fn) {
+             const present = !isBlank(value)
+             if (fn) fn.call(this, value)
+             return present
+         }
+
+         this.sessions = {
+             initAmountRelation: (sessionId) => {
+                 const $sessionAmount = $('#session_amount')
+                 $('#session_duration').on('change', function() {
+                     $.post(`/session/${sessionId}/amount`, { duration: $(this).val() })
+                      .then((response) => {
+                          if (response.status == 'error') {
+                              console.error(response.message)
+                          }
+                          else {
+                              $sessionAmount.val(response.data.amount)
+                          }
+                      })
+                 })
+             }
+         }
+
+         $(() => {
+             $('#sessionEndedModal').modal('show')
+
+             isPresent($('#session_id').val(), (id) => {
+                 sessions.initAmountRelation(id)
+             })
+         })
+     }.call(window, jQuery))
+    </script>
   </body>
 </html>

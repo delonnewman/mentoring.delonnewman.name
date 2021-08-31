@@ -48,7 +48,7 @@ module Drn
       ].freeze
 
       attr_reader :env, :logger, :root, :db, :session_secret, :settings,
-                  :zulip_client, :zoom_client, :default_mentor_username
+                  :zulip_client, :zoom_client, :billing, :default_mentor_username
 
       def initialize(env)
         @env = env
@@ -128,6 +128,8 @@ module Drn
         # TODO: componentize these
         load_env!
 
+        # TODO: bundler dependences should go here
+
         @db = Sequel.connect(settings.fetch('DATABASE_URL'))
         Stripe.api_key = settings.fetch('STRIPE_KEY')
         @session_secret = settings.fetch('MENTORING_SESSION_SECRET')
@@ -152,9 +154,9 @@ module Drn
 
         @zoom_client = Zoom.new
 
-        @default_mentor_username = 'delon'
+        @billing = Billing.new(self)
 
-        require 'pry' if env == :development
+        @default_mentor_username = 'delon'
 
         initialized!
 

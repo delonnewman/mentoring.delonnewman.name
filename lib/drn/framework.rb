@@ -38,6 +38,7 @@ require_relative 'framework/entity'
 require_relative 'framework/repository'
 
 # Controller
+require_relative 'framework/json_response'
 require_relative 'framework/authenticable'
 require_relative 'framework/controller'
 require_relative 'framework/entity_controller'

@@ -12,7 +12,7 @@ end
 
 desc 'Open project console'
 task :console do
-  sh 'bundle exec pry -Ilib -r./.console.rb'
+  sh 'bundle exec pry -Ilib -r./.console.rb -rpry-rescue'
 end
 
 desc 'Run development server'

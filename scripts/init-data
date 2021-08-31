@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
+require 'faker'
 require_relative '../lib/drn/mentoring'
 include Drn::Mentoring
+include Drn::Framework
 
 rates = [
   ProductRate[
@@ -172,8 +174,18 @@ pp users
 
 User.repository.store_all!(users) if User.repository.empty?
 
-# if app.env == :development || app.env == :test
-#   customers = %w[the-man-in-black june-carter]
+if app.env == :development || app.env == :test
+  customers = %w[the-man-in-black june-carter]
 
-#   MentoringSession[mentor: 'delon', customer: customers.sample]
-# end
+  sessions = 6.times.map do
+    MentoringSession[
+      mentor: 'delon',
+      customer: customers.sample,
+      product: app.products.first.id,
+      started_at: Faker::Date.between(from: TimeUtils.days(3).ago, to: Date.today),
+      zoom_meeting_id: 81610489073
+    ]
+  end
+
+  app.mentoring_sessions.store_all!(sessions)
+end

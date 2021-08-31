@@ -6,6 +6,9 @@ module Drn
     EMPTY_ARRAY = [].freeze
     EMPTY_HASH = {}.freeze
 
+    # Services
+    require_relative 'mentoring/billing'
+
     # Load dependencies, environment variables, etc.
     require_relative 'mentoring/environment'
     init!
@@ -26,7 +29,11 @@ module Drn
     require_relative 'mentoring/application_messenger'
 
     # Main Application
+
+    # Views
     require_relative 'mentoring/dashboard'
+
+    # Routers
     require_relative 'mentoring/main/products'
     require_relative 'mentoring/main/checkout'
     require_relative 'mentoring/main/mentoring_sessions'

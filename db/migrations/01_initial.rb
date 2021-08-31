@@ -58,6 +58,7 @@ Sequel.migration do
       Time :started_at, null: false, index: true
       Time :ended_at, index: true
       Time :paid_at, index: true
+      Time :billed_at, index: true
       Integer :mentor_id, null: false, index: true
       Integer :customer_id, null: false, index: true
       bigint :zoom_meeting_id, null: false, index: true
