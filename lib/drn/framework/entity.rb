@@ -136,8 +136,6 @@ module Drn
             unless attribute.valid_value?(value)
               raise TypeError, "For #{self}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
             end
-
-            h[name] = attribute.value_class[value] if attribute.entity?
           end
         end
       end
@@ -150,6 +148,8 @@ module Drn
           if value.nil? && attr.default && attr.required?
             record[attr.name] = attr.default.is_a?(Proc) ? instance_exec(&attr.default) : default
           end
+
+          record[attr.name] = attr.value_class[value] if attr.entity? && !value.nil?
         end
 
         super(record.freeze)

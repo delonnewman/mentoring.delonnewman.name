@@ -22,8 +22,8 @@ module Drn
         @messenger ||= ApplicationMessenger.new(self)
       end
 
-      def create_zoom_meeting!(customer:, mentor:)
-        ZoomMeeting.create!(zoom_client, customer, mentor)
+      def create_zoom_meeting!(customer:, mentor:, start_at: Time.now)
+        ZoomMeeting.create!(zoom_client, customer, mentor, start_at: start_at)
       end
 
       def zoom_meeting(session)

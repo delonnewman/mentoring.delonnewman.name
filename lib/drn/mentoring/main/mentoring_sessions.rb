@@ -16,7 +16,13 @@ module Drn
         # create session
         post '/' do
           customer = app.users.find_by!(id: params['customer_id'])
-          meeting = app.create_zoom_meeting!(customer: current_user, mentor: app.default_mentor)
+          start_time = Time.iso8601(params.fetch('start_at') { Time.now.iso8601 })
+
+          meeting = app.create_zoom_meeting!(
+            customer: current_user,
+            mentor: app.default_mentor,
+            start_at: start_time
+          )
 
           session = app.mentoring_sessions.create!(
             checkout_session_id: params['checkout_session_id'],

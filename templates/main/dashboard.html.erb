@@ -103,8 +103,11 @@
                                 <p style="font-size:0.8em"><%= product.description %></p>
                                 <% if purchased %>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="badge badge-primary">purchased</span>
-                                        <button class="btn btn-danger btn-sm">Cancel</button>
+                                        <span class="badge badge-success">purchased</span>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-ban"></i>
+                                            Cancel
+                                        </button>
                                     </div>
                                 <% else %>
                                     <div class="d-flex justify-content-between align-items-center">
@@ -130,13 +133,17 @@
                                         <input type="hidden" name="customer_id" value="<%= subscriber.id %>">
                                         <input type="hidden" name="product_id" value="<%= subscriber[:product_id] %>">
                                         <button class="btn btn-secondary btn-sm mr-2">
-                                            New Session
+                                            Start
                                         </button>
                                     </form>
-                                    <a class="btn btn-secondary btn-sm" title="Email <%= subscriber %>"
-                                       href="mailto:<%= subscriber.email %>">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </a>
+                                    <form action="/session" method="post">
+                                        <input type="hidden" name="customer_id" value="<%= subscriber.id %>">
+                                        <input type="hidden" name="product_id" value="<%= subscriber[:product_id] %>">
+                                        <button class="btn btn-secondary btn-sm mr-2">
+                                            <i class="fas fa-calendar"></i>
+                                            Schedule
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -4,8 +4,8 @@ module Drn
   module Mentoring
     # Represent a Zoom meeting interactions with the API and retrieving it's data
     class ZoomMeeting
-      def self.create!(client, customer, mentor)
-        new(client, customer, mentor).create!
+      def self.create!(client, customer, mentor, start_at: Time.now)
+        new(client, customer, mentor).create!(start_at)
       end
 
       def self.from_session(client, session)
@@ -32,8 +32,8 @@ module Drn
         self
       end
 
-      def create!
-        @data ||= @client.meeting_create(user_id: @mentor.email, topic: topic)
+      def create!(start_time = Time.now)
+        @data ||= @client.meeting_create(user_id: @mentor.email, topic: topic, start_time: start_time)
 
         self
       end
