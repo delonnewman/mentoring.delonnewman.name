@@ -38,7 +38,7 @@
     <% end %>
 </div>
 
-<% if session.ended? && current_user.id == session.mentor.id && !session.billed? %>
+<% if session.ended? && current_user.id == session.mentor.id && !session.billed? && !session.cost.zero? %>
     <div class="modal show fade" id="sessionEndedModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">

@@ -47,7 +47,6 @@ gem 'zoom_rb'
 group :development, :test do
   gem 'rake'
   gem 'rspec'
-  gem 'prettier'
   gem 'rubocop'
   gem 'capybara'
   gem 'cucumber'

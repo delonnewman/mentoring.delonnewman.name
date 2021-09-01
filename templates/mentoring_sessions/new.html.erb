@@ -6,6 +6,7 @@
     <form action="/session" method="post">
       <input type="hidden" value="<%= checkout_session_id %>" name="checkout_session_id">
       <input type="hidden" value="<%= product_id %>" name="product_id">
+      <input type="hidden" value="<%= current_user.id %>" name="customer_id">
       <button class="btn btn-primary">Start Session</button>
     </form>
     <a href="/" class="btn btn-warning ml-2">Cancel</a>

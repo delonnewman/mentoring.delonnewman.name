@@ -65,10 +65,6 @@ module Drn
         block ? block.call(results) : results
       end
 
-      def process_serialization(entity_class, record)
-
-      end
-
       # TODO: for performance this would be better as opt-in
       def process_record(entity_class, record)
         record = entity_class.ensure!(record)

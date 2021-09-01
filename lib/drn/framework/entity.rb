@@ -102,6 +102,10 @@ module Drn
           @attributes.fetch(name)
         end
 
+        def attribute?(name)
+          @attributes.key?(name)
+        end
+
         def [](init_value)
           ensure!(init_value)
         end
@@ -114,26 +118,41 @@ module Drn
         def canonical_name
           Utils.snakecase(name.split('::').last)
         end
+
+        def validate!(entity)
+          attributes.each do |attr|
+            if entity[attr.name].nil? && attr.required? && !attr.default
+              raise TypeError, "#{self}##{attr.name} is required"
+            end
+          end
+
+          entity.each_with_object({}) do |(name, value), h|
+            h[name] = value # pass along extra attributes with no checks
+            next unless attribute?(name)
+
+            attribute = attribute(name)
+            next if (attribute.optional? && value.nil?) || !attribute.default.nil?
+
+            unless attribute.valid_value?(value)
+              raise TypeError, "For #{self}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+            end
+
+            h[name] = attribute.value_class[value] if attribute.entity?
+          end
+        end
       end
 
       def initialize(attributes = EMPTY_HASH)
-        h = {}
-        attrs = self.class.attributes
+        record = self.class.validate!(attributes)
 
-        attrs.each do |attribute|
-          name = attribute.name
-          value = attributes[name]
-
-          h[attribute.name] = value
-
-          next if (attribute.optional? && value.nil?) || !attribute.default.nil?
-
-          unless attribute.valid_value?(value)
-            raise TypeError, "For #{attribute.entity}##{attribute.name} #{value.inspect}:#{value.class} is not a valid #{attribute[:type]}"
+        self.class.attributes.each do |attr|
+          value = record[attr.name]
+          if value.nil? && attr.default && attr.required?
+            record[attr.name] = attr.default.is_a?(Proc) ? instance_exec(&attr.default) : default
           end
         end
 
-        super(h.freeze)
+        super(record.freeze)
       end
 
       def value_for(name)

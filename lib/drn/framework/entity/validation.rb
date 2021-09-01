@@ -28,6 +28,7 @@ module Drn
             end
 
             unique = attr[:unique]
+
             repo =
               if unique.is_a?(Class) && unique < Entity
                 unique.repository

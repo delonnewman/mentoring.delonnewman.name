@@ -51,7 +51,10 @@ module Drn
             .join(:user_roles, id: Sequel[:users][:role_id])
             .where(Sequel[:product_rates][:subscription] => true)
             .select_all(:users)
-            .select_append(Sequel[:user_roles][:id].as('role[id]'), Sequel[:user_roles][:name].as('role[name]'))
+            .select_append(
+              Sequel[:user_roles][:id].as('role[id]'),
+              Sequel[:user_roles][:name].as('role[name]'),
+              Sequel[:products][:id].as('product_id'))
             .map { |record| Framework::SqlUtils.build_entity(User, record) }
         end
 
