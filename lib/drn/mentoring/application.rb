@@ -158,6 +158,9 @@ module Drn
 
         @default_mentor_username = 'delon'
 
+        require 'rack-mini-profiler'
+        Rack::MiniProfiler.config.authorization_mode = :allow_authorized if env == :production
+
         initialized!
 
         self
