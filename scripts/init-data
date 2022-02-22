@@ -13,11 +13,14 @@ rates = [
   ProductRate[
     name: 'per-half-hour',
     description: '/ half-hour',
-    unit: 'half_hour'],
+    unit: 'half_hour',
+    subscription: false],
   ProductRate[
     name: 'per-minute',
     description: '/ minute',
-    unit: 'minute']]
+    unit: 'minute',
+    subscription: false]
+]
 
 pp rates
 
@@ -25,22 +28,22 @@ ProductRate.repository.store_all!(rates) if ProductRate.repository.empty?
 
 products = [
   Product[
-    name: "Ongoing Mentoring",
-    description: "Mentoring on a monthly basis, " \
-                 "up to 2 hours of synchronous time " \
-                 "(by video or phone) unlimited asynchronous " \
-                 "time (by chat or email).",
+    name: 'Ongoing Mentoring',
+    description: 'Mentoring on a monthly basis, ' \
+                 'up to 2 hours of synchronous time ' \
+                 '(by video or phone) unlimited asynchronous ' \
+                 'time (by chat or email).',
     image_path: '/img/mentoring.jpg',
-    amount: 15000,
+    amount: 15_000,
     rate: 'per-month',
     sort_order: 3,
     meta: { stripe_price_id: 'price_1IfaNbJeITBgtWkksywHmJ2G' }
   ],
   Product[
-    name: "Instant Help",
-    description: "Remote programming help when the mentor is " \
-                 "available (by video conference) paid out by the " \
-                 "minute, first 5 minutes are free.",
+    name: 'Instant Help',
+    description: 'Remote programming help when the mentor is ' \
+                 'available (by video conference) paid out by the ' \
+                 'minute, first 5 minutes are free.',
     image_path: '/img/help.jpg',
     amount: 200,
     rate: 'per-minute',
@@ -48,10 +51,10 @@ products = [
     meta: { stripe_price_id: 'price_1IfaKNJeITBgtWkk53ie4flD' }
   ],
   Product[
-    name: "Instant Conversation",
-    description: "Remote programming help when the mentor is " \
-                 "available (by video conference) paid out by the " \
-                 "hour, first 5 minutes are free.",
+    name: 'Instant Conversation',
+    description: 'Remote programming help when the mentor is ' \
+                 'available (by video conference) paid out by the ' \
+                 'hour, first 5 minutes are free.',
     image_path: '/img/conversation.jpg',
     amount: 5000,
     rate: 'per-half-hour',
@@ -107,28 +110,28 @@ users = [
           'url' => 'https://github.com/delonnewman',
           'title' => "Deon's GitHub profile",
           'icon' => 'fab fa-github'
-        },
+        }
       ],
       'profile.bio' => <<~BIO,
-         <p class="lead">
-             Delon got his start professionally at 18 years old (in 1999) writing a data conversion script in Perl for his
-             mother's client in the manufacturing industry. Since then he's worked for various companies, but primarily he's
-             been a freelancer and consultant.
-         </p>
-         <p>
-             He's used a variety of technologies including Perl, C, C#, <abbr title="Visual Basic for Applications">VBA</abbr>,
-             Java, Python, Bash, PHP, Emacs Lisp, <abbr title="Structured Query Language">SQL</abbr> and Datalog, but mostly
-             works with Ruby, JavaScript and Clojure.
-         </p>
-         <p>
-             He loves learning and helping others learn. He's a self-professed math and science geek, but he also loves music
-             (especially Jazz), poetry, photography and hiking with his beautiful wife and their dog Blu.
-         </p>
-         <p>
-             If you'd like to learn more about Delon's background please visit his
-             <a href="https://delonnewman.name">personal website</a> to see his resume or his
-             <a href="https://github.com/delonnewman">GitHub profile</a> to see some of his open source work and experiments.
-         </p>
+        <p class="lead">
+            Delon got his start professionally at 18 years old (in 1999) writing a data conversion script in Perl for his
+            mother's client in the manufacturing industry. Since then he's worked for various companies, but primarily he's
+            been a freelancer and consultant.
+        </p>
+        <p>
+            He's used a variety of technologies including Perl, C, C#, <abbr title="Visual Basic for Applications">VBA</abbr>,
+            Java, Python, Bash, PHP, Emacs Lisp, <abbr title="Structured Query Language">SQL</abbr> and Datalog, but mostly
+            works with Ruby, JavaScript and Clojure.
+        </p>
+        <p>
+            He loves learning and helping others learn. He's a self-professed math and science geek, but he also loves music
+            (especially Jazz), poetry, photography and hiking with his beautiful wife and their dog Blu.
+        </p>
+        <p>
+            If you'd like to learn more about Delon's background please visit his
+            <a href="https://delonnewman.name">personal website</a> to see his resume or his
+            <a href="https://github.com/delonnewman">GitHub profile</a> to see some of his open source work and experiments.
+        </p>
       BIO
       'profile.availability' => {
         1 => {
@@ -155,19 +158,22 @@ users = [
     displayname: 'Jackie Newman',
     email: 'roadrunner.jackie@gmail.com',
     role: 'admin',
-    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO'],
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO',
+    meta: {}],
   User[
     username: 'the-man-in-black',
     displayname: 'Johnny Cash',
     email: 'delon.newman+jcash@gmail.com',
     role: 'customer',
-    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO'],
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO',
+    meta: {}],
   User[
     username: 'june-carter',
     displayname: 'June Carter Cash',
     email: 'delon.newman+j-carter-cash@gmail.com',
     role: 'customer',
-    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO']
+    encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO',
+    meta: {}]
 ]
 
 pp users
@@ -183,7 +189,7 @@ if app.env == :development || app.env == :test
       customer: customers.sample,
       product: app.products.first.id,
       started_at: Faker::Date.between(from: TimeUtils.days(3).ago, to: Date.today),
-      zoom_meeting_id: 81610489073
+      zoom_meeting_id: 81_610_489_073
     ]
   end
 
