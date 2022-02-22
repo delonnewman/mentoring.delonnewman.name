@@ -85,6 +85,7 @@ GEM
       i18n (>= 1.6, < 2)
     ffi (1.15.3)
     hash_delegator (0.1.2)
+    honeybadger (4.11.0)
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -102,6 +103,7 @@ GEM
       activesupport (>= 3.1.0)
       rack (>= 1.4.0)
       rest-client (>= 2.0.0)
+    memory_profiler (1.0.0)
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
@@ -120,7 +122,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.1.1)
       ast (~> 2.4.1)
-    pg (1.2.3)
+    pg (1.3.2)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -139,6 +141,8 @@ GEM
       rack (~> 2.0)
     rack-flash3 (1.0.5)
       rack
+    rack-mini-profiler (2.3.2)
+      rack (>= 1.2.0)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rack_csrf (2.6.0)
@@ -181,6 +185,7 @@ GEM
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     sequel (5.43.0)
+    stackprof (0.2.17)
     stripe (5.32.1)
     sys-uname (1.2.2)
       ffi (~> 1.1)
@@ -215,12 +220,14 @@ DEPENDENCIES
   erubi
   faker
   hash_delegator
+  honeybadger (~> 4.0)
   inflection
   invokable
   mailjet
+  memory_profiler
   nio4r
   oj
-  pg
+  pg (~> 1.2)
   pry
   pry-rescue
   pry-stack_explorer
@@ -228,6 +235,7 @@ DEPENDENCIES
   rack
   rack-contrib
   rack-flash3
+  rack-mini-profiler
   rack-routable!
   rack_csrf
   racksh
@@ -236,6 +244,7 @@ DEPENDENCIES
   rubocop
   sequel
   shotgun!
+  stackprof
   stripe
   webrick
   websocket-driver

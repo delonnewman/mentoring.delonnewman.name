@@ -8,7 +8,6 @@ end
 ruby '3.0.1'
 
 # db
-gem 'pg'
 gem 'sequel'
 
 # application server
@@ -21,9 +20,9 @@ gem 'bcrypt'
 gem 'rack_csrf'
 
 # performance
-# gem 'rack-mini-profiler'
-# gem 'memory_profiler'
-# gem 'stackprof'
+gem 'rack-mini-profiler', require: false
+gem 'memory_profiler'
+gem 'stackprof'
 
 # framework stuff
 gem 'dotenv'
@@ -43,6 +42,7 @@ gem 'stripe'
 gem 'mailjet'
 gem 'wonder-llama', require: 'wonder_llama', github: 'delonnewman/wonder-llama' # Zulip Chat
 gem 'zoom_rb'
+gem 'honeybadger', "~> 4.0"
 
 group :development, :test do
   gem 'rake'
@@ -62,3 +62,5 @@ group :development, :test do
 
   gem 'shotgun', github: 'shotgun'
 end
+
+gem "pg", "~> 1.2"
