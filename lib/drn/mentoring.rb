@@ -8,32 +8,5 @@ module Drn
 
     # Load dependencies, environment variables, etc.
     require_relative 'mentoring/environment'
-
-    # # Entities
-    # require_relative 'mentoring/user_role'
-    # require_relative 'mentoring/user'
-    # require_relative 'mentoring/product_rate'
-    # require_relative 'mentoring/product'
-    # require_relative 'mentoring/mentoring_session'
-    # require_relative 'mentoring/user_registration'
-
-    # # Factory Methods
-    # require_relative 'mentoring/zoom_meeting'
-    # require_relative 'mentoring/application/factories'
-
-    # # Messengers
-    # require_relative 'mentoring/application_messenger'
-
-    # # Main Application
-
-    # # Views
-    # require_relative 'mentoring/dashboard'
-
-    # # Routers
-    # require_relative 'mentoring/main/products'
-    # require_relative 'mentoring/main/checkout'
-    # require_relative 'mentoring/main/mentoring_sessions'
-    # require_relative 'mentoring/main_helpers'
-    # require_relative 'mentoring/main'
   end
 end

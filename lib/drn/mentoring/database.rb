@@ -12,6 +12,10 @@ module Drn
         instance[table_name]
       end
 
+      def tables
+        instance.tables
+      end
+
       def load
         @instance = ::Sequel.connect(app.settings[:database_url])
       end

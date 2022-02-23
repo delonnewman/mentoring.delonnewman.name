@@ -24,13 +24,24 @@ module Drn
           @settings.freeze
         end
 
+        def dotenv_path
+          case app.env
+          when :development
+            '.env'
+          when :production
+            nil
+          else
+            ".env.#{app.env}"
+          end
+        end
+
         private
 
         def notify!
           if app.production?
             app.logger.info "Initializing application in #{app.env} environment"
           else
-            app.logger.info "Initializing application in #{app.env} environment from #{app.dotenv_path}"
+            app.logger.info "Initializing application in #{app.env} environment from #{dotenv_path}"
           end
         end
 
@@ -54,7 +65,7 @@ module Drn
             load_settings_from_environment!
           else
             Dir.chdir(app.root_path)
-            @settings.merge!(Dotenv.load(app.dotenv_path).transform_keys(&method(:normalize_key)))
+            @settings.merge!(Dotenv.load(dotenv_path).transform_keys(&method(:normalize_key)))
           end
 
           self

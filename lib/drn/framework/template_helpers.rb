@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# rubocop: disable Metrics/ModuleLength
+
 module Drn
   module Framework
     module TemplateHelpers
@@ -5,13 +9,12 @@ module Drn
       required :app
 
       def url_for(path)
-        "#{app.url_scheme}://#{File.join(app.settings['DOMAIN'], path)}"
+        "#{app.request.url_scheme}://#{File.join(app.settings[:domain], path)}"
       end
 
       def link_to(path, content = nil, escape: true, title: nil, **options)
-        if not block_given? and content.nil?
-          raise 'Content is required for a link'
-        end
+        raise 'Content is required for a link' if !block_given? and content.nil?
+
         content = yield if block_given?
         content = escape_html(content) if escape
 
@@ -93,7 +96,7 @@ module Drn
         radios.join('')
       end
 
-      BOOLEAN_OPTIONS = { true => 'Yes', false => 'No' }
+      BOOLEAN_OPTIONS = { true => 'Yes', false => 'No' }.freeze
 
       def boolean_field(name, value)
         radio_buttons(name, BOOLEAN_OPTIONS, selected: value)
