@@ -1,5 +1,5 @@
 require_relative 'lib/drn/mentoring/environment'
-Drn::Mentoring.app.load_env!
+Drn::Mentoring.app.settings.load!
 
 task default: :spec
 
@@ -12,7 +12,7 @@ end
 
 desc 'Open project console'
 task :console do
-  sh 'bundle exec pry -Ilib -r./.console.rb -rpry-rescue'
+  sh 'bundle exec irb -Ilib -r./.console.rb'
 end
 
 desc 'Run development server'

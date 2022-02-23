@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'cgi'
 require 'stringio'
 require 'invokable'
@@ -265,31 +266,31 @@ module Rack
 
       def not_found
         io = StringIO.new
-        io.puts "<h1>Not Found</h1>"
+        io.puts '<h1>Not Found</h1>'
         io.puts "#{request.request_method} - #{request.path}"
 
         unless ENV['RACK_ENV'] == 'production'
-          io.puts "<div class=\"routes\"><h2>Valid Routes</h2>"
-          io.puts "<table>"
-          io.puts "<thead><tr><th>Method</th><th>Path</th><th>Router</th></thead>"
-          io.puts "<tbody>"
+          io.puts '<div class="routes"><h2>Valid Routes</h2>'
+          io.puts '<table>'
+          io.puts '<thead><tr><th>Method</th><th>Path</th><th>Router</th></thead>'
+          io.puts '<tbody>'
           self.class.routes.each do |route|
             io.puts "<tr><td>#{h route.method}</td><td>#{h route.path}</td><td>#{h route.router.to_s}</td></tr>"
           end
-          io.puts "</tbody></table></div>"
+          io.puts '</tbody></table></div>'
 
-          io.puts "<div class=\"environment\"><h2>Environment</h2>"
-          io.puts "<table><tbody>"
+          io.puts '<div class="environment"><h2>Environment</h2>'
+          io.puts '<table><tbody>'
           env.each do |key, value|
             io.puts "<tr><th>#{h key}</th><td><pre>#{h value.pretty_inspect}</pre></td>"
           end
-          io.puts "</tbody></table></div>"
+          io.puts '</tbody></table></div>'
         end
 
         [404, DEFAULT_HEADERS.dup, [NOT_FOUND_TMPL.sub('%BODY%', io.string)]]
       end
 
-      def error(e)
+      def error(_e)
         [500, DEFAULT_HEADERS.dup, StringIO.new('Server Error')]
       end
 
@@ -310,15 +311,15 @@ module Rack
           @match[:value].call(@match[:env])
         when :action
           res = begin
-                  instance_exec(params, @request, &@match[:value])
-                rescue => e
-                  if ENV.fetch('RACK_ENV') { :development }.to_sym == :production
-                    env['rack.routable.error'] = e
-                    return error(e)
-                  else
-                    raise e
-                  end
-                end
+            instance_exec(params, @request, &@match[:value])
+          rescue StandardError => e
+            if ENV.fetch('RACK_ENV') { :development }.to_sym == :production
+              env['rack.routable.error'] = e
+              return error(e)
+            else
+              raise e
+            end
+          end
 
           if res.is_a?(Array) && res.size == 3 && res[0].is_a?(Integer)
             res

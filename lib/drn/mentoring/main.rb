@@ -7,7 +7,7 @@ module Drn
       include MainHelpers
       include Framework::TimeUtils
 
-      use Rack::Session::Cookie, secret: Mentoring.app.session_secret
+      use Rack::Session::Cookie, secret: Mentoring.app.settings[:mentoring_session_secret]
 
       static '/' => 'public'
 

@@ -36,6 +36,7 @@ gem 'invokable'
 gem 'nio4r'
 gem 'websocket-driver'
 gem 'oj'
+gem 'zeitwerk'
 
 # vendor
 gem 'stripe'

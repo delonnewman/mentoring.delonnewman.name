@@ -90,7 +90,7 @@ module Drn
 
           @repository ||=
             repository_class.new(
-              Drn::Mentoring.app.db[repository_table_name.to_sym],
+              Drn::Mentoring.app.database[repository_table_name.to_sym],
               self
             )
         end

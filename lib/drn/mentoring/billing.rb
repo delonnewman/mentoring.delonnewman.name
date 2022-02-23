@@ -1,16 +1,22 @@
+# frozen_string_literal: true
+
 module Drn
   module Mentoring
-    class Billing
-      attr_reader :app
-
-      def initialize(app)
-        @app = app
-      end
-
+    # A collection of functions for billing customers
+    class Billing < Framework::Application::Package
       def bill_mentoring_session!(session)
         return if session.checkout_session_id.nil?
 
-        checkout = Stripe::Checkout::Session.retrieve(session.checkout_session_id)
+        create_stripe_payment!(session)
+
+        data = session.merge(billed_at: Time.now)
+        app.logger.info "SESSION BILLED: #{data.inspect}"
+
+        app.mentoring_sessions.update!(session.id, data)
+      end
+
+      def create_stipe_payment!(session)
+        checkout = Stripe::Checkout::Session.retrieve(checkout_id)
         intent = Stripe::SetupIntent.retrieve(checkout.setup_intent)
 
         Stripe::PaymentIntent.create(
@@ -20,10 +26,6 @@ module Drn
           customer: checkout.customer,
           payment_method: intent.payment_method
         )
-
-        app.logger.info "SESSION BILLED: #{session.merge(billed_at: Time.now).inspect}"
-
-        app.mentoring_sessions.update!(session.id, session.merge(billed_at: Time.now))
       end
 
       def find_or_create_customer!(user)

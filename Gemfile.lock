@@ -250,6 +250,7 @@ DEPENDENCIES
   websocket-driver
   wonder-llama!
   yard
+  zeitwerk
   zoom_rb
 
 RUBY VERSION

@@ -17,6 +17,9 @@ require_relative 'framework/core'
 # OOP
 require_relative 'framework/trait'
 
+# Application State & DI
+require_relative 'framework/application'
+
 # Utility methods
 require_relative 'framework/utils'
 require_relative 'framework/utils/string_utils'
