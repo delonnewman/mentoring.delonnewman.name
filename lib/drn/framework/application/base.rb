@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rack/contrib/try_static'
+# rubocop: disable Metrics/ClassLength
 
 module Drn
   module Framework
@@ -9,7 +9,7 @@ module Drn
       class Base
         extend ClassMethods
 
-        attr_reader :env, :logger, :root_path, :request, :settings, :loader
+        attr_reader :env, :logger, :root_path, :request, :settings, :loader, :routers
 
         def initialize(env)
           @env       = env # development, test, production, ci, etc.
@@ -78,7 +78,10 @@ module Drn
           loader.load!
 
           load_resources!
+          load_entities!
           load_packages!
+          load_routers!
+
           initialized!
 
           freeze
@@ -124,6 +127,40 @@ module Drn
           self.class.packages.each do |pkg|
             logger.info "Loading package #{pkg}..."
             load_package!(pkg)
+          end
+        end
+
+        def load_entity!(entity)
+          entity_class = entity.is_a?(Class) ? entity : self.class.resolve_class_symbol(entity)
+          repository = entity_class.repository_class.new(
+            database[entity_class.repository_table_name.to_sym],
+            entity_class
+          )
+
+          method_name = Inflection.plural(Utils.snakecase(entity_class.name.split('::').last))
+          var_name = "@#{method_name}"
+
+          instance_variable_set(var_name, repository)
+
+          define_singleton_method method_name do
+            instance_variable_get(var_name)
+          end
+
+          entity_class
+        end
+
+        def load_entities!
+          self.class.entities.each do |entity|
+            logger.info "Loading entity #{entity}..."
+            load_entity!(entity)
+          end
+        end
+
+        def load_routers!
+          self.class.routers.each do |router|
+            logger.info "Loading router #{router}..."
+            @routers ||= []
+            @routers << (router.is_a?(Class) ? router : self.class.resolve_class_symbol(router))
           end
         end
       end

@@ -19,14 +19,10 @@ module Drn
                :zoom_api_secret,
                :default_mentor_username
 
-      resource :database
-      resource :mailjet
-      resource :stripe
-      resource :zoom
-      resource :zulip
-      resource :profiler
-
-      package :billing
+      entities :user, :product, :mentoring_session, :user_registration
+      resources :database, :mailjet, :stripe, :zoom, :zulip, :profiler
+      packages :billing
+      routers :main
     end
   end
 end

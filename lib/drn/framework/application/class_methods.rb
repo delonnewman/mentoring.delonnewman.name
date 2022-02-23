@@ -48,28 +48,28 @@ module Drn
           app_module.const_get(Utils.camelcase(symbol.name))
         end
 
-        def resource(klass)
-          resources << klass
-        end
+        def resources(*resources)
+          @resources = resources unless resources.empty?
 
-        def resources
           @resources ||= []
         end
 
-        def package(klass)
-          packages << klass
-        end
+        def packages(*packages)
+          @packages = packages unless packages.empty?
 
-        def packages
           @packages ||= []
         end
 
-        def routers
+        def routers(*routers)
+          @routers = routers unless routers.empty?
+
           @routers ||= []
         end
 
-        def router(klass)
-          routers << klass
+        def entities(*entities)
+          @entities = entities unless entities.empty?
+
+          @entities ||= []
         end
       end
     end
