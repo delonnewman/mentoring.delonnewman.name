@@ -93,7 +93,7 @@
                 </ul>
 
                 <ul class="list-group list-group-flush mb-5 border-bottom">
-                    <% view.products.each do |(product, purchased)| %>
+                    <% view.products.each do |product| %>
                         <li class="list-group-item media d-flex justify-content-between align-items-center">
                             <img src="<%= product.image_path %>"
                                  alt="<%= product.name %> Image"
@@ -101,7 +101,7 @@
                             <div class="media-body">
                                 <h5 class="mb-0"><%= product %></h5>
                                 <p style="font-size:0.8em"><%= product.description %></p>
-                                <% if purchased %>
+                                <% if product.purchased %>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="badge badge-success">purchased</span>
                                         <button class="btn btn-secondary btn-sm">

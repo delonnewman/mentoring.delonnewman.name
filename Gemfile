@@ -53,6 +53,8 @@ group :development, :test do
   gem 'cucumber'
   gem 'faker'
 
+  gem 'filewatcher'
+
   gem 'pry'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'

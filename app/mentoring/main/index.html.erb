@@ -68,7 +68,7 @@
 </section>
 <section>
     <div class="container d-lg-flex mt-5">
-        <% products.each do |(product, purchased)| %>
+        <% products.each do |product| %>
             <section class="card mr-lg-3 mb-3 mb-lg-0 mx-auto" style="width: 350px">
                 <img class="card-img-top" src="<%= product.image_path %>">
                 <div class="card-body">
@@ -76,7 +76,7 @@
                     <div class="description text-muted" style="font-size: 0.9em"><%= product.description %></div>
                 </div>
                 <div class="card-footer d-flex justify-content-between">
-                    <% if not product.subscription? && purchased %>
+                    <% if not product.subscription? && product.purchased %>
                         <%= product_price product, subscriber: subscriber?(products) %>
                     <% else %>
                         <div></div>

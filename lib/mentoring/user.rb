@@ -40,17 +40,28 @@ module Mentoring
       def mentors
         where(mentor: true)
       end
+
+      def mentors_not_in_sessions
+        dataset
+          .join(:mentoring_sessions, Sequel[:users][:id] => Sequel[:mentoring_sessions][:mentor_id])
+          .where(Sequel.~(ended_at: nil))
+          .map { |record| SqlUtils.build_entity(User, record) }
+      end
     end
 
     def availability_schedule
       meta.fetch('profile.availability') { EMPTY_HASH }
     end
 
-    def available?(now = Time.now)
+    def available?(now: Time.now)
       day = availability_schedule[now.wday]
       return false unless day
 
       now.hour >= day[:start] && now.hour <= day[:end]
+    end
+
+    def currently_available?(sessions:)
+      available? && sessions.active_sessions(for_mentor: self).empty?
     end
 
     def status

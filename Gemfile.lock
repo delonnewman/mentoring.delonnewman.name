@@ -84,6 +84,8 @@ GEM
     faker (2.19.0)
       i18n (>= 1.6, < 2)
     ffi (1.15.3)
+    filewatcher (1.1.1)
+      optimist (~> 3.0)
     hash_delegator (0.1.2)
     honeybadger (4.11.0)
     http-accept (1.7.0)
@@ -119,6 +121,7 @@ GEM
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     oj (3.13.1)
+    optimist (3.0.1)
     parallel (1.20.1)
     parser (3.0.1.1)
       ast (~> 2.4.1)
@@ -219,6 +222,7 @@ DEPENDENCIES
   dotenv
   erubi
   faker
+  filewatcher
   hash_delegator
   honeybadger (~> 4.0)
   inflection

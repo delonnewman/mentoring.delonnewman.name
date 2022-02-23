@@ -51,14 +51,15 @@ module Mentoring
       end
     end
 
+    # FIXME: this seems redundant, see index.html.erb
     def subscriber?(products)
-      products.any? do |(product, purchased)|
-        product.subscription? && purchased
+      products.any? do |product|
+        product.subscription? && product.purchased
       end
     end
 
     def product_price(product, subscriber: false, size: nil)
-      return '<div></div>' if app.env == :production
+      return '<div></div>' if app.production?
 
       discount = subscriber ? product.price / 2 : product.price
       product_size = size.nil? ? '1.3em' : '0.9em'
@@ -85,7 +86,7 @@ module Mentoring
     end
 
     def product_button(product, size: nil)
-      disabled = 'disabled' if app.env == :production || product.disabled?(current_user)
+      disabled = 'disabled' if app.production? || product.disabled
       btn_class = size.nil? ? nil : "btn-#{size}"
 
       <<~HTML

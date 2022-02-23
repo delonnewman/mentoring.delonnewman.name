@@ -81,6 +81,10 @@ module Mentoring
         find_by!(id: id)
       end
 
+      def active_sessions(for_mentor:)
+        dataset.where(Sequel.~(ended_at: nil)).and(mentor_id: for_mentor.id)
+      end
+
       def active_and_recently_ended_sessions_where(predicates)
         dataset
           .where(ended_at: nil)

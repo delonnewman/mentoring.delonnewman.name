@@ -22,7 +22,8 @@ module Drn
         end
 
         def layout_path(templated)
-          templated.layout && templated.app.app_path.join(templated.app.app_name, 'layouts', templated.layout)
+          templated.layout && templated.app.app_path.join(templated.app.app_name, 'layouts',
+                                                          "#{templated.layout}.html.erb")
         end
 
         def [](templated, name)

@@ -23,9 +23,11 @@ module Mentoring
           )
 
     get '/', authenticate: false do
+      products = app.products.products_with_states(user: current_user, mentors: app.users.mentors_not_in_sessions)
+
       render :index, with: {
-        products: app.products.products_and_purchased_by_customer(current_user),
-               mentor: app.users.find_by!(username: 'delon')
+        products: products,
+        mentor: app.default_mentor
       }
     end
 

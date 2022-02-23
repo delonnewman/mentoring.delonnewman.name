@@ -14,7 +14,7 @@ module Mentoring
     end
 
     def products
-      app.products.products_and_purchased_by_customer(user)
+      app.products.products_with_states(user: user, mentors: app.users.mentors_not_in_sessions)
     end
 
     def mentors

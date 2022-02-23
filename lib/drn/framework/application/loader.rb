@@ -18,7 +18,7 @@ module Drn
 
           @instance.push_dir(app.lib_path)
           @instance.push_dir(app.app_path)
-          @instance.enable_reloading if app.development?
+          # @instance.enable_reloading if app.development?
 
           @instance.setup
         end

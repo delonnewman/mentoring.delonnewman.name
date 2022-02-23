@@ -58,7 +58,7 @@ module Drn
         def call(env)
           @request = Rack::Request.new(env)
 
-          reload! if development?
+          # reload! if development?
 
           # dispatch routes
           routers.each do |router|
@@ -129,6 +129,7 @@ module Drn
         def load_entity!(entity)
           entity_class = entity.is_a?(Class) ? entity : self.class.resolve_class_symbol(entity)
           repository = entity_class.repository_class.new(
+            self,
             database[entity_class.repository_table_name.to_sym],
             entity_class
           )
@@ -157,6 +158,16 @@ module Drn
             logger.info "Loading router #{router}..."
             @routers ||= []
             @routers << (router.is_a?(Class) ? router : self.class.resolve_class_symbol(router))
+          end
+        end
+      end
+
+      def init_filewatcher!
+        watcher = Filewatcher.new([lib_path, app_path])
+        Thread.new(watcher) do |w|
+          w.watch do |filename|
+            logger.info "Changes found in #{filename}. Reloading..."
+            reload!
           end
         end
       end

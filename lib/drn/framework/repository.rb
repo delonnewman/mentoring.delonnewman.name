@@ -16,9 +16,10 @@ module Drn
         attr_reader :order_by_attribute_name
       end
 
-      attr_reader :entity_class, :dataset, :fields, :db, :component_attributes
+      attr_reader :app, :entity_class, :dataset, :fields, :db, :component_attributes
 
-      def initialize(dataset, entity_class)
+      def initialize(app, dataset, entity_class)
+        @app = app
         @entity_class = entity_class
         @db = dataset.db
 
@@ -143,7 +144,7 @@ module Drn
       # delegate logger and db to Mentoring.app
       %i[logger db].each do |method|
         define_method method do
-          Mentoring.app.send(method)
+          app.send(method)
         end
       end
     end
