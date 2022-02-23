@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require_relative '../lib/drn/mentoring'
 
-include Drn::Mentoring
+include Mentoring
 
 products = Stripe::Price.list.map do |price|
   product = Stripe::Product.retrieve(price.product)

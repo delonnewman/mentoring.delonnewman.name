@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Drn::Mentoring
+include Mentoring
 
 RSpec.describe Product::OngoingMentoringPolicy do
   let(:product) { app.products.find_by!(name: 'Ongoing Mentoring') }

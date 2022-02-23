@@ -1,9 +1,9 @@
 # frozen_string_literal: true
+
 module Drn
   module Framework
     class AdminController
       include Templatable
-      include Authenticable
 
       DEFAULT_OPTIONS = {
         layout: :admin,
@@ -35,11 +35,11 @@ module Drn
 
         @controllers =
           entity_classes
-            .reduce({}) do |h, klass|
-              c = EntityController.new(klass, **@options)
-              h.merge!(c.canonical_name.to_sym => c)
-            end
-            .freeze
+          .reduce({}) do |h, klass|
+            c = EntityController.new(klass, **@options)
+            h.merge!(c.canonical_name.to_sym => c)
+          end
+          .freeze
       end
 
       def build!

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Drn::Mentoring::User do
+RSpec.describe Mentoring::User do
   it 'should reference a UserRole by UserRole#id or a UserRole#name' do
     user0 =
       described_class[
@@ -8,7 +8,7 @@ RSpec.describe Drn::Mentoring::User do
         email: 'tester@example.com',
         role: 'admin'
       ]
-    expect(user0.role).to be_an_instance_of Drn::Mentoring::UserRole
+    expect(user0.role).to be_an_instance_of Mentoring::UserRole
   end
 
   describe 'available?' do

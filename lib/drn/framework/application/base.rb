@@ -51,15 +51,7 @@ module Drn
         end
 
         def app_path
-          root_path.join(app_name)
-        end
-
-        def template_path(*parts, ext: 'html.erb')
-          app_path.join('templates', "#{parts.join('/')}.#{ext}")
-        end
-
-        def layout_path(name)
-          template_path('layouts', name)
+          root_path.join('app')
         end
 
         # Rack interface
@@ -69,6 +61,10 @@ module Drn
           reload! if development?
 
           # dispatch routes
+          routers.each do |router|
+            res = router.call(env)
+            return res unless res[0] == 404
+          end
         end
 
         def init!
@@ -84,7 +80,7 @@ module Drn
 
           initialized!
 
-          freeze
+          self
         end
 
         def initialized?

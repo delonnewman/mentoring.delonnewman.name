@@ -13,9 +13,7 @@ module Drn
           @order_by_attribute_name = attribute_name
         end
 
-        def order_by_attribute_name
-          @order_by_attribute_name
-        end
+        attr_reader :order_by_attribute_name
       end
 
       attr_reader :entity_class, :dataset, :fields, :db, :component_attributes
@@ -142,10 +140,10 @@ module Drn
 
       private
 
-      # delegate logger and db to Drn::Mentoring.app
+      # delegate logger and db to Mentoring.app
       %i[logger db].each do |method|
         define_method method do
-          Drn::Mentoring.app.send(method)
+          Mentoring.app.send(method)
         end
       end
     end

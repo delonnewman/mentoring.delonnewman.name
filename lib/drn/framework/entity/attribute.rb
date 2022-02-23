@@ -6,10 +6,9 @@ module Drn
       RegExpType = ->(regex) { ->(v) { v.is_a?(String) && !!(regex =~ v) } }
 
       DEFAULT_TYPE = ClassType[Object]
-      UUID_REGEXP = /\A[0-9A-Fa-f]{8,8}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{4,4}\-[0-9A-Fa-f]{12,12}\z/
-        .freeze
-      EMAIL_REGEXP = /\A[a-zA-Z0-9!#\$%&'*+\/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#\$%&'\*+\/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$\z/
-        .freeze
+      UUID_REGEXP = /\A[0-9A-Fa-f]{8,8}-[0-9A-Fa-f]{4,4}-[0-9A-Fa-f]{4,4}-[0-9A-Fa-f]{4,4}-[0-9A-Fa-f]{12,12}\z/
+
+      EMAIL_REGEXP = %r{\A[a-zA-Z0-9!#$%&'*+/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$\z}
 
       SPECIAL_TYPES = {
         boolean: ->(v) { v.is_a?(FalseClass) || v.is_a?(TrueClass) },
@@ -83,7 +82,7 @@ module Drn
           name = join_table_name
           return nil unless name
 
-          Drn::Mentoring.app.db[name]
+          Mentoring.app.database[name]
         end
 
         def type

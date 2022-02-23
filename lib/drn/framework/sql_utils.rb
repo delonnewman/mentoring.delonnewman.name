@@ -30,9 +30,9 @@ module Drn
 
           fields =
             value_class
-              .attributes
-              .reject { |a| value_class.exclude_for_storage.include?(a.name) || a.component? }
-              .map { |attr1| Sequel[attr_name][attr1.name].as(:"#{attr_name}[#{attr1.name}]") }
+            .attributes
+            .reject { |a| value_class.exclude_for_storage.include?(a.name) || a.component? }
+            .map { |attr1| Sequel[attr_name][attr1.name].as(:"#{attr_name}[#{attr1.name}]") }
 
           results = [{ fields: fields,
                        table: table_alias,
@@ -48,7 +48,7 @@ module Drn
 
       def run(query, *args, tag: nil, &block)
         tag = tag.nil? ? 'SQL' : "SQL #{tag}"
-        app = Drn::Mentoring.app
+        app = Mentoring.app
 
         app.logger.info "#{tag}: #{query.gsub(/\s+/, ' ')}, args: #{args.inspect}"
 
@@ -140,8 +140,8 @@ module Drn
       def query_fields(entity_class, db)
         fields =
           query_attribute_map(entity_class)
-            .reject { |(name, _)| entity_class.exclude_for_storage.include?(name) }
-            .map { |(_, ident)| db.literal(ident) }
+          .reject { |(name, _)| entity_class.exclude_for_storage.include?(name) }
+          .map { |(_, ident)| db.literal(ident) }
 
         entity_class.component_attributes.each_with_index do |comp, i|
           comp

@@ -7,7 +7,7 @@ module Drn
       module_function
 
       def mock_request(path, **options)
-        Rack::MockRequest.env_for(path, **options).merge('mentoring.app' => Drn::Mentoring.app)
+        Rack::MockRequest.env_for(path, **options).merge('mentoring.app' => Mentoring.app)
       end
 
       def money(amount, unit: '$')
@@ -71,16 +71,15 @@ module Drn
 
       def camelcase(string, uppercase_first: true)
         string = string.to_s
-        if uppercase_first
-          string = string.sub(/^[a-z\d]*/) { |match| match.capitalize }
-        else
-          string =
-            string.sub(/^[A-Z\d]*/) do |match|
-              match[0].downcase!
-              match
-            end
-        end
-        string.gsub!(%r{(?:_|(\/))([a-z\d]*)}i) { "#{$2.capitalize}" }
+        string = if uppercase_first
+                   string.sub(/^[a-z\d]*/) { |match| match.capitalize }
+                 else
+                   string.sub(/^[A-Z\d]*/) do |match|
+                     match[0].downcase!
+                     match
+                   end
+                 end
+        string.gsub!(%r{(?:_|(/))([a-z\d]*)}i) { Regexp.last_match(2).capitalize.to_s }
         string.gsub!('/', '::')
         string
       end
@@ -106,7 +105,7 @@ module Drn
       end
 
       def constantize(string)
-        Drn::Mentoring.const_get(string)
+        Mentoring.const_get(string)
       end
 
       def pluralize(number, string)

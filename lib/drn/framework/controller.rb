@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Drn
   module Framework
     class Controller < Templated
@@ -54,6 +55,10 @@ module Drn
 
       def logger
         app.logger
+      end
+
+      def current_user
+        app.current_user
       end
     end
   end

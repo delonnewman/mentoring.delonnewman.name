@@ -6,7 +6,7 @@ class Ordered < Repository
 end
 
 RSpec.describe Repository do
-  let(:db) { Drn::Mentoring.app.db }
+  let(:db) { Mentoring.app.database }
 
   describe '.order_by' do
     let(:repo) { Ordered.new(db[:products], Product) }

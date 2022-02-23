@@ -10,7 +10,7 @@ RSpec.describe Mailer do
 
   describe TestMailer do
     it 'should return the result of the mailer action' do
-      mailer = described_class.new(Drn::Mentoring.app)
+      mailer = described_class.new(Mentoring.app)
       expect(mailer.test).to eq 'testing'
     end
   end

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'faker'
 require_relative '../lib/drn/mentoring'
-include Drn::Mentoring
+include Mentoring
 include Drn::Framework
 
 rates = [

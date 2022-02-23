@@ -1,5 +1,5 @@
 require 'spec_helper'
-include Drn::Mentoring
+include Mentoring
 
 RSpec.describe Product::InstantHelpPolicy do
   let(:customer) { app.users.find_by!(username: 'the-man-in-black') }

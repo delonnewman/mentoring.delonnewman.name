@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Drn::Mentoring::Application do
+RSpec.describe Mentoring::Application do
   context '#dotenv_path' do
     it 'should return the appropriate dotenv_path for the environment' do
       app = described_class.new(:test)

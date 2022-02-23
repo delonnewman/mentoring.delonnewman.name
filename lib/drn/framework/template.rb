@@ -13,22 +13,22 @@ module Drn
       class << self
         def path(name, templated)
           if name.is_a?(Symbol) || !name.include?('/')
-            templated.app.template_path(templated.canonical_name, name)
+            templated.app.app_path.join(templated.app.app_name, templated.canonical_name, "#{name}.html.erb")
           else
             return Pathname.new(name) if File.exist?(name)
 
-            templated.app.template_path(name)
+            templated.app.app_path.join(templated.app.app_name, "#{name}.html.erb")
           end
         end
 
         def layout_path(templated)
-          templated.layout && templated.app.layout_path(templated.layout)
+          templated.layout && templated.app.app_path.join(templated.app.app_name, 'layouts', templated.layout)
         end
 
         def [](templated, name)
           tmpl = new(templated, path(name, templated), layout_path(templated))
 
-          templated.app.env == :production ? tmpl.memoize : tmpl
+          templated.app.production? ? tmpl.memoize : tmpl
         end
       end
 
@@ -66,7 +66,12 @@ module Drn
         content = eval(code, binding, path.to_s)
 
         if @layout
-          @layout.call(view.is_a?(Hash) ? view.merge(__content__: content, view: view) : { __content__: content, view: view })
+          @layout.call(if view.is_a?(Hash)
+                         view.merge(__content__: content,
+                                    view: view)
+                       else
+                         { __content__: content, view: view }
+                       end)
         else
           content
         end

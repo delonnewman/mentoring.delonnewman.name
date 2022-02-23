@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Drn
   module Framework
     class Templated
@@ -17,7 +18,7 @@ module Drn
       end
 
       %i[layout canonical_name].each do |method|
-        class_eval " def #{method}; self.class.#{method} end "
+        class_eval " def #{method}; self.class.#{method} end ", __FILE__, __LINE__
       end
 
       def app

@@ -1,9 +1,11 @@
-require_relative 'lib/drn/mentoring/environment'
-Drn::Mentoring.app.settings.load!
+require_relative 'app/mentoring'
+App = Mentoring::Application.new(:development).tap do |app|
+  app.settings.load!
+end
 
 task default: :spec
 
-TEST_ENV = Drn::Mentoring.app.env == :ci ? 'ci' : 'test'
+TEST_ENV = App.ci? ? 'ci' : 'test'
 
 desc 'Run spec'
 task :spec do
@@ -87,7 +89,7 @@ namespace :assets do
   task compile: %w[./public/js/chat.js]
 
   file './public/js/chat.js' do
-    if Drn::Mentoring.app.env == :production
+    if App.production?
       sh 'npx esbuild apps/chat/client.js --bundle --minify --target=chrome58,firefox57,safari11,edge16 --outfile=./public/js/chat.js'
     else
       sh 'npx esbuild apps/chat/client.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=./public/js/chat.js'

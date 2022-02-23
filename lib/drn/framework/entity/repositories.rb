@@ -87,12 +87,6 @@ module Drn
             repository_class Class.new(Repository)
             repository_class.class_eval(&block)
           end
-
-          @repository ||=
-            repository_class.new(
-              Drn::Mentoring.app.database[repository_table_name.to_sym],
-              self
-            )
         end
       end
     end

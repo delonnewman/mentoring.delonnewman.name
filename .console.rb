@@ -1,4 +1,6 @@
-require_relative 'lib/drn/mentoring'
-include Drn::Mentoring
+require_relative 'app/mentoring'
 
-# Drn::Mentoring.init!
+def app(env = :development)
+  @apps ||= {}
+  @apps[env] ||= Mentoring::Application.new(env)
+end

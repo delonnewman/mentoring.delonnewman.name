@@ -25,7 +25,7 @@ module Drn
             user_id = request.session[:current_user_id]
             return nil unless user_id
 
-            self.current_user = self.class.find_user.call(user_id)
+            self.current_user = instance_exec(user_id, &self.class.find_user)
           end
 
           def current_user=(user)
