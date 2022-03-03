@@ -3,7 +3,7 @@
 module Mentoring
   # A resource for loading Zoom configuration
   class Zoom
-    include Drn::Framework::Application::Resource
+    include El::Application::Resource
 
     attr_reader :client
 

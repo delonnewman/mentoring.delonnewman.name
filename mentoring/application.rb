@@ -5,8 +5,8 @@ require_relative '../lib/el'
 # A mentoring website (see https://mentoring.delonnewman.name)
 module Mentoring
   # Represents the application state
-  class Application < Drn::Framework::Application::Base
-    include Drn::Framework::Authenticable
+  class Application < El::Application::Base
+    include El::Authenticable
 
     find_user do |user_id|
       users.find_by!(id: user_id)
@@ -30,10 +30,6 @@ module Mentoring
     resources :database, :mailjet, :stripe, :zoom, :zulip, :profiler
     packages :billing
     routers :main, :checkout, :mentoring_sessions, :products
-
-    def messenger
-      @messenger ||= ApplicationMessenger.new(self)
-    end
 
     def default_mentor
       @default_mentor ||= users.find_by!(username: settings[:default_mentor_username])

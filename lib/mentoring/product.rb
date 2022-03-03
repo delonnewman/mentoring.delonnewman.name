@@ -2,8 +2,8 @@
 
 module Mentoring
   # Represents mentoring products
-  class Product < Drn::Framework::Entity
-    include Drn::Framework::NumericUtils
+  class Product < El::Entity
+    include El::NumericUtils
 
     primary_key :id, :uuid
 

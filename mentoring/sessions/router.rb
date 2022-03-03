@@ -3,8 +3,8 @@
 module Mentoring
   module Sessions
     # Routes for mentoring sessions
-    class Router < Drn::Framework::Router
-      include Drn::Framework::TimeUtils
+    class Router < El::Router
+      include El::TimeUtils
 
       get '/new' do
         # start / cancel buttons with some instructions

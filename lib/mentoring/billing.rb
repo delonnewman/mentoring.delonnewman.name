@@ -2,7 +2,7 @@
 
 module Mentoring
   # A collection of functions for billing customers
-  class Billing < Drn::Framework::Application::Package
+  class Billing < Mentoring::Application.Package()
     def bill_mentoring_session!(session)
       return if session.checkout_session_id.nil?
 

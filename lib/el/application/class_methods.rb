@@ -70,6 +70,18 @@ module El
 
         @entities ||= []
       end
+
+      def dependencies
+        @dependencies ||= {}
+      end
+
+      def add_dependency!(name, object, init: true)
+        dependencies[name] = { object: object, init: init }
+      end
+
+      def find_dependency(name)
+        @deps[name]
+      end
     end
   end
 end

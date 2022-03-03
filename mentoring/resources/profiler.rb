@@ -3,7 +3,7 @@
 module Mentoring
   # A resource for Rack::MiniProfiler configuration
   class Profiler
-    include Drn::Framework::Application::Resource
+    include El::Application::Resource
 
     attr_reader :instance
 

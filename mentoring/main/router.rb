@@ -3,9 +3,9 @@
 module Mentoring
   module Main
     # Routes for the landing page of the site
-    class Router < Drn::Framework::Router
+    class Router < El::Router
       include Helpers
-      include Drn::Framework::TimeUtils
+      include El::TimeUtils
 
       static '/' => 'public'
 

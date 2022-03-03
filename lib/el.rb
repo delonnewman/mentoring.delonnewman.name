@@ -21,6 +21,7 @@ require_relative 'el/trait'
 
 # Application State & DI
 require_relative 'el/application'
+require_relative 'el/authenticable'
 
 # Utility methods
 require_relative 'el/utils'
@@ -36,7 +37,7 @@ require_relative 'el/templated'
 require_relative 'el/template'
 
 # Messaging
-require_relative 'el/mailer'
+require_relative 'el/messenger'
 
 # Model
 require_relative 'el/entity'

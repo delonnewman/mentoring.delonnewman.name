@@ -3,7 +3,7 @@
 module Mentoring
   # Resource for loading an application database
   class Database
-    include Drn::Framework::Application::Resource
+    include El::Application::Resource
 
     attr_reader :instance
 

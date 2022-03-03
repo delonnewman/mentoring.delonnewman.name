@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mentoring
-  class ProductRate < Drn::Framework::Entity
+  class ProductRate < El::Entity
     primary_key :id
     reference :name, String
 

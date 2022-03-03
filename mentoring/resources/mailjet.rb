@@ -3,7 +3,7 @@
 module Mentoring
   # A resource for loading Mailjet configuration
   class Mailjet
-    include Drn::Framework::Application::Resource
+    include El::Application::Resource
 
     def load
       ::Mailjet.configure do |config|

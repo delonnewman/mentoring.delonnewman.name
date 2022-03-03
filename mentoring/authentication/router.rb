@@ -3,7 +3,7 @@
 module Mentoring
   module Authentication
     # Routes for authenticating and creating user accounts
-    class Router < Drn::Framework::Router
+    class Router < El::Router
       get '/signup', authenticate: false do
         render :signup
       end

@@ -10,6 +10,10 @@ module El
         new(env).init!
       end
 
+      def self.Package
+        @package_class ||= Application::Package.create(self)
+      end
+
       attr_reader :env, :logger, :root_path, :request, :settings, :loader, :routers
 
       def initialize(env)
@@ -48,7 +52,7 @@ module El
 
       def app_name
         parts = self.class.name.split('::')
-        Utils.snakecase(parts[parts.length - 2])
+        Utils.underscore(parts[parts.length - 2])
       end
 
       def app_path

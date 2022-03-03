@@ -3,7 +3,7 @@
 module Mentoring
   module Authentication
     # Manage email communication for the application
-    class Messenger < Drn::Framework::Mailer
+    class Messenger < El::Messenger
       layout :mailer
 
       def signup(user)

@@ -46,7 +46,7 @@ module El
     alias j escape_javascript
 
     # Blantantly stolen from active-support
-    def snakecase(string)
+    def underscore(string)
       return string unless /[A-Z-]|::/ =~ string
 
       word = string.to_s.gsub('::', '/')

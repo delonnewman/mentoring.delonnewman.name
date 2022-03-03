@@ -2,9 +2,9 @@
 
 module Mentoring
   # Represents the state of a mentoring session
-  class Session < Drn::Framework::Entity
-    include Drn::Framework::TimeUtils
-    include Drn::Framework::NumericUtils
+  class Session < El::Entity
+    include El::TimeUtils
+    include El::NumericUtils
 
     primary_key :id, :uuid
 
