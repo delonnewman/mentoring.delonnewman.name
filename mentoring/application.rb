@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative '../lib/drn/framework'
+require_relative '../lib/el'
 
 # A mentoring website (see https://mentoring.delonnewman.name)
 module Mentoring
   # Represents the application state
   class Application < Drn::Framework::Application::Base
-    include Drn::Framework::Application::Authenticable
+    include Drn::Framework::Authenticable
 
     find_user do |user_id|
       users.find_by!(id: user_id)

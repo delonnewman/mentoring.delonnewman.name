@@ -2,8 +2,8 @@
 
 module Mentoring
   class UserStatus
-    BUSY_STATUSES = Set[:in_session, :chatting, :busy]
-    STATUSES = Set[:available, :not_available] + BUSY_STATUSES
+    BUSY_STATUSES = Set[:in_session, :chatting, :busy].freeze
+    STATUSES = (Set[:available, :not_available] + BUSY_STATUSES).freeze
 
     STATUS_COLORS = {
       available: 'green',
