@@ -18,7 +18,7 @@ module Drn
               .join_table
               .join(name, id: attr.reference_key)
               .where(attr.entity.reference_key => id)
-            #.map { |record| attr.value_class[record] }
+            # .map { |record| attr.value_class[record] }
           end
 
           define_method Inflection.plural(attr.reference_key.name) do
@@ -71,22 +71,6 @@ module Drn
           end
 
           reference name, type, **opts
-        end
-
-        def ensure!(value)
-          case value
-          when self
-            value
-          when Hash
-            new(value)
-          else
-            # NOTE: As an optimization we could generate the comparible code
-            # whenever a reference attribute is added to the class.
-            reference_mapping.each do |type, ref|
-              return repository.find_by!(ref => value) if type.call(value)
-            end
-            raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{self}"
-          end
         end
 
         def exclude_for_storage

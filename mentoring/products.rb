@@ -2,7 +2,7 @@
 
 module Mentoring
   # Handle product interactions
-  class Products < Drn::Framework::Controller
+  class Products < Drn::Framework::Router
     get '/:id/subscribe' do
       app.products.subscribe(params[:id], current_user)
 

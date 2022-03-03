@@ -8,7 +8,7 @@ module Drn
       DEFAULT_OPTIONS = {
         layout: :admin,
         name: 'admin',
-        controller_super_class: Controller
+        controller_super_class: Router
       }.freeze
 
       attr_reader :controllers,

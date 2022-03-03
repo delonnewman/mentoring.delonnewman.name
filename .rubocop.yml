@@ -8,3 +8,6 @@ Layout/HashAlignment:
   Enabled: false
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
+
+Metrics/ClassLength:
+  Enabled: false

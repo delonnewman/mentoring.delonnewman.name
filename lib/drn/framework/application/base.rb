@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-# rubocop: disable Metrics/ClassLength
-
 module Drn
   module Framework
     module Application
       # Represents the application state
       class Base
         extend ClassMethods
+
+        def self.init!(env = ENV.fetch('RACK_ENV', 'development').to_sym)
+          new(env).init!
+        end
 
         attr_reader :env, :logger, :root_path, :request, :settings, :loader, :routers
 
@@ -51,7 +53,7 @@ module Drn
         end
 
         def app_path
-          root_path.join('app')
+          root_path.join(app_name)
         end
 
         # Rack interface
@@ -85,6 +87,16 @@ module Drn
 
         def initialized?
           !!@initialized
+        end
+
+        def repositories
+          @repositories ||= {}
+        end
+
+        def ensure_repository!(entity_class)
+          repositories.fetch(entity_class) do
+            raise "No repository for #{entity_class}"
+          end
         end
 
         private
@@ -126,14 +138,15 @@ module Drn
           end
         end
 
-        def load_entity!(entity)
-          entity_class = entity.is_a?(Class) ? entity : self.class.resolve_class_symbol(entity)
-          repository = entity_class.repository_class.new(
+        def init_repository!(entity_class)
+          repositories[entity_class] = entity_class.repository_class.new(
             self,
             database[entity_class.repository_table_name.to_sym],
             entity_class
           )
+        end
 
+        def define_repository_accessor!(entity_class, repository)
           method_name = Inflection.plural(Utils.snakecase(entity_class.name.split('::').last))
           var_name = "@#{method_name}"
 
@@ -142,6 +155,12 @@ module Drn
           define_singleton_method method_name do
             instance_variable_get(var_name)
           end
+        end
+
+        def load_entity!(entity)
+          entity_class = entity.is_a?(Class) ? entity : self.class.resolve_class_symbol(entity)
+
+          define_repository_accessor!(entity_class, init_repository!(entity_class))
 
           entity_class
         end
@@ -164,7 +183,7 @@ module Drn
 
       def init_filewatcher!
         watcher = Filewatcher.new([lib_path, app_path])
-        Thread.new(watcher) do |w|
+        Thread.new(watcher) do |w| # TODO: use a fiber instead
           w.watch do |filename|
             logger.info "Changes found in #{filename}. Reloading..."
             reload!

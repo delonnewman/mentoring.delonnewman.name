@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'app/mentoring'
+require_relative 'app/mentoring/application'
 
 # And use Honeybadger's rack middleware
 use Honeybadger::Rack::ErrorNotifier
@@ -10,4 +10,4 @@ use Honeybadger::Rack::ErrorNotifier
 
 use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
 
-run Mentoring::Application.new(ENV.fetch('RACK_ENV', 'development').to_sym).init!
+run Mentoring::Application.init!

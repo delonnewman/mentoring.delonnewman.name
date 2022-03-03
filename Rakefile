@@ -1,4 +1,5 @@
-require_relative 'app/mentoring'
+require_relative 'mentoring/application'
+
 App = Mentoring::Application.new(:development).tap do |app|
   app.settings.load!
 end

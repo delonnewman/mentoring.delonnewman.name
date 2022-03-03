@@ -1,30 +1,37 @@
 #!/usr/bin/env ruby
+
 require 'faker'
-require_relative '../lib/drn/mentoring'
+require_relative '../app/mentoring'
+
 include Mentoring
 include Drn::Framework
+
+app = Mentoring::Application.init!
 
 rates = [
   ProductRate[
     name: 'per-month',
     description: '/ month',
     unit: 'month',
-    subscription: true],
+    subscription: true
+  ],
   ProductRate[
     name: 'per-half-hour',
     description: '/ half-hour',
     unit: 'half_hour',
-    subscription: false],
+    subscription: false
+  ],
   ProductRate[
     name: 'per-minute',
     description: '/ minute',
     unit: 'minute',
-    subscription: false]
+    subscription: false
+  ]
 ]
 
 pp rates
 
-ProductRate.repository.store_all!(rates) if ProductRate.repository.empty?
+app.product_rates.store_all!(rates) if app.product_rates.empty?
 
 products = [
   Product[
@@ -65,14 +72,14 @@ products = [
 
 pp products
 
-Product.repository.store_all!(products) if Product.repository.empty?
+app.products.store_all!(products) if app.products.empty?
 
 roles = [
   UserRole[name: 'admin'],
   UserRole[name: 'customer']
 ]
 
-UserRole.repository.store_all!(roles) if UserRole.repository.empty?
+app.user_roles.store_all!(roles) if app.user_roles.empty?
 
 users = [
   User[
@@ -178,9 +185,9 @@ users = [
 
 pp users
 
-User.repository.store_all!(users) if User.repository.empty?
+app.users.store_all!(users) if app.users.empty?
 
-if app.env == :development || app.env == :test
+if app.development? || app.test?
   customers = %w[the-man-in-black june-carter]
 
   sessions = 6.times.map do

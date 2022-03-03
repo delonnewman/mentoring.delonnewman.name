@@ -42,8 +42,8 @@ require_relative 'framework/mailer'
 require_relative 'framework/entity'
 require_relative 'framework/repository'
 
-# Controller
+# Request Dispatch
 require_relative 'framework/json_response'
-require_relative 'framework/controller'
+require_relative 'framework/router'
 require_relative 'framework/entity_controller'
 require_relative 'framework/admin_controller'

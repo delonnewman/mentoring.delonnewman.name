@@ -67,7 +67,6 @@ module Drn
 
       # TODO: for performance this would be better as opt-in
       def process_record(entity_class, record)
-        record = entity_class.ensure!(record)
         h = record.to_h.dup
 
         attrs = entity_class.attributes
@@ -81,10 +80,10 @@ module Drn
         comps.each do |attr|
           id_key = attr.reference_key
 
-          if !record.key?(id_key) && (id_val = record.send(attr.name).id)
+          if !record.key?(id_key) && (id_val = record[attr.name].id)
             h[id_key] = id_val
-          elsif attr.required?
-            raise "#{id_key.inspect} is required for storage but is missing"
+          elsif !record.key?(id_key) && attr.required?
+            raise "#{id_key.inspect} is required for storage but is missing: #{record.inspect}:#{entity_class}"
           end
 
           h.delete(attr.name)

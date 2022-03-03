@@ -17,8 +17,9 @@ module Drn
           @instance = Zeitwerk::Loader.new
 
           @instance.push_dir(app.lib_path)
-          @instance.push_dir(app.app_path)
-          # @instance.enable_reloading if app.development?
+          @instance.push_dir(app.app_path, namespace: app.class.app_module)
+          @instance.enable_reloading if app.development?
+          # TODO: ignore template directories
 
           @instance.setup
         end

@@ -2,7 +2,7 @@
 
 module Mentoring
   # Routes for product checkout
-  class Checkout < Drn::Framework::Controller
+  class Checkout < Drn::Framework::Router
     get '/setup' do
       settings = { pub_key: app.settings['STRIPE_PUB_KEY'] }
 

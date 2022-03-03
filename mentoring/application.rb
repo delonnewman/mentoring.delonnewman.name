@@ -26,7 +26,7 @@ module Mentoring
              :zoom_api_secret,
              :default_mentor_username
 
-    entities :user, :product, :mentoring_session, :user_registration
+    entities :user, :product, :mentoring_session, :user_registration, :product_rate, :user_role
     resources :database, :mailjet, :stripe, :zoom, :zulip, :profiler
     packages :billing
     routers :main, :checkout, :mentoring_sessions, :products

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop disable: Metrics/ClassLength
+
 module Drn
   module Framework
     # Represents the storage and retrival of a given entity class.
@@ -22,28 +24,38 @@ module Drn
         @app = app
         @entity_class = entity_class
         @db = dataset.db
-
-        @component_attributes = @entity_class.component_attributes
-
-        @fields = entity_class.attributes
-                              .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
-                              .map { |a| Sequel[table_name][a.name] }
-
         @dataset = dataset
         @simple_dataset = dataset
 
-        unless @component_attributes.empty?
-          data = SqlUtils.component_attribute_query_info(entity_class)
-          @fields += data.flat_map { |x| x[:fields] }
+        @component_attributes = @entity_class.component_attributes
 
-          @dataset = data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }
-                         .select(*fields)
-        end
+        @fields = collect_fields!
+        init_component_fields!
 
         @fields.freeze
 
         @dataset = @dataset.order(self.class.order_by_attribute_name) if self.class.order_by_attribute_name
       end
+
+      private
+
+      def collect_fields!
+        entity_class.attributes
+                    .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
+                    .map { |a| Sequel[table_name][a.name] }
+      end
+
+      def init_component_fields!
+        return if component_attributes.empty?
+
+        data = SqlUtils.component_attribute_query_info(entity_class)
+        @fields += data.flat_map { |x| x[:fields] }
+
+        @dataset = data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }
+                       .select(*fields)
+      end
+
+      public
 
       def table_name
         Utils.table_name(entity_class.canonical_name).to_sym
@@ -69,7 +81,9 @@ module Drn
       alias each all
 
       def find_by(predicates)
-        record = dataset.first(SqlUtils.preprocess_predicates(predicates, table_name))
+        preds = SqlUtils.preprocess_predicates(predicates, table_name)
+        logger.info "Query #{entity_class}.repository.find_by: #{preds.inspect}"
+        record = dataset.first(preds)
         return nil unless record
 
         SqlUtils.build_entity(entity_class, record)
@@ -111,12 +125,22 @@ module Drn
         find_by!(id: id)
       end
 
-      def store!(record)
-        table.insert(SqlUtils.process_record(entity_class, record))
+      def store!(*args)
+        if args.length == 0
+          return store_all!(args[0]) if args[0].is_a?(Array)
+
+          return store_entity!(args[0])
+        end
+
+        store_all!(args)
+      end
+
+      def store_entity!(record)
+        table.insert(SqlUtils.process_record(entity_class, resolve_entity(record)))
       end
 
       def store_all!(records)
-        table.multi_insert(records.map(&SqlUtils.method(:process_record).curry[entity_class]))
+        table.multi_insert(records.map { |r| SqlUtils.process_record(entity_class, resolve_entity(r)) })
       end
 
       def delete_where!(predicates)
@@ -125,6 +149,47 @@ module Drn
 
       def delete_all!
         table.delete
+      end
+
+      def ensure!(value)
+        case value
+        when entity_class
+          value
+        when Hash
+          new(value)
+        else
+          logger.info "#{entity_class}.reference_mapping #{entity_class.reference_mapping.inspect}"
+          # NOTE: As an optimization we could generate the comparible code
+          # whenever a reference attribute is added to the class.
+          entity_class.reference_mapping.each do |type, ref|
+            logger.info "#{entity_class}.repository.find_by(#{ref.inspect} => #{value.inspect})"
+            return find_by!(ref => value) if type.call(value)
+          end
+
+          raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{entity_class}"
+        end
+      end
+      alias [] ensure!
+
+      def resolve_entity(entity)
+        data = entity.to_h
+
+        attrs = entity.class.attributes
+        attrs.reject { |a| a.default.nil? }.each { |attr| data[attr.name] = entity.value_for(attr.name) }
+
+        data = data.except(*entity.class.exclude_for_storage)
+        attrs
+          .select(&:optional?)
+          .each { |attr| data.delete(attr.name) if entity.value_for(attr.name).nil? }
+
+        if (comps = entity.class.attributes.select(&:component?)).empty?
+          data
+        else
+          comps.reduce(data) do |h, comp|
+            logger.info "comp: #{comp.value_class.inspect}"
+            h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).ensure!(entity.value_for(comp.name)).id)
+          end
+        end
       end
 
       protected
@@ -142,7 +207,7 @@ module Drn
       private
 
       # delegate logger and db to Mentoring.app
-      %i[logger db].each do |method|
+      %i[logger database].each do |method|
         define_method method do
           app.send(method)
         end

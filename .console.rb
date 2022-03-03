@@ -1,4 +1,4 @@
-require_relative 'app/mentoring'
+require_relative 'mentoring/application'
 
 def app(env = :development)
   @apps ||= {}
