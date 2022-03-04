@@ -4,13 +4,13 @@ module El
   module Application
     # A resource for loading settings from user and environment variables
     class Settings
-      include Resource
+      include Resourcable
 
       def [](key)
         @settings[normalize_key(key)]
       end
 
-      def load
+      def load!
         return if loaded?
 
         notify!
@@ -21,6 +21,7 @@ module El
         load_env!
 
         @settings.freeze
+        loaded!
       end
 
       def dotenv_path

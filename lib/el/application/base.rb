@@ -14,6 +14,10 @@ module El
         @package_class ||= Application::Package.create(self)
       end
 
+      def self.Resource
+        @resource_class ||= Application::Resource.create(self)
+      end
+
       attr_reader :env, :logger, :root_path, :request, :settings, :loader, :routers
 
       def initialize(env)

@@ -3,40 +3,33 @@
 module El
   # A stateful resource to be injected into the application
   module Application
-    module Resource
-      extend Trait
-      required :load
+    class Resource < Package
+      include Resourcable
 
-      attr_reader :app
+      class << self
+        attr_reader :loader, :unloader
 
-      def initialize(app)
-        @app = app
+        def start(&block)
+          @loader = block
+        end
+
+        def stop(&block)
+          @unloader = block
+        end
       end
 
-      def loaded?
-        @loaded
+      def initialize(app)
+        super(app, freeze: false)
       end
 
       def load!
-        load
+        instance_exec(&self.class.loader)
         loaded!
+        freeze
       end
-
-      def unload; end
 
       def unload!
-        unload
-        unloaded!
-      end
-
-      private
-
-      def loaded!
-        @loaded = true
-      end
-
-      def unloaded!
-        @loaded = false
+        instance_exec(&self.class.loader)
       end
     end
   end

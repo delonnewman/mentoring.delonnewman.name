@@ -2,10 +2,12 @@
 
 module Mentoring
   # Resource for loading an application database
-  class Database
-    include El::Application::Resource
-
+  class Database < Application.Resource()
     attr_reader :instance
+
+    start do
+      @instance = Sequel.connect(app.settings[:database_url])
+    end
 
     def [](table_name)
       instance[table_name]
@@ -13,10 +15,6 @@ module Mentoring
 
     def tables
       instance.tables
-    end
-
-    def load
-      @instance = Sequel.connect(app.settings[:database_url])
     end
   end
 end

@@ -4,7 +4,7 @@ module El
   module Application
     # A resource for handling code loading
     class Loader
-      include Resource
+      include Resourcable
 
       attr_reader :instance
 
@@ -26,7 +26,7 @@ module El
         '**/resources'
       ].freeze
 
-      def load
+      def load!
         @instance = Zeitwerk::Loader.new
         @instance.inflector.inflect(INFLECTIONS)
 
@@ -37,6 +37,8 @@ module El
         @instance.enable_reloading if app.development?
         @instance.setup
         @instance.eager_load
+
+        loaded!
       end
 
       private

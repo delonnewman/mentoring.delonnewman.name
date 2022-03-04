@@ -2,10 +2,8 @@
 
 module Mentoring
   # A resource for loading Mailjet configuration
-  class Mailjet
-    include El::Application::Resource
-
-    def load
+  class Mailings < Application.Resource()
+    start do
       ::Mailjet.configure do |config|
         config.api_key = app.settings[:mailjet_api_key]
         config.secret_key = app.settings[:mailjet_secret_key]

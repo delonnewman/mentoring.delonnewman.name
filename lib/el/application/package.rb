@@ -18,8 +18,9 @@ module El
 
       attr_reader :app
 
-      def initialize(app)
+      def initialize(app, freeze: true)
         @app = app
+        self.freeze if freeze
       end
     end
   end

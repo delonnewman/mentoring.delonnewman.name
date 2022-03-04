@@ -2,12 +2,10 @@
 
 module Mentoring
   # A resource for loading Mailjet configuration
-  class Zulip
-    include El::Application::Resource
-
+  class Chat < Application.Resource()
     attr_reader :client
 
-    def load
+    start do
       @client = WonderLlama::Client.new(
         host: app.settings[:zulip_host],
         email: app.settings[:zulip_bot_email],
