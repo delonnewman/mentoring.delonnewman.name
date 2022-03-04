@@ -6,6 +6,12 @@ module El
     class Settings
       include Resourcable
 
+      attr_reader :app
+
+      def initialize(app)
+        @app = app
+      end
+
       def [](key)
         @settings[normalize_key(key)]
       end

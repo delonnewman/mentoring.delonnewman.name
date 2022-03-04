@@ -1,10 +1,8 @@
 module El
   module Application
     module Resourcable
-      attr_reader :app
-
-      def initialize(app)
-        @app = app
+      def app
+        raise 'An app method must be defined'
       end
 
       def load!

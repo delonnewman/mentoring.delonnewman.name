@@ -3,7 +3,7 @@
 module Mentoring
   module Sessions
     # Routes for mentoring sessions
-    class Router < El::Router
+    class Router < Application.Router()
       include El::TimeUtils
 
       get '/new' do

@@ -92,7 +92,7 @@ module El
     end
 
     def table_name(entity_name)
-      Inflection.plural(Utils.snakecase(entity_name.split('::').last))
+      Inflection.plural(Utils.underscore(entity_name.split('::').last))
     end
 
     def join_table_name(entity_name, attribute_name)

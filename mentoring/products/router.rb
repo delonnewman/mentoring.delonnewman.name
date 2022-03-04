@@ -3,7 +3,7 @@
 module Mentoring
   module Products
     # Handle product interactions
-    class Router < El::Router
+    class Router < Application.Router()
       get '/:id/subscribe' do
         app.products.subscribe(params[:id], current_user)
 

@@ -18,6 +18,10 @@ module El
         @resource_class ||= Application::Resource.create(self)
       end
 
+      def self.Router
+        @router_class ||= Application::Router.create(self)
+      end
+
       attr_reader :env, :logger, :root_path, :request, :settings, :loader, :routers
 
       def initialize(env)

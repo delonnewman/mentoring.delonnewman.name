@@ -12,6 +12,7 @@ module El
 
         pkg = self
         app_class.define_method(name) do
+          @packages ||= {}
           @packages[name] ||= pkg.new(self)
         end
       end

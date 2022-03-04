@@ -3,7 +3,7 @@
 module Mentoring
   module Checkout
     # Routes for product checkout
-    class Router < El::Router
+    class Router < Application.Router()
       get '/setup' do
         settings = { pub_key: app.settings['STRIPE_PUB_KEY'] }
 

@@ -3,7 +3,7 @@
 module Mentoring
   module Main
     # Routes for the landing page of the site
-    class Router < El::Router
+    class Router < Application.Router()
       include Helpers
       include El::TimeUtils
 

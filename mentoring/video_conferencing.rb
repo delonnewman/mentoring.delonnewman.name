@@ -15,18 +15,18 @@ module Mentoring
     end
 
     def create_meeting!(customer:, mentor:, start_at: Time.now)
-      ZoomMeeting.create!(zoom_client, customer, mentor, start_at: start_at)
+      ZoomMeeting.create!(client, customer, mentor, start_at: start_at)
     end
 
     def meeting_for_session(session)
-      session = session.is_a?(MentoringSession) ? session : find_by!(id: session)
-      ZoomMeeting.from_session(zoom_client, session).tap do |meeting|
+      session = session.is_a?(Mentoring::Session) ? session : find_by!(id: session)
+      ZoomMeeting.from_session(client, session).tap do |meeting|
         meeting.fetch_data! unless session.ended?
       end
     end
 
     def delete_meeting!(session)
-      ZoomMeeting.from_session(zoom_client, session).delete!
+      ZoomMeeting.from_session(client, session).delete!
     end
   end
 end

@@ -6,7 +6,11 @@ module El
     class Loader
       include Resourcable
 
-      attr_reader :instance
+      attr_reader :instance, :app
+
+      def initialize(app)
+        @app = app
+      end
 
       def reload!
         instance.reload

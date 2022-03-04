@@ -6,6 +6,7 @@ require_relative 'application/dependency'
 require_relative 'application/package'
 require_relative 'application/resourcable'
 require_relative 'application/resource'
+require_relative 'application/router'
 
 require_relative 'application/class_methods'
 require_relative 'application/settings'
