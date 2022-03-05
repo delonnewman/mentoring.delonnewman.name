@@ -33,6 +33,10 @@ module El
           self.app_class = app_class
         end
 
+        def init_app!(app, dep_class)
+          dep_class.new(app)
+        end
+
         def inherited(dep_class)
           super
           return unless app_class?

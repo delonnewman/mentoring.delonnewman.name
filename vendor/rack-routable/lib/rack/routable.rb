@@ -271,7 +271,7 @@ module Rack
 
           io.puts '<div class="environment"><h2>Environment</h2>'
           io.puts '<table><tbody>'
-          env.each do |key, value|
+          request.env.each do |key, value|
             io.puts "<tr><th>#{h key}</th><td><pre>#{h value.pretty_inspect}</pre></td>"
           end
           io.puts '</tbody></table></div>'

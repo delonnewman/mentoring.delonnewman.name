@@ -7,7 +7,7 @@ module El
 
     class << self
       def canonical_name
-        Utils.snakecase(name.split('::').last)
+        Utils.underscore(name.split('::').last)
       end
 
       def layout(value = nil)

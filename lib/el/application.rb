@@ -9,7 +9,6 @@ require_relative 'entity'
 require_relative 'repository'
 
 require_relative 'application/dependency'
-require_relative 'application/package'
 require_relative 'application/servicable'
 require_relative 'application/service'
 require_relative 'application/router'

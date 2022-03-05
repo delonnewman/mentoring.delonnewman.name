@@ -66,17 +66,22 @@ module El
         root_path.join(app_name)
       end
 
+      DEFAULT_RESPONSE = [200, {}, ['Hi']].freeze
+
       # Rack interface
       def call(env)
         @request = Rack::Request.new(env)
 
-        # reload! if development?
+        reload! if development?
 
         # dispatch routes
-        routers.each do |router|
+        routers.each do |name, router|
           res = router.call(env)
+          logger.info "Dispatch response for #{name}: #{res.inspect}"
           return res unless res[0] == 404
         end
+
+        DEFAULT_RESPONSE
       end
 
       def init!
@@ -95,16 +100,6 @@ module El
         !!@initialized
       end
 
-      def repositories
-        @repositories ||= {}
-      end
-
-      def ensure_repository!(entity_class)
-        repositories.fetch(entity_class) do
-          raise "No repository for #{entity_class}"
-        end
-      end
-
       private
 
       def initialized!
@@ -114,10 +109,7 @@ module El
       def initialize_dependencies!
         ClassMethods::DEPENDENCY_KINDS.each do |kind|
           self.class.dependencies[kind].each_with_object(dependencies[kind]) do |(name, opts), deps|
-            logger.info "Initializing #{name}..."
             if opts[:init]
-              deps.merge!(name => opts[:object].new(self))
-            elsif opts[:object].respond_to?(:init_app!)
               deps.merge!(name => opts[:object].init_app!(self, opts[:object]))
             else
               deps.merge!(name => opts[:object])

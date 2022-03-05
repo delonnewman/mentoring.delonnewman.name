@@ -10,7 +10,7 @@ module El
           super(app_class)
 
           name = Utils.underscore(self.name.split('::').last).to_sym
-          app_class.add_dependency!(name, self, kind: :entities, init: false)
+          app_class.add_dependency!(name, self, kind: :entities)
 
           app_class.define_method(name) do
             entities.fetch(name)

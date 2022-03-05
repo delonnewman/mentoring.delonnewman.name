@@ -11,7 +11,7 @@ module El
 
         parts = name.split('::')
         name = Utils.underscore(parts[parts.length - 2]).to_sym
-        app_class.add_dependency!(name, self, kind: :routers, init: true)
+        app_class.add_dependency!(name, self, kind: :routers)
       end
 
       attr_reader :app
