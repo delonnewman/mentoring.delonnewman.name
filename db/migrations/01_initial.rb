@@ -51,7 +51,7 @@ Sequel.migration do
       foreign_key [:user_id], :users
     end
 
-    create_table :mentoring_sessions do
+    create_table :sessions do
       uuid :id, null: false, index: true, primary_key: true
       String :checkout_session_id
       FalseClass :from_subscription, null: false, default: false

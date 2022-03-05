@@ -12,23 +12,12 @@ module El
     attr_reader :path, :layout
 
     class << self
-      def path(name, templated)
-        if name.is_a?(Symbol) || !name.include?('/')
-          templated.app.app_path.join(templated.app.app_name, templated.canonical_name, "#{name}.html.erb")
-        else
-          return Pathname.new(name) if File.exist?(name)
-
-          templated.app.app_path.join(templated.app.app_name, "#{name}.html.erb")
-        end
-      end
-
       def layout_path(templated)
-        templated.layout && templated.app.app_path.join(templated.app.app_name, 'layouts',
-                                                        "#{templated.layout}.html.erb")
+        templated.layout && templated.app.app_path.join('layouts', "#{templated.layout}.html.erb")
       end
 
-      def [](templated, name)
-        tmpl = new(templated, path(name, templated), layout_path(templated))
+      def [](templated, path)
+        tmpl = new(templated, path, layout_path(templated))
 
         templated.app.production? ? tmpl.memoize : tmpl
       end
@@ -36,9 +25,9 @@ module El
 
     def initialize(templated, path, layout)
       @templated = templated
-      @app = templated.app
-      @path = path
-      @layout = Template.new(templated, layout, nil) if layout
+      @app       = templated.app
+      @path      = path
+      @layout    = Template.new(templated, layout, nil) if layout
     end
 
     def render(*args)

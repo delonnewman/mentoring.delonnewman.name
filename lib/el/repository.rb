@@ -191,7 +191,6 @@ module El
         data
       else
         comps.reduce(data) do |h, comp|
-          logger.info "comp: #{comp.value_class.inspect}"
           h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).ensure!(entity.value_for(comp.name)).id)
         end
       end

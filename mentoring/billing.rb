@@ -7,7 +7,7 @@ module Mentoring
       ::Stripe.api_key = app.settings[:stripe_key]
     end
 
-    def bill_mentoring_session!(session)
+    def bill_session!(session)
       return if session.checkout_session_id.nil?
 
       create_stripe_payment!(session)
@@ -15,7 +15,7 @@ module Mentoring
       data = session.merge(billed_at: Time.now)
       app.logger.info "SESSION BILLED: #{data.inspect}"
 
-      app.mentoring_sessions.update!(session.id, data)
+      app.sessions.update!(session.id, data)
     end
 
     def create_stipe_payment!(session)

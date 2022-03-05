@@ -19,7 +19,7 @@ module Mentoring
     end
 
     def meeting_for_session(session)
-      session = session.is_a?(Mentoring::Session) ? session : find_by!(id: session)
+      session = session.is_a?(Mentoring::Session) ? session : app.sessions.find_by!(id: session)
       ZoomMeeting.from_session(client, session).tap do |meeting|
         meeting.fetch_data! unless session.ended?
       end

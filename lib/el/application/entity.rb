@@ -9,7 +9,7 @@ module El
         def add_to!(app_class)
           super(app_class)
 
-          name = Utils.underscore(self.name.split('::').last).to_sym
+          name = self.name.split('::').last.to_sym
           app_class.add_dependency!(name, self, kind: :entities)
 
           app_class.define_method(name) do
@@ -21,6 +21,8 @@ module El
 
         def init_app!(app, entity_class)
           define_repository_accessor!(app, entity_class, init_repository!(app, entity_class))
+
+          entity_class
         end
 
         private
@@ -30,6 +32,10 @@ module El
 
           app_class.define_method :repositories do
             @repositories ||= {}
+          end
+
+          app_class.define_method :ensure_repository! do |name|
+            repositories.fetch(name)
           end
         end
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
 require 'faker'
-require_relative '../app/mentoring'
+require_relative '../mentoring/application'
 
 include Mentoring
-include Drn::Framework
+include El
 
 app = Mentoring::Application.init!
 
@@ -191,7 +191,7 @@ if app.development? || app.test?
   customers = %w[the-man-in-black june-carter]
 
   sessions = 6.times.map do
-    MentoringSession[
+    Mentoring::Session[
       mentor: 'delon',
       customer: customers.sample,
       product: app.products.first.id,
@@ -200,5 +200,5 @@ if app.development? || app.test?
     ]
   end
 
-  app.mentoring_sessions.store_all!(sessions)
+  app.sessions.store_all!(sessions)
 end

@@ -14,6 +14,12 @@ module El
         app_class.add_dependency!(name, self, kind: :routers)
       end
 
+      def self.canonical_name
+        parts = name.split('::')
+        ident = parts.last == 'Router' ? parts[parts.length - 2] : parts.last
+        Utils.underscore(ident)
+      end
+
       attr_reader :app
 
       def initialize(app)

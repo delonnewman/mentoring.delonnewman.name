@@ -76,9 +76,8 @@ module El
         reload! if development? && initialized?
 
         # dispatch routes
-        routers.each do |name, router|
+        routers.each do |_name, router|
           res = router.call(env)
-          logger.info "Dispatch response for #{name}: #{res.inspect}"
           return res unless res[0] == 404
         end
 

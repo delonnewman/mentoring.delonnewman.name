@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'app/mentoring/application'
+require_relative 'mentoring/application'
 
 # And use Honeybadger's rack middleware
 use Honeybadger::Rack::ErrorNotifier

@@ -5,7 +5,7 @@ module Mentoring
     # Routes for product checkout
     class Router < Application.Router()
       get '/setup' do
-        settings = { pub_key: app.settings['STRIPE_PUB_KEY'] }
+        settings = { pub_key: app.settings[:strip_pub_key] }
 
         settings[:prices] = app.products.map do |product|
           {

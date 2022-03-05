@@ -19,8 +19,6 @@ module El
       def load!
         return if loaded?
 
-        notify!
-
         @settings = {}
 
         load_user_settings!
@@ -46,14 +44,6 @@ module El
       end
 
       private
-
-      def notify!
-        if app.production?
-          app.logger.info "Initializing application in #{app.env} environment"
-        else
-          app.logger.info "Initializing application in #{app.env} environment from #{dotenv_path}"
-        end
-      end
 
       def normalize_key(key)
         return key if key.is_a?(Symbol)

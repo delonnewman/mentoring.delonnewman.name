@@ -23,9 +23,9 @@
     <% if !session.ended? %>
         <div>
             <% if current_user.id == session.mentor.id %>
-                <a class="btn btn-secondary" href="<%= zoom_meeting.start_url %>">Start Zoom</a>
+                <a class="btn btn-secondary" href="<%= meeting.start_url %>">Start Zoom</a>
             <% else %>
-                <a class="btn btn-secondary" href="<%= zoom_meeting.join_url %>">Join Zoom</a>
+                <a class="btn btn-secondary" href="<%= meeting.join_url %>">Join Zoom</a>
             <% end %>
         </div>
         <form action="<%= session_path(session) %>" method="post">

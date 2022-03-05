@@ -16,13 +16,13 @@ module Mentoring
         customer = app.users.find_by!(id: params['customer_id'])
         start_time = Time.iso8601(params.fetch('start_at') { Time.now.iso8601 })
 
-        meeting = app.create_zoom_meeting!(
+        meeting = app.video_conferencing.create_meeting!(
           customer: current_user,
           mentor: app.default_mentor,
           start_at: start_time
         )
 
-        session = app.mentoring_sessions.create!(
+        session = app.sessions.create!(
           checkout_session_id: params['checkout_session_id'],
           customer: customer,
           mentor: app.default_mentor,
@@ -40,10 +40,13 @@ module Mentoring
         # Display timer
         # Have a link to a Zoom Session
         # Display chat & shared code editor
-        session = app.mentoring_sessions.find_by!(id: params[:id])
+        session = app.sessions.find_by!(id: params[:id])
 
         if session.viewable_by?(current_user)
-          render :show, with: { session: session, zoom_meeting: app.zoom_meeting(session) }
+          render :show, with: {
+            session: session,
+            meeting: app.video_conferencing.meeting_for_session(session)
+          }
         else
           render :unauthorized
         end
@@ -51,7 +54,7 @@ module Mentoring
 
       # update session
       post '/:id' do
-        session = app.mentoring_sessions.update!(params[:id], params['session'])
+        session = app.sessions.update!(params[:id], params['session'])
 
         redirect_to session_path(session)
       end
@@ -62,24 +65,24 @@ module Mentoring
         # mentor should be able to update timestamp
         # calculate quantity from started_at and ended_at
         # mentor okays the checkout
-        session = app.mentoring_sessions.end!(params[:id])
-        app.delete_zoom_meeting!(session)
+        session = app.sessions.end!(params[:id])
+        app.video_conferencing.delete_meeting!(session)
 
         redirect_to session_path(session)
       end
 
       post '/:id/bill' do
-        session = app.mentoring_sessions
+        session = app.sessions
                      .find_by!(id: params[:id])
                      .merge(cost: Float(params.dig('session', 'amount'))) # TODO: improve entity coersion
 
-        app.billing.bill_mentoring_session!(session)
+        app.billing.bill_session!(session)
 
         redirect_to session_path(session)
       end
 
       post '/:id/amount' do
-        session = app.mentoring_sessions.find_by(id: params[:id])
+        session = app.sessions.find_by(id: params[:id])
         duration = minutes(Float(params['duration']))
 
         if session.nil?

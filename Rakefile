@@ -23,11 +23,6 @@ task :server do
   sh 'bundle exec shotgun -o 0.0.0.0 -p 3000'
 end
 
-desc 'Make Source Code Prettier'
-task :pretty do
-  sh 'bundle exec rbprettier --write "{lib,db,assets,scripts,spec,templates}/**/*.{rb,js,html,css,scss}"'
-end
-
 namespace :db do
   desc 'Setup database (i.e. create, migrate and seed)'
   task setup: %i[db:create db:migrate db:seed]
