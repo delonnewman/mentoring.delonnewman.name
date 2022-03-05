@@ -2,7 +2,7 @@
 
 module Mentoring
   # A resource for loading Mailjet configuration
-  class Chat < Application.Resource()
+  class Chat < Application.Service()
     attr_reader :client
 
     start do

@@ -2,7 +2,7 @@
 
 module Mentoring
   # A resource for Rack::MiniProfiler configuration
-  class Profiling < Application.Resource()
+  class Profiling < Application.Service()
     start do
       require 'rack-mini-profiler'
       Rack::MiniProfiler.config.authorization_mode = app.production? ? :allow_authorized : :allow_all

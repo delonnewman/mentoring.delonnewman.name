@@ -10,26 +10,25 @@ module El
         new(env).init!
       end
 
-      def self.Package
-        @package_class ||= Application::Package.create(self)
+      ClassMethods::DEPENDENCY_KINDS.each do |kind|
+        define_singleton_method kind do
+          dependencies.fetch(kind)
+        end
+
+        define_method kind do
+          dependencies.fetch(kind)
+        end
       end
 
-      def self.Resource
-        @resource_class ||= Application::Resource.create(self)
-      end
-
-      def self.Router
-        @router_class ||= Application::Router.create(self)
-      end
-
-      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :routers
+      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies
 
       def initialize(env)
-        @env       = env # development, test, production, ci, etc.
-        @logger    = Logger.new($stdout, level: log_level)
-        @root_path = Pathname.new(self.class.root_path || Dir.pwd)
-        @settings  = Settings.new(self)
-        @loader    = Loader.new(self)
+        @env          = env # development, test, production, ci, etc.
+        @logger       = Logger.new($stdout, level: log_level)
+        @root_path    = Pathname.new(self.class.root_path || Dir.pwd)
+        @settings     = Settings.new(self)
+        @loader       = Loader.new(self)
+        @dependencies = ClassMethods::DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
       end
 
       def reload!
@@ -85,11 +84,7 @@ module El
 
         settings.load!
         loader.load!
-
-        load_resources!
-        load_entities!
-        load_packages!
-        load_routers!
+        initialize_dependencies!
 
         initialized!
 
@@ -114,6 +109,18 @@ module El
 
       def initialized!
         @initialized = true
+      end
+
+      def initialize_dependencies!
+        ClassMethods::DEPENDENCY_KINDS.each do |kind|
+          self.class.dependencies[kind].each_with_object(dependencies[kind]) do |(name, opts), deps|
+            if opts[:init]
+              deps.merge!(name => opts[:object].new(self))
+            else
+              deps.merge!(name => opts[:object])
+            end
+          end
+        end
       end
 
       def load_package!(package)

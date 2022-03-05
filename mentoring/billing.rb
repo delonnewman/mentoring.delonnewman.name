@@ -2,7 +2,7 @@
 
 module Mentoring
   # A collection of functions for billing customers
-  class Billing < Application.Resource()
+  class Billing < Application.Service()
     start do
       ::Stripe.api_key = app.settings[:stripe_key]
     end

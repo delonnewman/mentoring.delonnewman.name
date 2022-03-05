@@ -4,7 +4,7 @@ module El
   module Application
     # A resource for handling code loading
     class Loader
-      include Resourcable
+      include Servicable
 
       attr_reader :instance, :app
 

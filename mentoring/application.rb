@@ -26,9 +26,6 @@ module Mentoring
              :zoom_api_secret,
              :default_mentor_username
 
-    entities :user, :product, :mentoring_session, :user_registration, :product_rate, :user_role
-    routers :main, :checkout, :mentoring_sessions, :products
-
     def default_mentor
       @default_mentor ||= users.find_by!(username: settings[:default_mentor_username])
     end

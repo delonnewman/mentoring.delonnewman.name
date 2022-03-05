@@ -2,10 +2,14 @@
 
 require 'rack/contrib/try_static'
 
+require_relative 'utils'
+require_relative 'templatable'
+require_relative 'templated'
+
 require_relative 'application/dependency'
 require_relative 'application/package'
-require_relative 'application/resourcable'
-require_relative 'application/resource'
+require_relative 'application/servicable'
+require_relative 'application/service'
 require_relative 'application/router'
 
 require_relative 'application/class_methods'

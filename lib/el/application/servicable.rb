@@ -1,6 +1,6 @@
 module El
   module Application
-    module Resourcable
+    module Servicable
       def app
         raise 'An app method must be defined'
       end

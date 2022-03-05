@@ -33,11 +33,11 @@ module El
           self.app_class = app_class
         end
 
-        def inherited(pkg_class)
+        def inherited(dep_class)
           super
           return unless app_class?
 
-          pkg_class.add_to!(app_class)
+          dep_class.add_to!(app_class)
         end
       end
 

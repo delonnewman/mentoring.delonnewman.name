@@ -3,13 +3,13 @@
 module El
   class Router < Templated
     include Rack::Routable
-    include Core
 
     attr_reader :app
 
-    def initialize(env)
-      super(env)
-      @app = env['mentoring.app']
+    def initialize(app)
+      super()
+
+      @app = app
     end
 
     def logger

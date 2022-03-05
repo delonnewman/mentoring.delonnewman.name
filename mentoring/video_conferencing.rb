@@ -2,7 +2,7 @@
 
 module Mentoring
   # A resource for loading Zoom configuration
-  class VideoConferencing < Application.Resource()
+  class VideoConferencing < Application.Service()
     attr_reader :client
 
     start do

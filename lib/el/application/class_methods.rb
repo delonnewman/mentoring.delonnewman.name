@@ -47,40 +47,31 @@ module El
         app_module.const_get(Utils.camelcase(symbol.name))
       end
 
-      def resources(*resources)
-        @resources = resources unless resources.empty?
-
-        @resources ||= []
+      def Service
+        @resource_class ||= Application::Service.create(self)
       end
 
-      def packages(*packages)
-        @packages = packages unless packages.empty?
-
-        @packages ||= []
+      def Router
+        @router_class ||= Application::Router.create(self)
       end
 
-      def routers(*routers)
-        @routers = routers unless routers.empty?
-
-        @routers ||= []
-      end
-
-      def entities(*entities)
-        @entities = entities unless entities.empty?
-
-        @entities ||= []
-      end
+      DEPENDENCY_KINDS = %i[routers packages services].freeze
 
       def dependencies
-        @dependencies ||= {}
+        @dependencies ||= DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
       end
 
-      def add_dependency!(name, object, init: true)
-        dependencies[name] = { object: object, init: init }
+      def add_dependency!(name, object, kind:, init: true)
+        dependencies[kind] ||= {}
+        dependencies[kind][name] = { object: object, init: init }
       end
 
-      def find_dependency(name)
-        @deps[name]
+      def dependency(kind, name)
+        dependencies.dig(kind, name)
+      end
+
+      def dependency!(kind, name)
+        dependencies.fetch(kind).fetch(name)
       end
     end
   end

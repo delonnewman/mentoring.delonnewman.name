@@ -2,7 +2,7 @@
 
 module Mentoring
   # Resource for loading an application database
-  class Database < Application.Resource()
+  class Database < Application.Service()
     attr_reader :instance
 
     start do

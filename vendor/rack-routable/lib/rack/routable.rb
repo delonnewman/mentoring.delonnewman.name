@@ -161,16 +161,6 @@ module Rack
     end
 
     module InstanceMethods
-      attr_reader :env, :request, :params
-
-      def initialize(env)
-        @env      = env
-        @request  = Request.new(env)
-        @match    = self.class.routes.match(env, @request.request_method) || EMPTY_HASH
-        @params   = @request.params.merge(@match[:params]) if @match && @match[:params]
-        @response = Rack::Response.new
-      end
-
       class Request < Rack::Request
         def request_method
           params.fetch('routable.http.method') do
@@ -179,11 +169,15 @@ module Rack
         end
       end
 
+      def routes
+        self.class.routes
+      end
+
       protected
 
       # These methods must be used or overridden by the subclass
 
-      attr_reader :match, :response
+      attr_reader :match, :response, :request, :params
 
       def options
         match[:options] || EMPTY_HASH
@@ -191,10 +185,6 @@ module Rack
 
       def session
         request.session
-      end
-
-      def routes
-        self.class.routes
       end
 
       def escape_html(*args)
@@ -303,7 +293,13 @@ module Rack
       public
 
       # TODO: add error and not_found to the DSL
-      def call
+      def call(env)
+        @env      = env
+        @request  = Request.new(env)
+        @match    = self.class.routes.match(env, @request.request_method) || EMPTY_HASH
+        @params   = @request.params.merge(@match[:params]) if @match && @match[:params]
+        @response = Rack::Response.new
+
         return not_found if @match.empty?
 
         case @match[:tag]

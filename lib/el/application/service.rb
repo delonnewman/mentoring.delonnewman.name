@@ -3,8 +3,9 @@
 module El
   # A stateful resource to be injected into the application
   module Application
-    class Resource < Package
-      include Resourcable
+    class Service
+      include Servicable
+      include Dependency
 
       class << self
         attr_reader :loader, :unloader
@@ -16,14 +17,27 @@ module El
         def stop(&block)
           @unloader = block
         end
+
+        def add_to!(app_class)
+          super(app_class)
+
+          name = Utils.underscore(self.name.split('::').last).to_sym
+          app_class.add_dependency!(name, self, kind: :services)
+
+          app_class.define_method(name) do
+            services.fetch(name)
+          end
+        end
       end
 
+      attr_reader :app
+
       def initialize(app)
-        super(app, freeze: false)
+        @app = app
       end
 
       def load!
-        instance_exec(&self.class.loader)
+        instance_exec(&self.class.loader) if self.class.loader
         loaded!
         freeze
       end

@@ -4,7 +4,7 @@ module El
   module Application
     # A resource for loading settings from user and environment variables
     class Settings
-      include Resourcable
+      include Servicable
 
       attr_reader :app
 
