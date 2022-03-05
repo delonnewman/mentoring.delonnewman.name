@@ -2,7 +2,7 @@
 
 module Mentoring
   # Represents mentoring products
-  class Product < El::Entity
+  class Product < Application.Entity()
     include El::NumericUtils
 
     primary_key :id, :uuid

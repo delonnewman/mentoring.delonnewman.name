@@ -22,11 +22,15 @@ module El
           super(app_class)
 
           name = Utils.underscore(self.name.split('::').last).to_sym
-          app_class.add_dependency!(name, self, kind: :services)
+          app_class.add_dependency!(name, self, kind: :services, init: false)
 
           app_class.define_method(name) do
             services.fetch(name)
           end
+        end
+
+        def init_app!(app, service_class)
+          service_class.new(app).load!
         end
       end
 

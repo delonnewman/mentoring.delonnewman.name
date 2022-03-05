@@ -30,6 +30,10 @@ module El
         loaded!
       end
 
+      def unload!
+        @loaded = false
+      end
+
       def dotenv_path
         case app.env
         when :development

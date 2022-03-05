@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mentoring
-  class UserRegistration < El::Entity
+  class UserRegistration < Application.Entity()
     primary_key :id, :uuid, display: { order: 0 }
 
     has :username, String, display: { order: 1 }, unique: { within: User.repository }

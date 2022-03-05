@@ -29,12 +29,5 @@ module Mentoring
     def default_mentor
       @default_mentor ||= users.find_by!(username: settings[:default_mentor_username])
     end
-
-    # TODO: remove this
-    def call(env)
-      env['mentoring.app'] = self
-
-      super
-    end
   end
 end

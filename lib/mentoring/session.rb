@@ -2,7 +2,7 @@
 
 module Mentoring
   # Represents the state of a mentoring session
-  class Session < El::Entity
+  class Session < Application.Entity()
     include El::TimeUtils
     include El::NumericUtils
 

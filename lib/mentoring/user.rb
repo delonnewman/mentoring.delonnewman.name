@@ -2,7 +2,7 @@
 
 module Mentoring
   # Represent users of the system
-  class User < El::Entity
+  class User < Application.Entity()
     primary_key :id
     reference :username, String, unique: true, display: { order: 1 }
     has :mentor, :boolean, required: false, display: { name: 'Is Mentor' }

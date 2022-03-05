@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../templated'
-
 module El
   module Application
     class Router < Templated

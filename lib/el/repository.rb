@@ -17,13 +17,11 @@ module El
       attr_reader :order_by_attribute_name
     end
 
-    attr_reader :app, :entity_class, :dataset, :fields, :db, :component_attributes
+    attr_reader :app, :entity_class, :fields, :component_attributes
 
-    def initialize(app, dataset, entity_class)
+    def initialize(app, entity_class)
       @app = app
       @entity_class = entity_class
-      @db = dataset.db
-      @dataset = dataset
       @simple_dataset = dataset
 
       @component_attributes = @entity_class.component_attributes
@@ -37,6 +35,14 @@ module El
     end
 
     private
+
+    def dataset
+      @dataset ||= app.database[entity_class.repository_table_name.to_sym]
+    end
+
+    def db
+      dataset.db
+    end
 
     def collect_fields!
       entity_class.attributes

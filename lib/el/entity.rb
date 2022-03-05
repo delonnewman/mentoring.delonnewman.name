@@ -92,7 +92,7 @@ module El
       end
 
       def canonical_name
-        Utils.snakecase(name.split('::').last)
+        Utils.underscore(name.split('::').last)
       end
 
       def validate!(entity)

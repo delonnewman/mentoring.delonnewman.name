@@ -1,5 +1,5 @@
 module Mentoring
-  class UserRole < El::Entity
+  class UserRole < Application.Entity()
     primary_key :id
     reference :name, String
 

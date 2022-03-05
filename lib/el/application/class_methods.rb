@@ -55,7 +55,11 @@ module El
         @router_class ||= Application::Router.create(self)
       end
 
-      DEPENDENCY_KINDS = %i[routers packages services].freeze
+      def Entity
+        @entity_class ||= Application::Entity.create(self)
+      end
+
+      DEPENDENCY_KINDS = %i[services routers entities].freeze
 
       def dependencies
         @dependencies ||= DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
