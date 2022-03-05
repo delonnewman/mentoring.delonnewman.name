@@ -67,12 +67,13 @@ module El
       end
 
       DEFAULT_RESPONSE = [200, {}, ['Hi']].freeze
+      private_constant :DEFAULT_RESPONSE
 
       # Rack interface
       def call(env)
         @request = Rack::Request.new(env)
 
-        reload! if development?
+        reload! if development? && initialized?
 
         # dispatch routes
         routers.each do |name, router|
