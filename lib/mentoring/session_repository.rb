@@ -5,13 +5,13 @@ module Mentoring
   class SessionRepository < El::Repository
     TIME_LEFT_QUERY = <<~SQL
         select *
-          from mentoring_sessions
+          from sessions
          where customer_id = :customer_id
       group by date_part('month', started_at)
     SQL
 
     def time_left_on_subscription(user)
-      db[:mentoring_sessions].fetch(TIME_LEFT_QUERY, customer_id: user.id)
+      db[:sessions].fetch(TIME_LEFT_QUERY, customer_id: user.id)
     end
 
     def end!(id)

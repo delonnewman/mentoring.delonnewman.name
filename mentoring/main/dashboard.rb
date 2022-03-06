@@ -24,7 +24,7 @@ module Mentoring
         @sessions ||=
           begin
             predicate = user.mentor? ? { mentor_id: user.id } : { customer_id: user.id }
-            app.mentoring_sessions.active_and_recently_ended_sessions_where(predicate)
+            app.sessions.active_and_recently_ended_sessions_where(predicate)
           end
       end
 
