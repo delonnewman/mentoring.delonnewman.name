@@ -96,17 +96,14 @@ module El
     end
 
     def reconstitute_record(entity_class, hash)
-      entity_class
-        .attributes
-        .select(&:serialize?)
-        .each { |attr| hash = hash.merge(attr.name => YAML.load(hash[attr.name])) if hash[attr.name] }
-
-      hash
+      entity_class.attributes.select(&:serialize?).each_with_object(hash.dup) do |attr, h|
+        h.merge!(attr.name => YAML.load(h[attr.name])) if h[attr.name]
+      end
     end
 
     def build_entity(entity_class, record)
       record = StringUtils.parse_nested_hash_keys(reconstitute_record(entity_class, record))
-      entity_class[record]
+      entity_class.new(record)
     end
 
     def ident_quote(db, *args)
@@ -123,18 +120,14 @@ module El
     ATTRIBUTE_MAP = Hash.new { |_, key| key }
 
     def query_attribute_map(entity_class)
-      entity_class
-        .attributes
-        .each_with_object(ATTRIBUTE_MAP.dup) do |attr, hash|
-          attr_name = attr.component? ? attr.reference_key : attr.name
-          if attr.many?
-            hash
-          else
-            hash.merge!(
-              attr.name => Sequel.qualify(entity_class.repository_table_name, attr_name)
-            )
-          end
+      entity_class.attributes.each_with_object(ATTRIBUTE_MAP.dup) do |attr, hash|
+        attr_name = attr.component? ? attr.reference_key : attr.name
+        if attr.many?
+          hash
+        else
+          hash.merge!(attr.name => Sequel.qualify(entity_class.repository_table_name, attr_name))
         end
+      end
     end
 
     def query_fields(entity_class, db)
@@ -144,15 +137,12 @@ module El
         .map { |(_, ident)| db.literal(ident) }
 
       entity_class.component_attributes.each_with_index do |comp, i|
-        comp
-          .value_class
-          .storable_attributes
-          .each do |attr|
-            table = "#{entity_class.component_table_name(comp)}#{i}"
-            ident = Sequel.qualify(table, attr.name)
-            name = Sequel.identifier("#{comp.name}_#{attr.name}")
-            fields << "#{db.literal(ident)} as #{db.literal(name)}"
-          end
+        comp.value_class.storable_attributes.each do |attr|
+          table = "#{entity_class.component_table_name(comp)}#{i}"
+          ident = Sequel.qualify(table, attr.name)
+          name = Sequel.identifier("#{comp.name}_#{attr.name}")
+          fields << "#{db.literal(ident)} as #{db.literal(name)}"
+        end
       end
 
       fields.join(', ')

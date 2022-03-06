@@ -26,10 +26,13 @@ module El
 
         @settings.freeze
         loaded!
+        self
       end
 
       def unload!
+        @settings = {}
         @loaded = false
+        self
       end
 
       def dotenv_path

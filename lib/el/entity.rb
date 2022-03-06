@@ -95,6 +95,13 @@ module El
         Utils.underscore(name.split('::').last)
       end
 
+      def valid?(entity)
+        validate!(entity)
+        true
+      rescue TypeError
+        false
+      end
+
       def validate!(entity)
         return unless entity.is_a?(Hash)
 

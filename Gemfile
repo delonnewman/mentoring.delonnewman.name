@@ -9,6 +9,7 @@ ruby '3.0.1'
 
 # db
 gem 'sequel'
+gem "pg", "~> 1.2"
 
 # application server
 gem 'rack'
@@ -65,5 +66,3 @@ group :development, :test do
 
   gem 'shotgun', github: 'shotgun'
 end
-
-gem "pg", "~> 1.2"

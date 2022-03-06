@@ -13,6 +13,7 @@ module Mentoring
     end
 
     env_vars :database_url,
+             :database_name,
              :domain,
              :stripe_key,
              :strip_pub_key,

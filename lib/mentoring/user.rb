@@ -45,7 +45,7 @@ module Mentoring
         dataset
           .join(:sessions, Sequel[:users][:id] => Sequel[:sessions][:mentor_id])
           .where(Sequel.~(ended_at: nil))
-          .map { |record| SqlUtils.build_entity(User, record) }
+          .map(&method(:entity))
       end
     end
 

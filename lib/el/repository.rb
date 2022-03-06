@@ -7,8 +7,6 @@ module El
   class Repository
     include Enumerable
 
-    include Core
-
     class << self
       def order_by(attribute_name)
         @order_by_attribute_name = attribute_name
@@ -45,9 +43,10 @@ module El
     end
 
     def collect_fields!
-      entity_class.attributes
-                  .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
-                  .map { |a| Sequel[table_name][a.name] }
+      entity_class
+        .attributes
+        .reject { |a| entity_class.exclude_for_storage.include?(a.name) }
+        .map { |a| Sequel[table_name][a.name] }
     end
 
     def init_component_fields!
@@ -56,8 +55,7 @@ module El
       data = SqlUtils.component_attribute_query_info(entity_class)
       @fields += data.flat_map { |x| x[:fields] }
 
-      @dataset = data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }
-                     .select(*fields)
+      @dataset = data.reduce(@dataset) { |ds, data| ds.join(data[:table], id: data[:ref]) }.select(*fields)
     end
 
     public
@@ -67,23 +65,37 @@ module El
     end
 
     def table
-      db[table_name]
+      app.database[table_name]
     end
 
     def empty?
-      first.nil?
+      dataset.empty?
     end
 
     def all(&block)
-      tag = "#{entity_class}.repository.all"
+      tag = "app.#{table_name}.all"
       logger.info "SQL #{tag}: #{dataset.sql}"
 
-      dataset.each do |row|
-        entity = SqlUtils.build_entity(entity_class, row)
-        block&.call(entity)
-      end
+      return to_a unless block
+
+      to_a.each(&block)
     end
-    alias each all
+
+    def each(&block)
+      return lazy unless block
+
+      dataset.each do |row|
+        block&.call(entity(row))
+      end
+
+      self
+    end
+
+    def pluck(*columns)
+      return @simple_dataset.select_map(columns[0]) if columns.size == 1
+
+      @simple_dataset.select_map(columns)
+    end
 
     def find_by(predicates)
       preds = SqlUtils.preprocess_predicates(predicates, table_name)
@@ -91,7 +103,7 @@ module El
       record = dataset.first(preds)
       return nil unless record
 
-      SqlUtils.build_entity(entity_class, record)
+      entity(record)
     end
 
     def find_by!(attributes)
@@ -112,36 +124,70 @@ module El
           next
         end
 
-        h[key] =
-          if attr.serialize?
-            YAML.dump(value)
-          else
-            value
-          end
+        if attr.serialize?
+          h.merge!(key => YAML.dump(value))
+        else
+          h.merge!(key => value)
+        end
       end
-
-      logger.info "UPDATE: #{data.inspect}"
 
       @simple_dataset.where(id: id).update(data)
     end
 
-    def create!(record)
-      id = store!(record)
+    def valid?(entity)
+      !!validate!(entity)
+    rescue TypeError
+      false
+    end
+
+    # TODO: add database oriented validations like uniqness here
+    def validate!(entity)
+      entity_class.validate!(entity)
+    end
+
+    def create!(*records)
+      if records.size == 1
+        return create_each!(records[0]) if records[0].is_a?(Enumerable)
+
+        return create_one!(records[0])
+      end
+
+      create_each!(records)
+    end
+
+    def create_one!(record)
+      validate!(record)
+      id = store_one!(entity(record))
       find_by!(id: id)
     end
 
-    def store!(*args)
-      if args.length == 0
-        return store_all!(args[0]) if args[0].is_a?(Array)
-
-        return store_entity!(args[0])
+    def create_each!(records)
+      ids = records.map do |record|
+        validate!(record)
+        store_one!(entity(record))
       end
 
-      store_all!(args)
+      where(Sequel[table_name][:id] => ids)
     end
 
-    def store_entity!(record)
+    def store!(*records)
+      if records.size == 1
+        return store_each!(records[0]) if records[0].is_a?(Enumerable)
+
+        return store_one!(records[0])
+      end
+
+      store_each!(records)
+    end
+
+    def store_one!(record)
       table.insert(SqlUtils.process_record(entity_class, resolve_entity(record)))
+    end
+
+    def store_each!(records)
+      db.transaction do
+        records.map(&method(:store_entity!))
+      end
     end
 
     def store_all!(records)
@@ -156,64 +202,64 @@ module El
       table.delete
     end
 
-    def ensure!(value)
-      case value
-      when entity_class
-        value
-      when Hash
-        new(value)
-      else
-        logger.info "#{entity_class}.reference_mapping #{entity_class.reference_mapping.inspect}"
-        # NOTE: As an optimization we could generate the comparible code
-        # whenever a reference attribute is added to the class.
-        entity_class.reference_mapping.each do |type, ref|
-          logger.info "#{entity_class}.repository.find_by(#{ref.inspect} => #{value.inspect})"
-          return find_by!(ref => value) if type.call(value)
-        end
+    def find(value)
+      return value if value.is_a?(entity_class)
+      return entity(value) if value.is_a?(Hash)
 
-        raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{entity_class}"
+      entity_class.reference_mapping.each do |type, ref|
+        return find_by(ref => value) if type.call(value)
       end
+
+      nil
     end
-    alias [] ensure!
+    alias [] find
+    alias call find
 
-    def resolve_entity(entity)
-      data = entity.to_h
+    def to_proc
+      ->(value) { find(value) }
+    end
 
-      attrs = entity.class.attributes
-      attrs.reject { |a| a.default.nil? }.each { |attr| data[attr.name] = entity.value_for(attr.name) }
-
-      data = data.except(*entity.class.exclude_for_storage)
-      attrs
-        .select(&:optional?)
-        .each { |attr| data.delete(attr.name) if entity.value_for(attr.name).nil? }
-
-      if (comps = entity.class.attributes.select(&:component?)).empty?
-        data
-      else
-        comps.reduce(data) do |h, comp|
-          h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).ensure!(entity.value_for(comp.name)).id)
-        end
-      end
+    def find!(value)
+      find(value) or raise TypeError, "#{value.inspect}:#{value.class} cannot be coerced into #{entity_class}"
     end
 
     protected
-
-    def where(predicates)
-      dataset.where(predicates).map do |row|
-        SqlUtils.build_entity(entity_class, row)
-      end
-    end
-
-    def build_entity(hash)
-      SqlUtils.build_entity(entity_class, hash)
-    end
-
-    private
 
     # delegate logger and db to Mentoring.app
     %i[logger database].each do |method|
       define_method method do
         app.send(method)
+      end
+    end
+
+    def where(predicates)
+      dataset.where(predicates).map(&method(:entity))
+    end
+
+    def entity(hash)
+      SqlUtils.build_entity(entity_class, hash)
+    end
+
+    private
+
+    def resolve_entity(entity)
+      data = entity.to_h
+
+      attrs = entity.class.attributes
+      attrs.reject { |a| a.default.nil? }.each_with_object(data) do |attr, h|
+        h.merge!(attr.name => entity.value_for(attr.name))
+      end
+
+      data = data.except(*entity.class.exclude_for_storage)
+      attrs.select(&:optional?).each_with_object(data) do |attr, h|
+        h.delete(attr.name) if entity.value_for(attr.name).nil?
+      end
+
+      comps = entity.class.attributes.select(&:component?)
+      return data if comps.empty?
+
+      comps.reduce(data) do |h, comp|
+        h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).ensure!(entity.value_for(comp.name)).id)
       end
     end
   end

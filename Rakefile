@@ -1,8 +1,5 @@
 require_relative 'mentoring/application'
-
-App = Mentoring::Application.new(:development).tap do |app|
-  app.settings.load!
-end
+App = Mentoring::Application.with_only_settings
 
 task default: :spec
 
@@ -20,7 +17,7 @@ end
 
 desc 'Run development server'
 task :server do
-  sh 'bundle exec shotgun -o 0.0.0.0 -p 3000'
+  sh 'bundle exec puma -b tcp://0.0.0.0 -p 3000'
 end
 
 namespace :db do
@@ -34,32 +31,32 @@ namespace :db do
 
   desc 'Run migrations'
   task :migrate do
-    sh "bundle exec sequel '#{ENV['DATABASE_URL']}' -m db/migrations/"
+    sh "bundle exec sequel '#{App.settings[:database_url]}' -m db/migrations/"
   end
 
   desc 'Drop tables'
   task :drop_tables do
-    sh "source .env && bundle exec sequel '#{ENV['DATABASE_URL']}' -c 'DB.tables.each { |t| DB.drop_table?(t, cascade: true) }'"
+    sh "bundle exec sequel '#{App.settings[:database_url]}' -c 'DB.tables.each { |t| DB.drop_table?(t, cascade: true) }'"
   end
 
   desc 'Drop database'
   task :drop do
-    sh "psql -c 'DROP DATABASE #{ENV['DATABASE_NAME']}'"
+    sh "psql -c 'DROP DATABASE #{App.settings[:database_name]}'"
   end
 
   desc 'Open database console'
   task :console do
-    sh "psql #{ENV['DATABASE_NAME']}"
+    sh "psql #{App.settings[:database_name]}"
   end
 
   desc 'Create database'
   task :create do
-    sh "createdb #{ENV['DATABASE_NAME']}"
+    sh "createdb #{App.settings[:database_name]}"
   end
 
   desc 'Dump schema do db/schema.sql'
   task :dump do
-    sh "bundle exec sequel #{ENV['DATABASE_URL']} --dump-schema db/schema.sql"
+    sh "bundle exec sequel #{App.settings[:database_url]} --dump-schema db/schema.sql"
   end
 end
 

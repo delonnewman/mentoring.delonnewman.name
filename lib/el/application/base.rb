@@ -10,6 +10,12 @@ module El
         new(env).init!
       end
 
+      def self.with_only_settings(env = ENV.fetch('RACK_ENV', 'development').to_sym)
+        new(env).tap do |app|
+          app.settings.load!
+        end
+      end
+
       ClassMethods::DEPENDENCY_KINDS.each do |kind|
         define_singleton_method kind do
           dependencies.fetch(kind)
