@@ -26,9 +26,5 @@ module Mentoring
              :zoom_api_key,
              :zoom_api_secret,
              :default_mentor_username
-
-    def default_mentor
-      @default_mentor ||= users.find_by!(username: settings[:default_mentor_username])
-    end
   end
 end

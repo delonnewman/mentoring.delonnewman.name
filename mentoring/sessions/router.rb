@@ -18,14 +18,14 @@ module Mentoring
 
         meeting = app.video_conferencing.create_meeting!(
           customer: current_user,
-          mentor: app.default_mentor,
+          mentor: app.users.default_mentor,
           start_at: start_time
         )
 
         session = app.sessions.create!(
           checkout_session_id: params['checkout_session_id'],
           customer: customer,
-          mentor: app.default_mentor,
+          mentor: app.users.default_mentor,
           zoom_meeting_id: meeting.id,
           product: app.products.find_by!(id: params['product_id'])
         )

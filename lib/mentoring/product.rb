@@ -70,55 +70,5 @@ module Mentoring
     def ongoing?
       type == :ongoing
     end
-
-    # TODO: create a ProductRepository class
-    repository do
-      order_by :sort_order
-
-      def subscribe(product, user)
-        product = Product.ensure!(product)
-        user = User.ensure!(user)
-        db[:users_products].insert(product_id: product.id, user_id: user.id, created_at: Time.now)
-      end
-
-      def products_by_customer(user)
-        customer_products(user).map(&SqlUtils.method(:build_entity).curry[entity_class])
-      end
-
-      def product_ids_by_customer(user)
-        customer_products(user).select_map(Sequel[:products][:id])
-      end
-
-      def products_with_states(user:, mentors:)
-        purchased = product_ids_by_customer(user)
-        map do |p|
-          p.merge(purchased: purchased.include?(p.id),
-                  disabled: p.should_disable?(user: user, mentors: mentors, products: self))
-        end
-      end
-
-      def subscribers
-        db[:products]
-          .join(:product_rates, id: :rate_id)
-          .join(:users_products, product_id: Sequel[:products][:id])
-          .join(:users, id: Sequel[:users_products][:user_id])
-          .join(:user_roles, id: Sequel[:users][:role_id])
-          .where(Sequel[:product_rates][:subscription] => true)
-          .select_all(:users)
-          .select_append(
-            Sequel[:user_roles][:id].as('role[id]'),
-            Sequel[:user_roles][:name].as('role[name]'),
-            Sequel[:products][:id].as('product_id')
-          )
-          .map { |record| Framework::SqlUtils.build_entity(User, record) }
-      end
-
-      private
-
-      def customer_products(user)
-        user_id = user.is_a?(User) ? user.id : user
-        dataset.join(:users_products, product_id: Sequel[:products][:id]).where(user_id: user_id)
-      end
-    end
   end
 end

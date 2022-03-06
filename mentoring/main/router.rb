@@ -14,7 +14,7 @@ module Mentoring
 
         render :index, with: {
           products: products,
-          mentor: app.default_mentor
+          mentor: app.users.default_mentor
         }
       end
 
