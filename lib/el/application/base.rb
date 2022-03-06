@@ -26,7 +26,7 @@ module El
         end
       end
 
-      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies
+      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies, :server
 
       def initialize(env)
         @env          = env # development, test, production, ci, etc.
@@ -72,7 +72,7 @@ module El
         root_path.join(app_name)
       end
 
-      DEFAULT_RESPONSE = [200, {}, ['Hi']].freeze
+      DEFAULT_RESPONSE = [404, {}, ['Not Found']].freeze
       private_constant :DEFAULT_RESPONSE
 
       # Rack interface
@@ -88,6 +88,31 @@ module El
         end
 
         DEFAULT_RESPONSE
+      end
+
+      def run!
+        init! unless initialized?
+
+        options = { environment: env.name, DocumentRoot: root_path.join('public'), Port: 3000 }
+
+        @server = nil
+        Thread.new do
+          Rack::Handler::WEBrick.run(self, **options) do |s|
+            @server = s
+          end
+        end
+
+        @running = true
+      end
+
+      def running?
+        @running
+      end
+
+      def stop!
+        return unless running?
+
+        server.shutdown
       end
 
       def init!

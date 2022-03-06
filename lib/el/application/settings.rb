@@ -24,13 +24,11 @@ module El
         load_user_settings!
         load_env!
 
-        @settings.freeze
         loaded!
         self
       end
 
       def unload!
-        @settings = {}
         @loaded = false
         self
       end
