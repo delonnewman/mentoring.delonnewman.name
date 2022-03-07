@@ -16,6 +16,10 @@ module El
         end
       end
 
+      def self.rack
+        init!.rack_app
+      end
+
       ClassMethods::DEPENDENCY_KINDS.each do |kind|
         define_singleton_method kind do
           dependencies.fetch(kind)
@@ -26,20 +30,25 @@ module El
         end
       end
 
-      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies, :server
+      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies, :server, :rack_app
 
-      def initialize(env)
+      def initialize(env, loader = nil)
         @env          = env # development, test, production, ci, etc.
         @logger       = Logger.new($stdout, level: log_level)
         @root_path    = Pathname.new(self.class.root_path || Dir.pwd)
         @settings     = Settings.new(self)
-        @loader       = Loader.new(self)
+        @loader       = loader || Loader.new(self)
         @dependencies = ClassMethods::DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
       end
 
       def reload!
-        settings.tap(&:unload!).load!
+        settings.unload!
         loader.reload!
+        @initialized = false
+
+        init!
+
+        true
       end
 
       def log_level
@@ -72,6 +81,14 @@ module El
         root_path.join(app_name)
       end
 
+      def public_path
+        root_path.join('public')
+      end
+
+      def public_urls
+        public_path.opendir.children
+      end
+
       DEFAULT_RESPONSE = [404, {}, ['Not Found']].freeze
       private_constant :DEFAULT_RESPONSE
 
@@ -90,37 +107,13 @@ module El
         DEFAULT_RESPONSE
       end
 
-      def run!
-        init! unless initialized?
-
-        options = { environment: env.name, DocumentRoot: root_path.join('public'), Port: 3000 }
-
-        @server = nil
-        Thread.new do
-          Rack::Handler::WEBrick.run(self, **options) do |s|
-            @server = s
-          end
-        end
-
-        @running = true
-      end
-
-      def running?
-        @running
-      end
-
-      def stop!
-        return unless running?
-
-        server.shutdown
-      end
-
       def init!
-        raise 'An application can only be initialized once' if initialized?
+        raise 'An application can only be initialized once' if initialized? && !development?
 
         settings.load!
-        loader.load!
+        loader.load! unless loader.loaded?
         initialize_dependencies!
+        initialize_middleware!
 
         initialized!
 
@@ -129,6 +122,14 @@ module El
 
       def initialized?
         !!@initialized
+      end
+
+      def middleware
+        @middleware ||= self.class.middleware.dup
+      end
+
+      def use(middle, options = El::Core::EMPTY_HASH)
+        middleware << [middle, options]
       end
 
       private
@@ -145,6 +146,21 @@ module El
             else
               deps.merge!(name => opts[:object])
             end
+          end
+        end
+      end
+
+      def initialize_middleware!
+        use Rack::Static, cascade: true, root: public_path, urls: public_urls << '/assets'
+        use Rack::Session::Cookie, secret: settings[:session_secret] if settings[:session_secret]
+
+        app = self
+        middleware = self.middleware
+
+        @rack_app = Rack::Builder.new do
+          middleware.each do |(middle, options)|
+            use middle, options
+            run app
           end
         end
       end

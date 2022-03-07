@@ -47,6 +47,14 @@ module El
         app_module.const_get(Utils.camelcase(symbol.name))
       end
 
+      def middleware
+        @middleware ||= []
+      end
+
+      def use(app, options = El::Core::EMPTY_HASH)
+        middleware << [app, options]
+      end
+
       def Service
         @resource_class ||= Application::Service.create(self)
       end

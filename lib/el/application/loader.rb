@@ -10,10 +10,26 @@ module El
 
       def initialize(app)
         @app = app
+        @instance = Zeitwerk::Loader.new
       end
 
       def reload!
+        instance.eager_load
         instance.reload
+
+        self
+      end
+
+      def on_setup(&block)
+        instance.on_setup(&block)
+
+        self
+      end
+
+      def on_load(*args, &block)
+        instance.on_load(*args, &block)
+
+        self
       end
 
       INFLECTIONS = {
@@ -23,7 +39,8 @@ module El
       IGNORE_PATHS = [
         '**/templates',
         '**/core_ext.rb',
-        '**/layouts'
+        '**/layouts',
+        'vendor/**'
       ].freeze
 
       COLLAPSE_PATHS = [
@@ -31,7 +48,6 @@ module El
       ].freeze
 
       def load!
-        @instance = Zeitwerk::Loader.new
         @instance.inflector.inflect(INFLECTIONS)
 
         init_app_paths

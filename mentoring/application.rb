@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../lib/el'
+require 'rack-mini-profiler'
 
 # A mentoring website (see https://mentoring.delonnewman.name)
 module Mentoring
@@ -11,6 +12,9 @@ module Mentoring
     find_user do |user_id|
       users.find_by!(id: user_id)
     end
+
+    use Rack::MiniProfiler
+    use Honeybadger::Rack::ErrorNotifier
 
     env_vars :database_url,
              :database_name,

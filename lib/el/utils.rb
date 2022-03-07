@@ -10,7 +10,12 @@ module El
     end
 
     def money(amount, unit: '$')
-      "#{unit}#{format '%.2f', amount}"
+      case amount
+      when El::Money
+        amount.to_s
+      else
+        "#{unit}#{format '%.2f', amount}"
+      end
     end
 
     def escape_html(string)

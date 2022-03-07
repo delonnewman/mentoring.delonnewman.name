@@ -3,11 +3,10 @@
 require_relative 'mentoring/application'
 
 # And use Honeybadger's rack middleware
-use Honeybadger::Rack::ErrorNotifier
 
 # require 'rack-mini-profiler'
 # use Rack::MiniProfiler
 
-use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
+# use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
 
-run Mentoring::Application.init!
+run Mentoring::Application.rack

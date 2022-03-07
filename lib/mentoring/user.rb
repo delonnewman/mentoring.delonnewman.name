@@ -38,6 +38,10 @@ module Mentoring
       :available
     end
 
+    def test
+      :testing
+    end
+
     def name
       displayname || username
     end

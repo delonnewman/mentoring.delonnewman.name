@@ -24,11 +24,11 @@ module Mentoring
     end
 
     def price_rate
-      dollars(amount / 100).per(rate.unit)
+      price.per(rate.unit)
     end
 
     def price
-      amount / 100
+      dollars(amount / 100)
     end
 
     def price_id

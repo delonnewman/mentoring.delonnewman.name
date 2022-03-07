@@ -259,7 +259,7 @@ module El
       return data if comps.empty?
 
       comps.reduce(data) do |h, comp|
-        h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).ensure!(entity.value_for(comp.name)).id)
+        h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).find!(entity.value_for(comp.name)).id)
       end
     end
   end

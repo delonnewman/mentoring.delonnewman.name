@@ -37,7 +37,7 @@ products = [
                  'up to 2 hours of synchronous time ' \
                  '(by video or phone) unlimited asynchronous ' \
                  'time (by chat or email).',
-    image_path: '/img/mentoring.jpg',
+    image_path: '/assets/img/mentoring.jpg',
     amount: 15_000,
     rate: 'per-month',
     sort_order: 3,
@@ -48,7 +48,7 @@ products = [
     description: 'Remote programming help when the mentor is ' \
                  'available (by video conference) paid out by the ' \
                  'minute, first 5 minutes are free.',
-    image_path: '/img/help.jpg',
+    image_path: '/assets/img/help.jpg',
     amount: 200,
     rate: 'per-minute',
     sort_order: 1,
@@ -59,7 +59,7 @@ products = [
     description: 'Remote programming help when the mentor is ' \
                  'available (by video conference) paid out by the ' \
                  'hour, first 5 minutes are free.',
-    image_path: '/img/conversation.jpg',
+    image_path: '/assets/img/conversation.jpg',
     amount: 5_000,
     rate: 'per-half-hour',
     sort_order: 2,
@@ -87,7 +87,7 @@ users = [
     mentor: true,
     encrypted_password: '$2a$12$3uYDM6Fk1WgSa4IbTpvmpe1elRzi4d8p68n7mGFFi.eA4PCP7jLZO',
     meta: {
-      'profile.image_path' => '/img/delon.jpg',
+      'profile.image_path' => '/assets/img/delon.jpg',
       'profile.location' => 'Albuquerque, NM, USA',
       'profile.timezoneOffset' => 6,
       'profile.interests' => [
@@ -192,7 +192,7 @@ if app.development? || app.test?
       mentor: 'delon',
       customer: customers.sample,
       product: app.products.first.id,
-      started_at: Faker::Date.between(from: TimeUtils.days(3).ago, to: Date.today),
+      started_at: Faker::Date.between(from: El::TimeUtils.days(3).ago, to: Date.today),
       zoom_meeting_id: 81_610_489_073
     ]
   end
