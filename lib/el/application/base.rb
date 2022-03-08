@@ -99,7 +99,7 @@ module El
 
         if development?
           logger.info "#{request.request_method} #{request.path}"
-          reload! if development? && initialized?
+          reload! if initialized?
         end
 
         # dispatch routes
@@ -116,6 +116,8 @@ module El
 
         settings.load!
         loader.load! unless loader.loaded?
+        LiveReload.new(self).load! if development?
+
         initialize_dependencies!
         initialize_middleware!
 
@@ -132,7 +134,7 @@ module El
         @middleware ||= self.class.middleware.dup
       end
 
-      def use(middle, options = El::Core::EMPTY_HASH)
+      def use(middle, options = {})
         middleware << [middle, options]
       end
 

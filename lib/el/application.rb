@@ -15,6 +15,8 @@ require_relative 'application/routes'
 require_relative 'application/router'
 require_relative 'application/entity'
 
+require_relative 'application/live_reload'
+
 require_relative 'application/class_methods'
 require_relative 'application/settings'
 require_relative 'application/loader'
