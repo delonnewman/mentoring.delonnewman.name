@@ -2,6 +2,7 @@
 
 require_relative '../lib/el'
 require 'rack-mini-profiler'
+require 'rack-livereload'
 
 # A mentoring website (see https://mentoring.delonnewman.name)
 module Mentoring
@@ -14,6 +15,7 @@ module Mentoring
     end
 
     use Rack::MiniProfiler
+    use Rack::LiveReload
     use Honeybadger::Rack::ErrorNotifier
 
     env_vars :database_url,

@@ -173,11 +173,13 @@ module Rack
         self.class.routes
       end
 
+      attr_reader :params, :request
+
       protected
 
       # These methods must be used or overridden by the subclass
 
-      attr_reader :match, :response, :request, :params
+      attr_reader :match, :response
 
       def options
         match[:options] || EMPTY_HASH

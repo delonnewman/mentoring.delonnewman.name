@@ -44,6 +44,14 @@ module El
         end
       end
 
+      def inspect
+        @settings.inspect
+      end
+
+      def to_s
+        "#<#{self.class} #{@settings}>"
+      end
+
       private
 
       def normalize_key(key)

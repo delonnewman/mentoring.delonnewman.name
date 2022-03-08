@@ -51,7 +51,7 @@ module El
         @middleware ||= []
       end
 
-      def use(app, options = El::Core::EMPTY_HASH)
+      def use(app, options = {})
         middleware << [app, options]
       end
 

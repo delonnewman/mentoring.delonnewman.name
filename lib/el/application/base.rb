@@ -30,7 +30,7 @@ module El
         end
       end
 
-      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies, :server, :rack_app
+      attr_reader :env, :logger, :root_path, :request, :settings, :loader, :dependencies, :server, :rack_app, :routes
 
       def initialize(env, loader = nil)
         @env          = env # development, test, production, ci, etc.
@@ -39,6 +39,7 @@ module El
         @settings     = Settings.new(self)
         @loader       = loader || Loader.new(self)
         @dependencies = ClassMethods::DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
+        @routes       = Application::Routes.new
       end
 
       def reload!
@@ -96,7 +97,10 @@ module El
       def call(env)
         @request = Rack::Request.new(env)
 
-        reload! if development? && initialized?
+        if development?
+          logger.info "#{request.request_method} #{request.path}"
+          reload! if development? && initialized?
+        end
 
         # dispatch routes
         routers.each do |_name, router|

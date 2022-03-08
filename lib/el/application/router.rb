@@ -14,6 +14,14 @@ module El
         app_class.add_dependency!(name, self, kind: :routers)
       end
 
+      def self.init_app!(app, router_class)
+        router = router_class.new(app)
+
+        app.routes << router
+
+        router
+      end
+
       def self.canonical_name
         parts = name.split('::')
         ident = parts.last == 'Router' ? parts[parts.length - 2] : parts.last

@@ -188,12 +188,14 @@ if app.development? || app.test?
   customers = %w[the-man-in-black june-carter]
 
   sessions = 6.times.map do
+    start = Faker::Time.between(from: El::TimeUtils.days(3).ago, to: El::TimeUtils.hours(3).ago)
     app.Session[
       mentor: 'delon',
       customer: customers.sample,
       product: app.products.first.id,
-      started_at: Faker::Date.between(from: El::TimeUtils.days(3).ago, to: Date.today),
-      zoom_meeting_id: 81_610_489_073
+      zoom_meeting_id: 81_610_489_073,
+      started_at: start,
+      ended_at: start + (5..60).step(15).to_a.sample
     ]
   end
 

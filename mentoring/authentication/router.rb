@@ -4,6 +4,8 @@ module Mentoring
   module Authentication
     # Routes for authenticating and creating user accounts
     class Router < Application.Router()
+      layout :main
+
       get '/signup', authenticate: false do
         render :signup
       end
@@ -20,6 +22,7 @@ module Mentoring
             app.user_registrations.store!(user)
             app.messenger.signup(user).wait!
           end
+
           redirect_to app.routes.dashboard_path
         else
           render :signup, with: { errors: errors }
@@ -47,7 +50,7 @@ module Mentoring
           User[data].tap do |user|
             logger.info "Storing user: #{user.inspect}"
             app.users.store!(user)
-            current_user!(user)
+            app.current_user = user
           end
           redirect_to app.routes.login_path
         else
@@ -65,7 +68,7 @@ module Mentoring
         ref = params['ref'].blank? ? app.routes.dashboard_path : params['ref']
 
         if user
-          current_user! user
+          app.current_user = user
           redirect_to ref
         else
           status 401
@@ -74,7 +77,7 @@ module Mentoring
       end
 
       post '/logout' do
-        logout!
+        app.logout!
 
         if request.content_type == 'application/javascript'
           render json: { redirect: app.routes.root_path }

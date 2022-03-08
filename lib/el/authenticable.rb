@@ -23,7 +23,10 @@ module El
         user_id = request.session[:current_user_id]
         return nil unless user_id
 
-        self.current_user = instance_exec(user_id, &self.class.find_user)
+        finder = self.class.find_user
+        raise "Don't know how to find a user" unless finder
+
+        self.current_user = instance_exec(user_id, &finder)
       end
 
       def current_user=(user)

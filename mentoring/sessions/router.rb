@@ -6,13 +6,13 @@ module Mentoring
     class Router < Application.Router()
       include El::TimeUtils
 
-      get '/new' do
+      get '/session/new' do
         # start / cancel buttons with some instructions
         render :new, with: { checkout_session_id: params['session_id'], product_id: params['product_id'] }
       end
 
       # create session
-      post '/' do
+      post '/session' do
         customer = app.users.find_by!(id: params['customer_id'])
         start_time = Time.iso8601(params.fetch('start_at') { Time.now.iso8601 })
 
@@ -36,7 +36,7 @@ module Mentoring
       end
 
       # show session
-      get '/:id' do
+      get '/session/:id' do
         # Display timer
         # Have a link to a Zoom Session
         # Display chat & shared code editor
@@ -53,14 +53,14 @@ module Mentoring
       end
 
       # update session
-      post '/:id' do
+      post '/session/:id' do
         session = app.sessions.update!(params[:id], params['session'])
 
         redirect_to session_path(session)
       end
 
       # end session
-      delete '/:id' do
+      delete '/session/:id' do
         # set ended_at timestamp for session
         # mentor should be able to update timestamp
         # calculate quantity from started_at and ended_at
@@ -71,7 +71,7 @@ module Mentoring
         redirect_to session_path(session)
       end
 
-      post '/:id/bill' do
+      post '/session/:id/bill' do
         session = app.sessions
                      .find_by!(id: params[:id])
                      .merge(cost: Float(params.dig('session', 'amount'))) # TODO: improve entity coersion
@@ -81,7 +81,7 @@ module Mentoring
         redirect_to session_path(session)
       end
 
-      post '/:id/amount' do
+      post '/session/:id/amount' do
         session = app.sessions.find_by(id: params[:id])
         duration = minutes(Float(params['duration']))
 

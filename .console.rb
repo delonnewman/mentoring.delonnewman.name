@@ -15,7 +15,7 @@ class ApplicationContainer
     @app.init!
   end
 
-  def run!
+  def start!
     return if running?
 
     init! unless @app.initialized?
@@ -31,6 +31,7 @@ class ApplicationContainer
 
     @running = true
   end
+  alias run! start!
 
   def stop!
     return unless running?

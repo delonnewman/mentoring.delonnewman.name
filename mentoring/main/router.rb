@@ -7,10 +7,8 @@ module Mentoring
       include Helpers
       include El::TimeUtils
 
-      static '/' => 'public'
-
       get '/', authenticate: false do
-        products = app.products.products_with_states(user: current_user, mentors: app.users.mentors_not_in_sessions)
+        products = app.products.products_with_states(user: app.current_user, mentors: app.users.mentors_not_in_sessions)
 
         render :index, with: {
           products: products,
@@ -19,7 +17,7 @@ module Mentoring
       end
 
       get '/dashboard' do
-        render :dashboard, with: Dashboard.new(app, current_user)
+        render :dashboard, with: Main::Dashboard.new(app, current_user)
       end
 
       get '/state.js', authenticate: false do

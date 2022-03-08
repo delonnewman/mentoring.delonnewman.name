@@ -95,6 +95,10 @@ module Rack
       end
       alias each each_route
 
+      def route_path_methods
+        @route_path_methods ||= []
+      end
+
       # Add a route to the table.
       #
       # @param method [Symbol]
@@ -113,6 +117,8 @@ module Rack
         define_singleton_method route.path_method_name do |*args|
           route.route_path(*args)
         end
+
+        route_path_methods << route.path_method_name.to_sym
 
         self
       end
@@ -146,11 +152,10 @@ module Rack
       def match(env, method = env['REQUEST_METHOD'])
         path   = env['PATH_INFO']
         path   = path.start_with?('/') ? path[1, path.size] : path
-        parts  = path.split(/\/+/)
-
+        parts  = path.split(%r{/+})
 
         if (routes = @table[method])
-          routes.each do |route| #|(route, action, _, options)|
+          routes.each do |route| # |(route, action, _, options)|
             if (params = match_path(parts, route.parsed_path))
               return { tag: :action, value: route.action, params: params, options: route.options }
             end
@@ -158,17 +163,17 @@ module Rack
         end
 
         if (mounted = @table[:mount])
-          mounted.each do |route| #|(prefix, app, _, options)|
+          mounted.each do |route| # |(prefix, app, _, options)|
             prefix = route.parsed_path
-            if path_start_with?(parts, prefix)
-              app_path = "/#{parts[prefix.size, parts.size].join('/')}"
-              return {
-                tag: :app,
-                value: route.action,
-                env: env.merge('PATH_INFO' => app_path, 'rack-routable.original-path' => path),
-                options: route.options
-              }
-            end
+            next unless path_start_with?(parts, prefix)
+
+            app_path = "/#{parts[prefix.size, parts.size].join('/')}"
+            return {
+              tag: :app,
+              value: route.action,
+              env: env.merge('PATH_INFO' => app_path, 'rack-routable.original-path' => path),
+              options: route.options
+            }
           end
         end
 
@@ -181,7 +186,7 @@ module Rack
         str   = str.start_with?('/') ? str[1, str.size] : str
         names = []
 
-        route = str.split(/\/+/).each_with_index.map do |part, i|
+        route = str.split(%r{/+}).each_with_index.map do |part, i|
           if part.start_with?(':')
             names[i] = part[1, part.size].to_sym
             NAME_PATTERN
@@ -218,6 +223,7 @@ module Rack
 
         path.each_with_index do |part, i|
           return false unless pattern[i] === part
+
           if (name = names[i])
             params[name] = part
           end
@@ -226,7 +232,7 @@ module Rack
         params
       end
 
-      NAME_PATTERN = /\A[\w\-]+\z/.freeze
+      NAME_PATTERN = /\A[\w\-]+\z/
       private_constant :NAME_PATTERN
     end
   end

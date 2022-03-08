@@ -4,7 +4,7 @@ module Mentoring
   module Products
     # Handle product interactions
     class Router < Application.Router()
-      get '/:id/subscribe' do
+      get '/product/:id/subscribe' do
         app.products.subscribe(params[:id], current_user)
 
         redirect_to '/dashboard'

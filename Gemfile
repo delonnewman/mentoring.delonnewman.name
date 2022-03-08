@@ -63,6 +63,5 @@ group :development, :test do
 
   gem 'yard'
   gem 'webrick' # for yard documentation server
-
-  gem 'shotgun', github: 'shotgun'
+  gem 'rack-livereload'
 end

@@ -28,15 +28,15 @@ module Mentoring
     end
 
     SUBSCRIBERS_QUERY = <<~SQL
-      select users.*,
-             user_roles.id   as role[id],
-             user_roles.name as role[name],
-             products.id     as product_id,
+      select u.*,
+             ur.id   as "role[id]",
+             ur.name as "role[name]",
+             p.id    as product_id
         from products p
              inner join product_rates r   on r.id = p.rate_id
-             inner join users_products up on ip.product_id = p.id
+             inner join users_products up on up.product_id = p.id
              inner join users u           on u.id = up.user_id
-             inner join users_roles ur    on ur.id = u.role_id
+             inner join user_roles ur     on ur.id = u.role_id
        where r.subscription
     SQL
 
