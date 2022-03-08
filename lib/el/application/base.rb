@@ -37,7 +37,6 @@ module El
         @logger       = Logger.new($stdout, level: log_level)
         @root_path    = Pathname.new(self.class.root_path || Dir.pwd)
         @settings     = Settings.new(self)
-        pp @settings
         @loader       = Loader.new(self)
         @dependencies = ClassMethods::DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
         @routes       = Application::Routes.new

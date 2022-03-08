@@ -1,15 +1,6 @@
 require_relative 'mentoring/application'
 App = Mentoring::Application.with_only_settings
 
-task default: :spec
-
-TEST_ENV = App.ci? ? 'ci' : 'test'
-
-desc 'Run spec'
-task :spec do
-  sh "RACK_ENV=#{TEST_ENV} bundle exec rspec"
-end
-
 desc 'Open project console'
 task :console do
   sh 'bundle exec irb -Ilib -r./.console.rb'
@@ -76,16 +67,5 @@ namespace :assets do
   desc 'Pull asset dependencies'
   task :deps do
     sh 'npm install'
-  end
-
-  desc 'Compile assets for deployment'
-  task compile: %w[./public/js/chat.js]
-
-  file './public/js/chat.js' do
-    if App.production?
-      sh 'npx esbuild apps/chat/client.js --bundle --minify --target=chrome58,firefox57,safari11,edge16 --outfile=./public/js/chat.js'
-    else
-      sh 'npx esbuild apps/chat/client.js --bundle --minify --sourcemap --target=chrome58,firefox57,safari11,edge16 --outfile=./public/js/chat.js'
-    end
   end
 end

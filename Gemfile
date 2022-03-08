@@ -18,7 +18,7 @@ gem 'puma'
 
 # security
 gem 'bcrypt'
-gem 'rack_csrf'
+# gem 'rack_csrf'
 
 # performance
 gem 'rack-mini-profiler', require: false
@@ -32,10 +32,10 @@ gem 'rack-routable', path: './vendor/rack-routable'
 gem 'rack-flash3'
 gem 'erubi'
 gem 'inflection'
-gem 'concurrent-ruby'
 gem 'invokable'
-gem 'nio4r'
-gem 'websocket-driver'
+# gem 'concurrent-ruby'
+# gem 'nio4r'
+# gem 'websocket-driver'
 gem 'oj'
 gem 'zeitwerk'
 
@@ -55,11 +55,6 @@ group :development, :test do
   gem 'faker'
 
   gem 'filewatcher'
-
-  gem 'pry'
-  gem 'pry-rescue'
-  gem 'pry-stack_explorer'
-  gem 'racksh'
 
   gem 'yard'
   gem 'webrick' # for yard documentation server
