@@ -4,7 +4,7 @@ module Mentoring
   module Checkout
     # Routes for product checkout
     class Router < Application.Router()
-      get '/setup' do
+      get '/checkout/setup' do
         settings = { pub_key: app.settings[:strip_pub_key] }
 
         settings[:prices] = app.products.map do |product|
@@ -18,7 +18,7 @@ module Mentoring
         render json: settings
       end
 
-      post '/session' do
+      post '/checkout/session' do
         data = JSON.parse(request.body.read, symbolize_names: true)
         product = app.products.find_by!(id: data[:product_id])
 
@@ -41,7 +41,7 @@ module Mentoring
         end
       end
 
-      post '/customer-portal' do
+      post '/checkout/customer-portal' do
         data = JSON.parse(request.body.read)
 
         # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
@@ -60,7 +60,7 @@ module Mentoring
         render json: { url: session.url }
       end
 
-      post '/webhook' do
+      post '/checkout/webhook' do
         # You can use webhooks to receive information about asynchronous payment events.
         # For more about our webhook events check out https://stripe.com/docs/webhooks.
         webhook_secret = app.settings['STRIPE_WEBHOOK_SECRET']

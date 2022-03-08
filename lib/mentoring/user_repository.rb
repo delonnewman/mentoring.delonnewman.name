@@ -4,7 +4,7 @@ module Mentoring
   # A collection of user objects and methods on that collection
   class UserRepository < El::Repository
     def default_mentor
-      @default_mentor ||= find(app.settings[:default_mentor_username])
+      @default_mentor ||= find!(app.settings[:default_mentor_username])
     end
 
     def find_user_and_authenticate(username:, password:)

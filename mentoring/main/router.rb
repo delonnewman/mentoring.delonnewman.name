@@ -28,9 +28,9 @@ module Mentoring
 
       def error(error)
         logger.error error.message
-        error.backtrace.each { |trace| logger.error "  #{trace}" }
+        error.backtrace&.each { |trace| logger.error "  #{trace}" }
 
-        render :error
+        render :error, with: { error: error }
       end
     end
   end

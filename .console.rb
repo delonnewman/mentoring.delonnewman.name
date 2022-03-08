@@ -54,7 +54,7 @@ class ApplicationContainer
   end
 end
 
-def app(env = :development)
+def app(env = ENV.fetch('RACK_ENV', 'development').to_sym)
   @apps ||= {}
   @apps[env] ||= ApplicationContainer.create(env)
 end

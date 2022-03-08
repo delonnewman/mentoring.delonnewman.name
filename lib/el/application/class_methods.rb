@@ -22,12 +22,12 @@ module El
 
       def env_vars(*keys)
         keys.each do |key|
-          settings_from_environment << key.to_s.upcase
+          settings_from_environment[key] = key.to_s.upcase
         end
       end
 
       def settings_from_environment
-        @settings_from_environment ||= []
+        @settings_from_environment ||= {}
       end
 
       def root_path(path = nil)

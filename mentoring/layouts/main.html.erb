@@ -26,7 +26,7 @@
           </a>
           <div class="container-fluid">
               <ul class="navbar-nav flex-row mr-auto">
-                  <% if current_user %>
+                  <% if app.current_user %>
                       <li class="nav-item">
                           <a class="nav-link" title="Dashboard" href="/dashboard">
                               <i class="fas fa-home"></i>
@@ -43,7 +43,7 @@
               </ul>
               <% if app.authenticated? %>
                   <span class="navbar-text mr-3">
-                      Hello <%= current_user.first_name %>
+                      Hello <%= app.current_user.first_name %>
                   </span>
                   <a class="btn btn-outline-secondary btn-sm" data-method="post" href="/logout">
                       <i class="fas fa-sign-out-alt"></i>

@@ -32,6 +32,7 @@ module El
         self
       end
 
+      # TODO: make these configurable
       INFLECTIONS = {
         'json_response' => 'JSONResponse'
       }.freeze
@@ -43,9 +44,7 @@ module El
         'vendor/**'
       ].freeze
 
-      COLLAPSE_PATHS = [
-        '**/resources'
-      ].freeze
+      COLLAPSE_PATHS = [].freeze
 
       def load!
         @instance.inflector.inflect(INFLECTIONS)

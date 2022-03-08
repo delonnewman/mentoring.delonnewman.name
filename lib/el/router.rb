@@ -53,14 +53,14 @@ module El
       response.tap do |res|
         res.write content.to_json
         res.set_header 'Content-Type', 'application/json'
-      end
+      end.finish
     end
 
     def render_plain(content)
       response.tap do |res|
         res.write content
         res.set_header 'Content-Type', 'text/plain'
-      end
+      end.finish
     end
 
     def render_js(content)
@@ -68,7 +68,7 @@ module El
         content = content.to_js if content.respond_to?(:to_js)
         res.write content
         res.set_header 'Content-Type', 'application/javascript'
-      end
+      end.finish
     end
 
     def render_hash_view(name, options)
@@ -76,7 +76,7 @@ module El
       response.tap do |res|
         res.write render_template(name, view)
         res.set_header 'Content-Type', 'text/html'
-      end
+      end.finish
     end
   end
 end

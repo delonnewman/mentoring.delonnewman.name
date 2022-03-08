@@ -10,6 +10,7 @@ module El
 
       def initialize(app)
         @app = app
+        @settings = {}
       end
 
       def [](key)
@@ -18,8 +19,6 @@ module El
 
       def load!
         return if loaded?
-
-        @settings = {}
 
         load_user_settings!
         load_env!
@@ -30,27 +29,20 @@ module El
 
       def unload!
         @loaded = false
+        @settings = {}
         self
       end
 
-      def dotenv_path
-        case app.env
-        when :development
-          '.env'
-        when :production
-          nil
-        else
-          ".env.#{app.env}"
+      def dotenv_paths
+        %W[.env .env.#{app.env}].map do |path|
+          app.root_path.join(path)
         end
       end
 
-      def inspect
-        @settings.inspect
-      end
-
       def to_s
-        "#<#{self.class} #{@settings}>"
+        "#<#{self.class} #{@settings.inspect}>"
       end
+      alias inspect to_s
 
       private
 
@@ -60,22 +52,31 @@ module El
         key.downcase.to_sym
       end
 
-      def load_settings_from_environment!
-        app.class.settings_from_environment.each_with_object(@settings) do |key, h|
-          h.merge!(normalize_key(key) => ENV.fetch(key))
+      def load_settings_from_environment!(settings)
+        settings.each do |setting|
+          env_name = app.class.settings_from_environment[setting]
+          @settings.merge!(setting => ENV.fetch(env_name))
         end
 
         self
       end
 
-      def load_env!
-        case app.env
-        when :production, :ci
-          load_settings_from_environment!
-        else
-          Dir.chdir(app.root_path)
-          @settings.merge!(Dotenv.load(dotenv_path).transform_keys(&method(:normalize_key)))
+      def load_dotenv_files
+        dotenv_paths.reduce({}) do |h, path|
+          if path.exist?
+            h.merge!(Dotenv.load(path))
+          else
+            h
+          end
         end
+      end
+
+      def load_env!
+        settings = load_dotenv_files
+        @settings.merge!(settings.transform_keys(&method(:normalize_key)))
+
+        missing = app.class.settings_from_environment.keys - @settings.keys
+        load_settings_from_environment!(missing)
 
         self
       end

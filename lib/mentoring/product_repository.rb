@@ -51,7 +51,7 @@ module Mentoring
     private
 
     def customer_products(user)
-      user_id = user.is_a?(User) ? user.id : user
+      user_id = user.respond_to?(:id) ? user.id : user
       dataset.join(:users_products, product_id: Sequel[:products][:id]).where(user_id: user_id)
     end
   end

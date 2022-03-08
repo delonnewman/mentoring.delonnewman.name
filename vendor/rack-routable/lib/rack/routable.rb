@@ -311,6 +311,7 @@ module Rack
           res = begin
             instance_exec(params, @request, &@match[:value])
           rescue StandardError => e
+            puts "ERROR in #{self.class}: #{e.inspect}"
             if ENV.fetch('RACK_ENV') { :development }.to_sym == :production
               env['rack.routable.error'] = e
               return error(e)
