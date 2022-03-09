@@ -4,7 +4,7 @@ module El
   module Application
     class Router < Templated
       include Dependency
-      include Rack::Routable
+      include Routable
 
       def self.add_to!(app_class)
         super(app_class)

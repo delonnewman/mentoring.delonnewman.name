@@ -28,7 +28,7 @@ gem 'stackprof'
 # framework stuff
 gem 'dotenv'
 gem 'hash_delegator'
-gem 'rack-routable', path: './vendor/rack-routable'
+# gem 'rack-routable', path: './vendor/rack-routable'
 gem 'rack-flash3'
 gem 'erubi'
 gem 'inflection'
@@ -38,6 +38,15 @@ gem 'invokable'
 # gem 'websocket-driver'
 gem 'oj'
 gem 'zeitwerk'
+
+# git 'https://github.com/delonnewman/el-toolkit.git' do
+#   gem 'el-core'
+#   gem 'el-routing'
+# end
+
+gem 'el-core', path: '../../Personal/el-toolkit/el-core'
+gem 'el-routing', path: '../../Personal/el-toolkit/el-routing'
+
 
 # vendor
 gem 'stripe'

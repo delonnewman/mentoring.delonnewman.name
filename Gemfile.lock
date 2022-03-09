@@ -5,10 +5,15 @@ GIT
     wonder-llama (0.0.1)
 
 PATH
-  remote: vendor/rack-routable
+  remote: ../../Personal/el-toolkit/el-core
   specs:
-    rack-routable (0.1.0)
-      invokable
+    el-core (0.1.0)
+
+PATH
+  remote: ../../Personal/el-toolkit/el-routing
+  specs:
+    el-routing (0.1.0)
+      el-core
       rack
 
 GEM
@@ -193,6 +198,8 @@ DEPENDENCIES
   capybara
   cucumber
   dotenv
+  el-core!
+  el-routing!
   erubi
   faker
   filewatcher
@@ -211,7 +218,6 @@ DEPENDENCIES
   rack-flash3
   rack-livereload
   rack-mini-profiler
-  rack-routable!
   rake
   rspec
   rubocop
