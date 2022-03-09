@@ -90,7 +90,7 @@ users = [
     meta: {
       'profile.image_path' => '/assets/img/delon.jpg',
       'profile.location' => 'Albuquerque, NM, USA',
-      'profile.timezoneOffset' => 6,
+      'profile.timezone' => 'America/Denver',
       'profile.interests' => [
         'programming languages',
         'system design',

@@ -121,7 +121,7 @@
 
     function atOffset(offset) {
         var t = new Date();
-        return new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours(), t.getMinutes()) + (offset * 60 * 60 * 1000));
+        return new Date(Date.UTC(t.getFullYear(), t.getMonth(), t.getDate(), t.getHours(), t.getMinutes()) - (offset * 1000));
     }
 
     const WEEKDAYS_LIST = [

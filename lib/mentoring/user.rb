@@ -28,6 +28,31 @@ module Mentoring
       now.hour >= day[:start] && now.hour <= day[:end]
     end
 
+    def timezone
+      tz = meta['profile.timezone']
+      return unless tz
+
+      zone = Timezone[tz]
+      return unless zone.valid?
+
+      zone
+    end
+
+    def utc_offset
+      tz = timezone
+      return unless tz
+
+      tz.utc_offset(Time.now)
+    end
+
+    def localtime
+      tz = timezone
+      return unless tz
+
+      t = Net::NTP.get('time.apple.com').reference_timestamp
+      Time.at(t, in: tz)
+    end
+
     def currently_available?(sessions:)
       available? && sessions.active_sessions(for_mentor: self).empty?
     end

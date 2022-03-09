@@ -45,6 +45,8 @@ gem 'mailjet'
 gem 'wonder-llama', require: 'wonder_llama', github: 'delonnewman/wonder-llama' # Zulip Chat
 gem 'zoom_rb'
 gem 'honeybadger', "~> 4.0"
+gem 'net-ntp', require: 'net/ntp'
+gem 'timezone'
 
 group :development, :test do
   gem 'rake'
