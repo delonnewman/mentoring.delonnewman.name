@@ -7,6 +7,14 @@ module Mentoring
       @default_mentor ||= find!(app.settings[:default_mentor_username])
     end
 
+    def update_meta!(user:, **updates)
+      meta = user.meta.dup
+      updates.each do |key, value|
+        meta[key] = value
+      end
+      update!(user.id, meta: meta)
+    end
+
     def find_user_and_authenticate(username:, password:)
       user = find_by(username: username)
       return nil unless user

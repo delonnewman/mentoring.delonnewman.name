@@ -158,9 +158,16 @@
         };
     }
 
+    function isBlank(aString) {
+        return aString == null || aString.length === 0 || aString.replace(/\s+/, '').length === 0
+    }
+
     $("#mentor-current-time").each(function () {
         var $elem = $(this);
-        var offset = parseInt($elem.find(".offset").text());
+        var offsetText = $elem.find(".offset").text();
+        if (isBlank(offsetText)) return;
+
+        var offset = parseInt(offsetText);
         var setTime = setCurrentTime($elem, offset);
 
         setTime();
