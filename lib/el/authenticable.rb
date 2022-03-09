@@ -4,7 +4,6 @@ module El
   # Authentication for applications
   module Authenticable
     def self.included(base)
-      base.include(InstanceMethods)
       base.extend(ClassMethods)
     end
 
@@ -16,17 +15,17 @@ module El
       end
     end
 
-    module InstanceMethods
+    module RouterMethods
       def current_user
         return @current_user if @current_user
 
         user_id = request.session[:current_user_id]
         return nil unless user_id
 
-        finder = self.class.find_user
+        finder = app.class.find_user
         raise "Don't know how to find a user" unless finder
 
-        self.current_user = instance_exec(user_id, &finder)
+        self.current_user = app.instance_exec(user_id, &finder)
       end
 
       def current_user=(user)

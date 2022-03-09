@@ -45,6 +45,3 @@ require_relative 'el/repository'
 
 # Request Dispatch
 require_relative 'el/json_response'
-require_relative 'el/router'
-require_relative 'el/entity_controller'
-require_relative 'el/admin_controller'

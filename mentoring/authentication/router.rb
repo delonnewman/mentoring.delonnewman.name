@@ -50,7 +50,7 @@ module Mentoring
           User[data].tap do |user|
             logger.info "Storing user: #{user.inspect}"
             app.users.store!(user)
-            app.current_user = user
+            self.current_user = user
           end
           redirect_to app.routes.login_path
         else
@@ -68,7 +68,7 @@ module Mentoring
         ref = params['ref'].blank? ? app.routes.dashboard_path : params['ref']
 
         if user
-          app.current_user = user
+          self.current_user = user
           redirect_to ref
         else
           status 401

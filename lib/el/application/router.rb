@@ -17,6 +17,7 @@ module El
       def self.init_app!(app, router_class)
         router = router_class.new(app)
 
+        router.extend(Authenticable::RouterMethods) if app.is_a?(Authenticable)
         app.routes << router
 
         router
@@ -38,10 +39,6 @@ module El
 
       def logger
         app.logger
-      end
-
-      def current_user
-        app.current_user
       end
 
       def json

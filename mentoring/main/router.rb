@@ -8,7 +8,7 @@ module Mentoring
       include El::TimeUtils
 
       get '/', authenticate: false do
-        products = app.products.products_with_states(user: app.current_user, mentors: app.users.mentors_not_in_sessions)
+        products = app.products.products_with_states(user: current_user, mentors: app.users.mentors_not_in_sessions)
 
         render :index, with: {
           products: products,
@@ -21,7 +21,7 @@ module Mentoring
       end
 
       get '/state.js', authenticate: false do
-        state = { authenticated: app.authenticated? }
+        state = { authenticated: authenticated? }
 
         render js: "Mentoring = {}; Mentoring.state = #{state.to_json}"
       end

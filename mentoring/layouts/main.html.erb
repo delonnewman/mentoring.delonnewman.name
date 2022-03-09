@@ -26,14 +26,14 @@
           </a>
           <div class="container-fluid">
               <ul class="navbar-nav flex-row mr-auto">
-                  <% if app.current_user %>
+                  <% if current_user %>
                       <li class="nav-item">
                           <a class="nav-link" title="Dashboard" href="/dashboard">
                               <i class="fas fa-home"></i>
                           </a>
                       </li>
                   <% end %>
-	          <% if app.authenticated?(as: :admin) %>
+	          <% if authenticated?(as: :admin) %>
                       <li class="nav-item">
                           <a class="nav-link" title="Admin" href="/admin">
                               Admin
@@ -41,9 +41,9 @@
                       </li>
 	          <% end %>
               </ul>
-              <% if app.authenticated? %>
+              <% if authenticated? %>
                   <span class="navbar-text mr-3">
-                      Hello <%= app.current_user.first_name %>
+                      Hello <%= current_user.first_name %>
                   </span>
                   <a class="btn btn-outline-secondary btn-sm" data-method="post" href="/logout">
                       <i class="fas fa-sign-out-alt"></i>
@@ -114,7 +114,7 @@
       <script src="/state.js"></script>
       <script src="/assets/js/jquery.min.js"></script>
       <script src="/assets/js/bootstrap.min.js"></script>
-      <% if app.authenticated? %><script src="https://js.stripe.com/v3/"></script><% end %>
+      <% if authenticated? %><script src="https://js.stripe.com/v3/"></script><% end %>
       <script src="/assets/js/application.js"></script>
       <!-- script async type="text/javascript" id="mini-profiler" src="/mini-profiler-resources/includes.js?v=12b4b45a3c42e6e15503d7a03810ff33" data-version="12b4b45a3c42e6e15503d7a03810ff33" data-path="/mini-profiler-resources/" data-current-id="redo66j4g1077kto8uh3" data-ids="redo66j4g1077kto8uh3" data-horizontal-position="left" data-vertical-position="top" data-trivial="false" data-children="false" data-max-traces="10" data-controls="false" data-authorized="true" data-toggle-shortcut="Alt+P" data-start-hidden="false" data-collapse-results="true"></script -->
   </body>
