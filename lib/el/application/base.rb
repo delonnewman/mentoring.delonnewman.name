@@ -111,9 +111,9 @@ module El
       def init!
         raise 'An application can only be initialized once' if initialized? && !development?
 
+        notify
         settings.load!
         loader.load! unless loader.loaded?
-        LiveReload.new(self).load! if development?
 
         initialize_dependencies!
         initialize_middleware!
@@ -135,7 +135,16 @@ module El
         middleware << [middle, options]
       end
 
+      def to_s
+        "#<#{self.class} #{env}>"
+      end
+      alias inspect to_s
+
       private
+
+      def notify
+        logger.info "#{self.class} is being initialized in a #{env} environment"
+      end
 
       def initialized!
         @initialized = true

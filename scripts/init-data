@@ -4,7 +4,6 @@ require 'faker'
 require_relative '../mentoring/application'
 
 app = Mentoring::Application.init!
-pp app.settings
 
 rates = [
   app.ProductRate[

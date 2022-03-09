@@ -44,10 +44,10 @@ jobs:
         run: |
           sudo systemctl start postgresql.service
           pg_isready
-      - name: Create scheduler user
+      - name: Create user
         run: |
           sudo -u postgres psql --command="CREATE USER tester PASSWORD 'somestrong'" --command="\du"
-      - name: Create timetable database
+      - name: Create database
         run: |
           sudo -u postgres createdb --owner=tester $DATABASE_NAME
           PGPASSWORD=somestrong psql --username=tester --host=localhost --list $DATABASE_NAME

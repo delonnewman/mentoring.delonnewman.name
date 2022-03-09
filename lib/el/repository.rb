@@ -32,6 +32,11 @@ module El
       @dataset = @dataset.order(self.class.order_by_attribute_name) if self.class.order_by_attribute_name
     end
 
+    def to_s
+      "#<#{self.class} entity: #{entity_class}>"
+    end
+    alias inspect to_s
+
     private
 
     def dataset
