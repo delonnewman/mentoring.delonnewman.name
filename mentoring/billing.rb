@@ -31,17 +31,17 @@ module Mentoring
       )
     end
 
+    def create_stripe_customer!(user)
+      Stripe::Customer.create(name: user.name, email: user.email, description: user.stripe_description)
+    end
+
     def find_or_create_customer!(user)
       if user.stripe_customer_id?
         Stripe::Customer.retrieve(user.stripe_customer_id)
       else
-        customer = Stripe::Customer.create(
-          name: current_user.name,
-          email: current_user.email,
-          description: current_user.stripe_description
-        )
-
-        app.users.add_stripe_customer_id!(id: current_user.id, stripe_id: customer.id)
+        create_stripe_customer!(user).tap do |customer|
+          app.users.add_stripe_customer_id!(id: user.id, stripe_id: customer.id)
+        end
       end
     end
 

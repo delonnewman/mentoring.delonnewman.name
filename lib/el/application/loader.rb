@@ -54,6 +54,8 @@ module El
         init_collapse_paths
 
         @instance.enable_reloading if app.development?
+        init_livereload! if app.development?
+
         @instance.setup
         @instance.eager_load
 
@@ -61,6 +63,11 @@ module El
       end
 
       private
+
+      def init_livereload!
+        require 'rack-livereload'
+        app.use Rack::LiveReload
+      end
 
       def init_app_paths
         @instance.push_dir(app.lib_path, namespace: app.class.app_module)

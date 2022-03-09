@@ -5,25 +5,15 @@ module Mentoring
     # Routes for product checkout
     class Router < Application.Router()
       get '/checkout/setup' do
-        settings = { pub_key: app.settings[:strip_pub_key] }
-
-        settings[:prices] = app.products.map do |product|
-          {
-            product_id: product.id,
-            price_id: product.price_id,
-            name: product.name
-          }
-        end
-
-        render json: settings
+        render json: {
+          pub_key: app.settings[:stripe_pub_key],
+          prices: app.products.project(:name, :price_id, id: :product_id)
+        }
       end
 
       post '/checkout/session' do
         data = JSON.parse(request.body.read, symbolize_names: true)
         product = app.products.find_by!(id: data[:product_id])
-
-        logger.info "From Product ID: #{data[:product_id].inspect}"
-        logger.info "Creating session with #{product.inspect}"
 
         # See https://stripe.com/docs/api/checkout/sessions/create
         # for additional parameters to pass.
@@ -32,8 +22,6 @@ module Mentoring
         # is redirected to the success page.
         begin
           session = app.billing.create_checkout_session!(current_user, product)
-          logger.info "Session created: #{session.inspect}"
-
           render json: app.billing.checkout_success_data(product, session)
         rescue StandardError => e
           logger.error e

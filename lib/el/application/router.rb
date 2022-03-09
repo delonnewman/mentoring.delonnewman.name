@@ -56,6 +56,12 @@ module El
         render_special_types(options)
       end
 
+      protected
+
+      def url_for(path)
+        [request.path, path].join('/')
+      end
+
       private
 
       def render_special_types(options)

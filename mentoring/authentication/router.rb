@@ -77,7 +77,7 @@ module Mentoring
       end
 
       post '/logout' do
-        app.logout!
+        logout!
 
         if request.content_type == 'application/javascript'
           render json: { redirect: app.routes.root_path }

@@ -1,6 +1,8 @@
 module El
   module Application
     class Routes
+      include Enumerable
+
       def initialize
         @routers = []
         @path_methods = {}
@@ -13,8 +15,20 @@ module El
         end
       end
 
+      def [](path_method)
+        @path_methods[path_method]
+      end
+
+      def has?(path_method)
+        @path_methods.key?(path_method)
+      end
+
       def path_methods
         @path_methods.keys
+      end
+
+      def each(&block)
+        @path_methods.each(&block)
       end
 
       def method_missing(method, *_args)
