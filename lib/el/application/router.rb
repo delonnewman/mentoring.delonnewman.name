@@ -50,10 +50,10 @@ module El
       end
 
       def render(name = nil, **options)
-        return name if name.is_a?(Rack::Response)
-        return render_hash_view(name, options) unless name.nil?
+        halt name if name.is_a?(Rack::Response)
+        halt render_hash_view(name, options) unless name.nil?
 
-        render_special_types(options)
+        halt render_special_types(options)
       end
 
       protected

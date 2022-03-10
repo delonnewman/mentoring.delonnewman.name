@@ -21,10 +21,6 @@ require_relative 'el/core'
 # OOP
 require_relative 'el/trait'
 
-# Application State & DI
-require_relative 'el/application'
-require_relative 'el/authenticable'
-
 # Utility methods
 require_relative 'el/utils'
 require_relative 'el/utils/string_utils'
@@ -47,3 +43,9 @@ require_relative 'el/repository'
 
 # Request Dispatch
 require_relative 'el/json_response'
+
+require_relative 'el/authenticable'
+require_relative 'el/controller'
+
+# Application State & DI
+require_relative 'el/application'

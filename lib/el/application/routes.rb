@@ -23,7 +23,7 @@ module El
         @path_methods.key?(path_method)
       end
 
-      def path_methods
+      def route_path_methods
         @path_methods.keys
       end
 
@@ -31,9 +31,9 @@ module El
         @path_methods.each(&block)
       end
 
-      def method_missing(method, *_args)
+      def method_missing(method, *args)
         router = @path_methods[method]
-        return router.routes.public_send(method) if router
+        return router.routes.public_send(method, *args) if router
 
         raise NoMethodError, "undefined method `#{method} for #{self}:#{self.class}"
       end
