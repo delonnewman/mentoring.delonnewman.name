@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/delonnewman/el-toolkit.git
-  revision: fb3d25bbc239530cade83ec3c1fdbe0e75500afc
+  revision: 00c50d9efb8a5d053ac922db8d5493805f66ae18
   specs:
     el-core (0.1.0)
     el-routing (0.1.0)

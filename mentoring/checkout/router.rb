@@ -6,10 +6,10 @@ module Mentoring
     class Router < Application.Router()
       namespace '/checkout'
 
-      get '/setup', CheckoutController, :setup
-      post '/session', CheckoutController, :create_checkout_session
-      post '/customer-portal', CheckoutController, :create_billing_portal
-      post '/webhook', CheckoutController, :create_webhook
+      get '/setup', SetupController, :show
+      post '/session', CheckoutSessionController, :create
+      post '/customer-portal', BillingPortalController, :create
+      post '/webhook', WebhookController, :create
     end
   end
 end

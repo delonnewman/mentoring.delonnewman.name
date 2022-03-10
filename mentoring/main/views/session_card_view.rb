@@ -2,7 +2,7 @@
 
 module Mentoring
   module Main
-    class SessionCard
+    class SessionCardView
       def initialize(app, dashboard)
         @app = app
         @dashboard = dashboard

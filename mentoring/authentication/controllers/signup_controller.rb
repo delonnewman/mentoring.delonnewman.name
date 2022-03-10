@@ -3,8 +3,12 @@
 module Mentoring
   module Authentication
     # A controller for the authentiation module
-    class Controller < El::Controller
-      def signup
+    class SignupController < El::Controller
+      def index
+        render :signup
+      end
+
+      def create
         data = params.slice(:username, :email)
 
         app.user_registrations.valid?(data) do |user|

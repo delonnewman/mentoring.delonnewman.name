@@ -3,13 +3,13 @@
 module Mentoring
   module Main
     # A view object that represents a users dashboard
-    class Dashboard
+    class DashboardView
       attr_reader :app, :user, :session_card
 
       def initialize(app, user)
         @app = app
         @user = user
-        @session_card = SessionCard.new(app, self)
+        @session_card = SessionCardView.new(app, self)
       end
 
       def products
