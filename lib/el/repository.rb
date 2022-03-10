@@ -139,8 +139,10 @@ module El
       @simple_dataset.where(id: id).update(data)
     end
 
-    def valid?(entity)
-      !!validate!(entity)
+    def valid?(entity, &block)
+      validate!(entity)
+      block.call(entity_class.new(entity)) if block_given?
+      true
     rescue TypeError
       false
     end

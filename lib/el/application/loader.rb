@@ -44,7 +44,9 @@ module El
         'vendor/**'
       ].freeze
 
-      COLLAPSE_PATHS = [].freeze
+      COLLAPSE_PATHS = [
+        '**/controllers'
+      ].freeze
 
       def load!
         @instance.inflector.inflect(INFLECTIONS)

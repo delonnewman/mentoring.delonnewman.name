@@ -39,13 +39,13 @@ gem 'invokable'
 gem 'oj'
 gem 'zeitwerk'
 
-# git 'https://github.com/delonnewman/el-toolkit.git' do
-#   gem 'el-core'
-#   gem 'el-routing'
-# end
+git 'https://github.com/delonnewman/el-toolkit.git' do
+   gem 'el-core'
+   gem 'el-routing'
+end
 
-gem 'el-core', path: '../../Personal/el-toolkit/el-core'
-gem 'el-routing', path: '../../Personal/el-toolkit/el-routing'
+# gem 'el-core', path: '../../Personal/el-toolkit/el-core'
+# gem 'el-routing', path: '../../Personal/el-toolkit/el-routing'
 
 
 # vendor
