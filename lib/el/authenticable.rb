@@ -19,7 +19,7 @@ module El
       def current_user
         return @current_user if @current_user
 
-        user_id = request.session[:current_user_id]
+        user_id = request&.session&.fetch(:current_user_id, nil)
         return unless user_id
 
         finder = app.class.find_user

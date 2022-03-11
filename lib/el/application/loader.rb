@@ -46,7 +46,8 @@ module El
 
       COLLAPSE_PATHS = [
         '**/controllers',
-        '**/views'
+        '**/views',
+        '**/shared'
       ].freeze
 
       def load!

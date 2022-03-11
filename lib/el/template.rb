@@ -19,7 +19,7 @@ module El
       def [](templated, path)
         tmpl = new(templated, path, layout_path(templated))
 
-        templated.app.production? ? tmpl.memoize : tmpl
+        # templated.app.production? ? tmpl.memoize : tmpl
       end
     end
 
@@ -46,32 +46,37 @@ module El
       super || @templated.respond_to?(method)
     end
 
-    def call(view)
-      define_singleton_method(:view) { view }
-
-      if view.is_a?(Hash)
-        define_singleton_method(:locals) { view }
-        view.each_pair { |key, value| define_singleton_method(key) { value } }
-      end
-
-      content = eval(code, binding, path.to_s)
-
-      if @layout
-        @layout.call(if view.is_a?(Hash)
-                       view.merge(__content__: content,
-                                  view: view)
-                     else
-                       { __content__: content, view: view }
-                     end)
-      else
-        content
-      end
-    end
-
     def code
       return @code if app.env == :production && @code
 
       @code = Erubi::Engine.new(path.read).src
+    end
+
+    def call(view)
+      content = if view.is_a?(Hash)
+                  eval_hash_view(view, binding)
+                else
+                  view.render(code, path.to_s)
+                end
+
+      return content unless @layout
+
+      @layout.call(layout_arguments(content, view))
+    end
+
+    private
+
+    def eval_hash_view(view, scope)
+      view.each_pair { |key, value| scope.local_variable_set(key, value) }
+      scope.eval(code, path.to_s)
+    end
+
+    def layout_arguments(content, view)
+      if view.is_a?(Hash)
+        view.merge(__content__: content, view: view)
+      else
+        { __content__: content, view: view }
+      end
     end
   end
 end

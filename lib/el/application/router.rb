@@ -83,7 +83,7 @@ module El
 
       def render(name = nil, **options)
         return name if name.is_a?(Rack::Response)
-        return render_hash_view(name, options) unless name.nil?
+        return render_view(name, options) unless name.nil?
 
         render_special_types(options)
       end
@@ -130,8 +130,14 @@ module El
         end
       end
 
-      def render_hash_view(name, options)
-        view = options.delete(:with) || EMPTY_HASH
+      def render_view(name, options)
+        if name.is_a?(Class)
+          view = name.new(self)
+          name = name.template_name
+        else
+          view = options.delete(:with) || EMPTY_HASH
+        end
+
         response.tap do |res|
           res.write render_template(name, view)
           res.set_header 'Content-Type', 'text/html'

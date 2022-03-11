@@ -37,7 +37,7 @@ module El
     end
 
     def render_template(name, view = EMPTY_HASH)
-      template(name).call(view)
+      template(name)&.call(view)
     end
 
     def app

@@ -37,6 +37,7 @@ require_relative 'el/json_response'
 
 require_relative 'el/authenticable'
 require_relative 'el/controller'
+require_relative 'el/view'
 
 # Application State & DI
 require_relative 'el/application'

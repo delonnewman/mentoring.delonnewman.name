@@ -62,14 +62,14 @@ module Mentoring
       def product_price(product, subscriber: false, size: nil)
         return '<div></div>' if app.production?
 
-        discount = subscriber ? product.price / 2 : product.price
+        discount = subscriber ? product.discounted_price : product.price
         product_size = size.nil? ? '1.3em' : '0.9em'
         desc_size = size.nil? ? '1.1em' : '0.9em'
 
         if !subscriber
           <<~HTML
             <div class="price">
-              <span class="font-weight-bold" style="font-size:#{product_size}">#{money product.price}</span>
+              <span class="font-weight-bold" style="font-size:#{product_size}">#{product.price}</span>
               <span style="font-size:#{desc_size}" class="text-muted">#{product.rate.description}</span>
             </div>
           HTML
@@ -77,8 +77,8 @@ module Mentoring
           <<~HTML
             <div class="price">
               <span class="font-weight-bold" style="font-size:#{product_size}">
-                <s class="text-muted" style="font-size:0.8em">#{money product.price}</s>
-                #{money discount}
+                <s class="text-muted" style="font-size:0.8em">#{product.price}</s>
+                #{discount}
               </span>
               <span style="font-size:#{desc_size}" class="text-muted">#{product.rate.description}</span>
             </div>

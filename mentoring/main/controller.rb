@@ -4,11 +4,7 @@ module Mentoring
   module Main
     class Controller < El::Controller
       def index
-        products = app.products.products_with_states(user: current_user, mentors: app.users.mentors_not_in_sessions)
-
-        logger.info "CONTENT_TYPE: #{request.content_type.inspect}"
-
-        render :index, with: { products: products, mentor: app.users.default_mentor }
+        render Main::IndexView
       end
 
       def state
@@ -18,7 +14,7 @@ module Mentoring
       end
 
       def dashboard
-        render :dashboard, with: DashboardView.new(app, current_user)
+        render Main::DashboardView
       end
     end
   end

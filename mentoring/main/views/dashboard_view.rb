@@ -3,17 +3,13 @@
 module Mentoring
   module Main
     # A view object that represents a users dashboard
-    class DashboardView
-      attr_reader :app, :user, :session_card
-
-      def initialize(app, user)
-        @app = app
-        @user = user
-        @session_card = SessionCardView.new(app, self)
+    class DashboardView < BaseView
+      def session_card
+        @session_card ||= SessionCardView.new(app, self)
       end
 
       def products
-        app.products.products_with_states(user: user, mentors: app.users.mentors_not_in_sessions)
+        app.products.products_with_states(user: current_user, mentors: app.users.mentors_not_in_sessions)
       end
 
       def mentors
@@ -23,7 +19,7 @@ module Mentoring
       def sessions
         @sessions ||=
           begin
-            predicate = user.mentor? ? { mentor_id: user.id } : { customer_id: user.id }
+            predicate = current_user.mentor? ? { mentor_id: current_user.id } : { customer_id: current_user.id }
             app.sessions.active_and_recently_ended_sessions_where(predicate)
           end
       end

@@ -29,6 +29,10 @@ module Mentoring
       amount.cents.in(:dollars)
     end
 
+    def discounted_price
+      price / 2
+    end
+
     def price_id
       meta.fetch(:stripe_price_id)
     end

@@ -9,15 +9,6 @@ module El
       Rack::MockRequest.env_for(path, **options).merge('mentoring.app' => Mentoring.app)
     end
 
-    def money(amount, unit: '$')
-      case amount
-      when El::Money
-        amount.to_s
-      else
-        "#{unit}#{format '%.2f', amount}"
-      end
-    end
-
     def escape_html(string)
       CGI.escapeHTML(string)
     end
