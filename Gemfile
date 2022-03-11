@@ -38,7 +38,7 @@ gem 'invokable'
 gem 'oj'
 gem 'zeitwerk'
 
-# path '../../Personal/el-toolkit/el-core' do
+# path '../../Personal/el-toolkit' do
 git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
    gem 'el-routing', require: 'el/routable'

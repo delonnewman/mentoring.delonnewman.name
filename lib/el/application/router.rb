@@ -77,6 +77,10 @@ module El
         @json ||= JSONResponse.new(response)
       end
 
+      def response
+        Rack::Response.new
+      end
+
       def status(status)
         response.tap { |r| r.status = status }
       end
