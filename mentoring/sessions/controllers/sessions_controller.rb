@@ -14,9 +14,10 @@ module Mentoring
       # Display chat & shared code editor
       def show
         session = app.sessions.find_by!(id: params[:id])
-        meeting = app.video_conferencing.meeting_for_session(session)
 
         if session.viewable_by?(current_user)
+          meeting = app.video_conferencing.meeting_for_session(session)
+
           render :show, with: { session: session, meeting: meeting }
         else
           render :unauthorized
