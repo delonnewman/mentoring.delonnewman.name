@@ -2,6 +2,7 @@
 
 module Mentoring
   module Checkout
+    # Create a billing portal
     class BillingPortalController < El::Controller
       def create(request)
         data = JSON.parse(request.body.read, symbolize_names: true)

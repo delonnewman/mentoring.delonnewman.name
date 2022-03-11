@@ -10,15 +10,15 @@ module Mentoring
     def bill_session!(session)
       return if session.checkout_session_id.nil?
 
-      create_stripe_payment!(session)
+      create_payment!(session)
 
       data = session.merge(billed_at: Time.now)
-      app.logger.info "SESSION BILLED: #{data.inspect}"
+      logger.info "SESSION BILLED: #{data.inspect}"
 
       app.sessions.update!(session.id, data)
     end
 
-    def create_stipe_payment!(session)
+    def create_payment!(session)
       checkout = Stripe::Checkout::Session.retrieve(checkout_id)
       intent = Stripe::SetupIntent.retrieve(checkout.setup_intent)
 
@@ -31,7 +31,7 @@ module Mentoring
       )
     end
 
-    def create_stripe_customer!(user)
+    def create_customer!(user)
       Stripe::Customer.create(name: user.name, email: user.email, description: user.stripe_description)
     end
 
@@ -39,7 +39,7 @@ module Mentoring
       if user.stripe_customer_id?
         Stripe::Customer.retrieve(user.stripe_customer_id)
       else
-        create_stripe_customer!(user).tap do |customer|
+        create_customer!(user).tap do |customer|
           app.users.add_stripe_customer_id!(id: user.id, stripe_id: customer.id)
         end
       end
@@ -51,18 +51,21 @@ module Mentoring
       Stripe::Checkout::Session.create(checkout_session_data(product, customer))
     end
 
+    private
+
     def checkout_success_url(product)
+      # NOTE: The "{CHECKOUT_SESSION_ID}" brackets may get mangled
       if product.subscription?
-        "http://#{app.settings['DOMAIN']}/products/#{product.id}/subscribe?session_id={CHECKOUT_SESSION_ID}"
+        app.routes.products_subscribe_url(product.id, session_id: '{CHECKOUT_SESSION_ID}')
       else
-        "http://#{app.settings['DOMAIN']}/session/new?session_id={CHECKOUT_SESSION_ID}&product_id=#{product.id}"
+        app.routes.session_new_url(session_id: '{CHECKOUT_SESSION_ID}', product_id: product.id)
       end
     end
 
     def checkout_session_data(product, customer)
       data = {
         success_url: checkout_success_url(product),
-        cancel_url: "http://#{app.settings['DOMAIN']}",
+        cancel_url: app.routes.root_url,
         payment_method_types: ['card'],
         mode: product.checkout_mode,
         customer: customer.id
@@ -71,18 +74,6 @@ module Mentoring
       return data unless product.subscription?
 
       data.merge!(line_items: [{ quantity: 1, price: product.price_id }])
-    end
-
-    def checkout_success_data(product, session)
-      if product.subscription?
-        { type: 'complete', sessionId: session.id }
-      else
-        {
-          type: 'setup',
-          sessionId: session.id,
-          setupIntent: session.setup_intent
-        }
-      end
     end
   end
 end

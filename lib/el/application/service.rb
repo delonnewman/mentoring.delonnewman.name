@@ -40,6 +40,10 @@ module El
         @app = app
       end
 
+      def logger
+        app.logger
+      end
+
       def load!
         instance_exec(&self.class.loader) if self.class.loader
         loaded!

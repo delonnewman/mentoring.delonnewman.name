@@ -7,15 +7,17 @@ module Mentoring
         begin
           construct_stripe_event(request)
         rescue Stripe::SignatureVerificationError, JSON::ParserError => e
-          render json: { status: 'error', message: e.message }, status: 400
+          json.error(e.message, status: 400)
         end
 
         if event['type'] == 'checkout.session.completed'
-          render json: { status: 'success' }
+          json.success
         else
-          render json: { status: 'error', data: event }
+          json.error(event, status: 400)
         end
       end
+
+      private
 
       def construct_stripe_event(request)
         webhook_secret = app.settings[:stripe_webhook_secret]

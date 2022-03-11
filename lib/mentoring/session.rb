@@ -3,9 +3,6 @@
 module Mentoring
   # Represents the state of a mentoring session
   class Session < Application.Entity()
-    include El::TimeUtils
-    include El::NumericUtils
-
     primary_key :id, :uuid
 
     has :zoom_meeting_id,     Integer
@@ -56,8 +53,8 @@ module Mentoring
       return nil if duration.nil?
 
       fetch :cost do
-        if duration <= ~minutes(5)
-          dollars(0)
+        if duration <= ~5.minutes
+          0.dollars
         else
           product.price_rate * duration
         end

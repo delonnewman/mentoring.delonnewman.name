@@ -40,12 +40,12 @@ gem 'oj'
 gem 'zeitwerk'
 
 git 'https://github.com/delonnewman/el-toolkit.git' do
-   gem 'el-core'
-   gem 'el-routing'
+   gem 'el-core', require: 'el/core_ext/all'
+   gem 'el-routing', require: 'el/routable'
 end
 
-# gem 'el-core', path: '../../Personal/el-toolkit/el-core'
-# gem 'el-routing', path: '../../Personal/el-toolkit/el-routing'
+# gem 'el-core', path: '../../Personal/el-toolkit/el-core', require: 'el/core_ext/all'
+# gem 'el-routing', path: '../../Personal/el-toolkit/el-routing', require: 'el/routable'
 
 
 # vendor

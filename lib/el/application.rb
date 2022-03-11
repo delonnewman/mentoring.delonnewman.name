@@ -2,7 +2,6 @@
 
 require 'rack/contrib/try_static'
 
-require_relative 'utils'
 require_relative 'templatable'
 require_relative 'templated'
 require_relative 'entity'

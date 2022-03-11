@@ -39,7 +39,7 @@ module El
         @settings     = Settings.new(self)
         @loader       = Loader.new(self)
         @dependencies = ClassMethods::DEPENDENCY_KINDS.reduce({}) { |h, kind| h.merge(kind => {}) }
-        @routes       = Application::Routes.new
+        @routes       = Application::Routes.new(self)
       end
 
       def reload!
@@ -95,7 +95,8 @@ module El
 
       # Rack interface
       def call(env)
-        @request = Rack::Request.new(env)
+        @request = El::Routable::Request.new(env)
+        env['rack.logger'] = logger
 
         reload! if development? && initialized?
 

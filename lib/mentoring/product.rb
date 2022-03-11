@@ -3,16 +3,14 @@
 module Mentoring
   # Represents mentoring products
   class Product < Application.Entity()
-    include El::NumericUtils
-
     primary_key :id, :uuid
 
-    has :name, String, display: { order: 0 }
+    has :name,        String, display: { order: 0 }
     has :description, String
-    has :image_path, String
-    has :amount, Integer
-    has :meta, Hash, serialize: true, default: EMPTY_HASH
-    has :sort_order, Integer, default: 0
+    has :image_path,  String
+    has :amount,      Integer
+    has :meta,        Hash,    serialize: true, default: EMPTY_HASH
+    has :sort_order,  Integer, default: 0
 
     belongs_to :rate
     def_delegator :rate, :subscription?
@@ -28,7 +26,7 @@ module Mentoring
     end
 
     def price
-      dollars(amount / 100)
+      amount.cents.in(:dollars)
     end
 
     def price_id

@@ -102,7 +102,7 @@ module El
     end
 
     def build_entity(entity_class, record)
-      record = StringUtils.parse_nested_hash_keys(reconstitute_record(entity_class, record))
+      record = DataUtils.parse_nested_hash_keys(reconstitute_record(entity_class, record))
       entity_class.new(record)
     end
 

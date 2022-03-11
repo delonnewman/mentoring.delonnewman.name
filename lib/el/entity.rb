@@ -92,7 +92,7 @@ module El
       end
 
       def canonical_name
-        Utils.underscore(name.split('::').last)
+        StringUtils.underscore(name.split('::').last)
       end
 
       def valid?(entity)
