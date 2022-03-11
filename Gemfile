@@ -38,14 +38,11 @@ gem 'invokable'
 gem 'oj'
 gem 'zeitwerk'
 
+# path '../../Personal/el-toolkit/el-core' do
 git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
    gem 'el-routing', require: 'el/routable'
 end
-
-# gem 'el-core', path: '../../Personal/el-toolkit/el-core', require: 'el/core_ext/all'
-# gem 'el-routing', path: '../../Personal/el-toolkit/el-routing', require: 'el/routable'
-
 
 # vendor
 gem 'stripe'

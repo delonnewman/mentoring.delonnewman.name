@@ -12,8 +12,6 @@ module El
   class Entity < HashDelegator
     transform_keys(&:to_sym)
 
-    extend Core
-    include Core
     extend Forwardable
     extend Associations
     extend Repositories
