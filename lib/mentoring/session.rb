@@ -42,15 +42,15 @@ module Mentoring
     end
 
     def duration
-      return nil unless ended?
+      return unless ended?
 
       fetch :duration do
-        seconds(ended_at - started_at).as(:minutes)
+        (ended_at - started_at).seconds.as(:minutes)
       end
     end
 
     def cost
-      return nil if duration.nil?
+      return if duration.nil?
 
       fetch :cost do
         if duration <= ~5.minutes

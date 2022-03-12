@@ -1,6 +1,8 @@
 module El
   class View
-    attr :request, :app
+    include TemplateHelpers
+
+    attr_reader :request, :app
 
     def self.template_name
       StringUtils.underscore(name.split('::').last.sub(/View$/, '')).to_sym

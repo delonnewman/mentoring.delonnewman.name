@@ -95,7 +95,6 @@ module El
 
       # Rack interface
       def call(env)
-        @request = El::Routable::Request.new(env)
         env['rack.logger'] = logger
 
         reload! if development? && initialized?
@@ -103,6 +102,7 @@ module El
         # dispatch routes
         routers.each do |_name, router|
           res = router.call(env)
+          @request = router.request
           return res unless res[0] == 404
         end
 
@@ -163,9 +163,13 @@ module El
         end
       end
 
+      def session_options
+        { secret: settings[:session_secret], key: "#{app_name}.session" }
+      end
+
       def initialize_middleware!
         use Rack::Static, cascade: true, root: public_path, urls: public_urls << '/assets'
-        use Rack::Session::Cookie, secret: settings[:session_secret] if settings[:session_secret]
+        use Rack::Session::Cookie, session_options if settings[:session_secret]
 
         app = self
         middleware = self.middleware

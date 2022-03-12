@@ -4,8 +4,10 @@ module Mentoring
   module Main
     # A view object that represents a users dashboard
     class DashboardView < BaseView
+      include Helpers
+
       def session_card
-        @session_card ||= SessionCardView.new(app, self)
+        @session_card ||= SessionCardView.new(app, current_user)
       end
 
       def products

@@ -38,7 +38,6 @@ gem 'invokable'
 gem 'oj'
 gem 'zeitwerk'
 
-# path '../../Personal/el-toolkit' do
 git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
    gem 'el-routing', require: 'el/routable'
@@ -55,7 +54,9 @@ gem 'timezone'
 
 group :development, :test do
   gem 'rake'
-  gem 'rspec'
+  gem 'minitest'
+  gem 'minitest-autotest'
+  
   gem 'rubocop'
   gem 'capybara'
   gem 'cucumber'

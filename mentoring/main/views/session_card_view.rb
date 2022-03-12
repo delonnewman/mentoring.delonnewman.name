@@ -3,14 +3,14 @@
 module Mentoring
   module Main
     class SessionCardView
-      def initialize(app, dashboard)
+      def initialize(app, user)
         @app = app
-        @dashboard = dashboard
+        @user = user
       end
 
       def displayed_user(session)
         mentor = @app.users.default_mentor.nil? ? session.mentor : 'your mentor'
-        @dashboard.user.mentor? ? session.customer : mentor
+        @user.mentor? ? session.customer : mentor
       end
     end
   end

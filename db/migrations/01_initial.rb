@@ -17,6 +17,7 @@ Sequel.migration do
       Integer :amount, null: false
       Integer :rate_id, null: false
       Integer :sort_order, null: false, default: 0
+      String :type, null: false
       String :meta
 
       foreign_key [:rate_id], :product_rates

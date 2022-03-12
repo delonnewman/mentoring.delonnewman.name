@@ -40,6 +40,7 @@ products = [
     image_path: '/assets/img/mentoring.jpg',
     amount: 15_000,
     rate: 'per-month',
+    type: 'ongoing',
     sort_order: 3,
     meta: { stripe_price_id: 'price_1IfaNbJeITBgtWkksywHmJ2G' }
   ],
@@ -51,6 +52,7 @@ products = [
     image_path: '/assets/img/help.jpg',
     amount: 200,
     rate: 'per-minute',
+    type: 'instant',
     sort_order: 1,
     meta: { stripe_price_id: 'price_1IfaKNJeITBgtWkk53ie4flD' }
   ],
@@ -62,6 +64,7 @@ products = [
     image_path: '/assets/img/conversation.jpg',
     amount: 5_000,
     rate: 'per-half-hour',
+    type: 'instant',
     sort_order: 2,
     meta: { stripe_price_id: 'price_1IfaKRJeITBgtWkkiRidT1tN' }
   ]
@@ -188,7 +191,7 @@ if app.development? || app.test?
   customers = %w[the-man-in-black june-carter]
 
   sessions = 6.times.map do
-    start = Faker::Time.between(from: El::TimeUtils.days(3).ago, to: El::TimeUtils.hours(3).ago)
+    start = Faker::Time.between(from: 3.days.ago, to: 3.hours.ago)
     app.Session[
       mentor: 'delon',
       customer: customers.sample,

@@ -4,15 +4,13 @@ module Mentoring
   module Checkout
     # Create a checkout session
     class CheckoutSessionController < El::Controller
-      def create(request)
-        product = app.products.find_by!(id: request.json_body[:product_id])
+      def create
+        product = app.products.find_by!(id: params.fetch(:product_id))
+        session = app.billing.create_checkout_session!(current_user, product)
 
-        begin
-          session = app.billing.create_checkout_session!(current_user, product)
-          json.success(checkout_success_data(product, session))
-        rescue StandardError => e
-          json.error(message: e.message)
-        end
+        json.success(checkout_success_data(product, session))
+      rescue StandardError => e
+        json.error(e.message, status: 500)
       end
 
       private

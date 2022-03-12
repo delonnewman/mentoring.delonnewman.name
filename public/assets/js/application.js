@@ -60,6 +60,7 @@
                     if (data.status === "error") {
                         throw new Error(data.message);
                     } else {
+                        console.log('Redirect to checkout', data)
                         stripe.redirectToCheckout({ sessionId: data.sessionId }).then(handleResult);
                     }
                 });

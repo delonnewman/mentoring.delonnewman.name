@@ -3,6 +3,7 @@ module El
     # Higher-Order Types
     ClassType = ->(klass) { ->(v) { v.is_a?(klass) } }
     RegExpType = ->(regex) { ->(v) { v.is_a?(String) && !!(regex =~ v) } }
+    SetType = ->(set) { ->(v) { set.include?(v) } }
 
     DEFAULT_TYPE = ClassType[Object]
     UUID_REGEXP = /\A[0-9A-Fa-f]{8,8}-[0-9A-Fa-f]{4,4}-[0-9A-Fa-f]{4,4}-[0-9A-Fa-f]{4,4}-[0-9A-Fa-f]{12,12}\z/
@@ -91,6 +92,7 @@ module El
         return t                      if t.respond_to?(:call)
         return ClassType[value_class] if t.is_a?(String)
         return RegExpType[t]          if t.is_a?(Regexp)
+        return SetType[t]             if t.is_a?(Set)
 
         SPECIAL_TYPES[t]
       end

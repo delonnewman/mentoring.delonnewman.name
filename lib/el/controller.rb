@@ -24,6 +24,14 @@ module El
       router.request
     end
 
+    def redirect_to(*args)
+      router.redirect_to(*args)
+    end
+
+    def response
+      router.response
+    end
+
     def params
       router.params
     end

@@ -17,18 +17,18 @@ module El
       end
     end
 
-    def success(data = nil, **options)
+    def success(data = nil, status: 200)
       msg = if data
               SUCCESS.merge(data: data)
             else
               SUCCESS
             end
 
-      render(msg, **options)
+      render(msg, status: status)
     end
 
-    def error(message, **options)
-      render(ERROR.merge(message: message), **options)
+    def error(message, status: 500)
+      render(ERROR.merge(message: message), status: status)
     end
   end
 end

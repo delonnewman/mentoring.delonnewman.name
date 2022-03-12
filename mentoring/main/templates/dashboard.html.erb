@@ -1,7 +1,7 @@
 <div class="container-fluid mt-2 mt-md-4">
     <div class="row">
         <div class="<%= current_user.mentor? ? 'col-lg-9' : 'col-lg-7' %>">
-            <% if view.sessions.empty? %>
+            <% if sessions.empty? %>
                 <style>
                  #dashboard-no-sessions {
                      background: url(/assets/img/laptop-house.svg) no-repeat center;
@@ -21,7 +21,7 @@
                 </div>
             <% else %>
                 <div id="sessions">
-                    <% view.sessions.each do |session| %>
+                    <% sessions.each do |session| %>
                             <div class="card mx-auto ml-md-0 mr-md-3 mb-3 d-inline-block" style="width:320px">
                                 <div class="card-body">
                                     <h5 class="card-title mb-0">
@@ -30,10 +30,10 @@
                                     <p class="card-text text-muted">
                                         <small>
                                             <% if session.ended? %>
-                                                Ended with <%= view.session_card.displayed_user(session) %>
+                                                Ended with <%= session_card.displayed_user(session) %>
                                                 <%= time_ago_in_words session.ended_at %>
                                             <% else %>
-                                                Started with <%= view.session_card.displayed_user(session) %>
+                                                Started with <%= session_card.displayed_user(session) %>
                                                 <%= time_ago_in_words session.started_at %>
                                             <% end %>
                                         </small>
@@ -61,7 +61,7 @@
             <% if !current_user.mentor? %>
                 <h5 class="text-muted border-bottom text-uppercase">Your Mentor</h5>
                 <ul class="list-group list-group-flush">
-                    <% view.mentors.each do |mentor| %>
+                    <% mentors.each do |mentor| %>
                         <li class="list-group-item media">
                             <div class="d-flex">
                                 <img src="<%= mentor.meta['profile.image_path'] %>"
@@ -93,7 +93,7 @@
                 </ul>
 
                 <ul class="list-group list-group-flush mb-5 border-bottom">
-                    <% view.products.each do |product| %>
+                    <% products.each do |product| %>
                         <li class="list-group-item media d-flex justify-content-between align-items-center">
                             <img src="<%= product.image_path %>"
                                  alt="<%= product.name %> Image"
@@ -111,7 +111,7 @@
                                     </div>
                                 <% else %>
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <%= product_price product, size: 'sm', subscriber: subscriber?(view.products) %>
+                                        <%= product_price product, size: 'sm', subscriber: subscriber?(products) %>
                                         <%= product_button product, size: 'sm' %>
                                     </div>
                                 <% end %>
@@ -120,9 +120,9 @@
                     <% end %>
                 </ul>
             <% else %>
-                <% unless view.subscribers.empty? %>
+                <% unless subscribers.empty? %>
                     <h5>Subscribers</h5>
-                    <% view.subscribers.each do |subscriber| %>
+                    <% subscribers.each do |subscriber| %>
                         <div class="card" style="width:250px">
                             <div class="card-body">
                                 <h6 class="card-title">

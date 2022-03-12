@@ -5,21 +5,18 @@ module Mentoring
   class Product < Application.Entity()
     primary_key :id, :uuid
 
-    has :name,        String, display: { order: 0 }
-    has :description, String
-    has :image_path,  String
-    has :amount,      Integer
-    has :meta,        Hash,    serialize: true, default: EMPTY_HASH
-    has :sort_order,  Integer, default: 0
+    has :name,         String, display: { order: 0 }
+    has :description,  String
+    has :image_path,   String
+    has :amount,       Integer
+    has :meta,         Hash,    serialize: true, default: EMPTY_HASH
+    has :sort_order,   Integer, default: 0
+    has :type,         %w[instant ongoing].to_set
 
     belongs_to :rate
     def_delegator :rate, :subscription?
 
     alias to_s name
-
-    def disabled?(*args)
-      policy&.disabled?(*args)
-    end
 
     def price_rate
       price.per(rate.unit)
@@ -41,36 +38,12 @@ module Mentoring
       subscription? ? 'subscription' : 'setup'
     end
 
-    def subscribed?(user:, products:)
-      return false unless subscription? || user.nil?
-
-      products.product_ids_by_customer(user).include?(id)
-    end
-
-    def should_disable?(user:, mentors:, products:)
-      case type
-      when :instant
-        mentors.none?(&:available?)
-      when :ongoing
-        subscribed?(user: user, products: products)
-      end
-    end
-
-    def type
-      case name
-      when 'Instant Help', 'Instant Conversation'
-        :instant
-      when 'Ongoing Mentoring'
-        :ongoing
-      end
-    end
-
     def instant?
-      type == :instant
+      type == 'instant'
     end
 
     def ongoing?
-      type == :ongoing
+      type == 'ongoing'
     end
   end
 end

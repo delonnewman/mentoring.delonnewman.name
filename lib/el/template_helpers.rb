@@ -23,6 +23,38 @@ module El
       "<a href=\"#{url_for(path)}\" title=\"#{title}\" class=\"#{classes}\">#{content}</a>"
     end
 
+    def pluralize(number, string)
+      number == 1 ? "#{number} #{string}" : "#{number} #{Inflection.plural string}"
+    end
+
+    YEAR_IN_SECONDS = 31_104_000
+    MONTH_IN_SECONDS = 2_592_000
+    WEEK_IN_SECONDS = 604_800
+    DAY_IN_SECONDS = 86_400
+    HOUR_IN_SECONDS = 3600
+
+    def time_ago_in_words(time)
+      diff = Time.now - time
+      suffix = diff.negative? ? 'from now' : 'ago'
+      diff_ = diff.abs
+
+      if diff_ > YEAR_IN_SECONDS
+        "#{pluralize (diff_ / YEAR_IN_SECONDS).floor, 'year'} #{suffix}"
+      elsif diff_ > MONTH_IN_SECONDS
+        "#{pluralize (diff_ / MONTH_IN_SECONDS).floor, 'month'} #{suffix}"
+      elsif diff_ > WEEK_IN_SECONDS
+        "#{pluralize (diff_ / WEEK_IN_SECONDS).floor, 'week'} #{suffix}"
+      elsif diff_ > DAY_IN_SECONDS
+        "#{pluralize (diff_ / DAY_IN_SECONDS).floor, 'day'} #{suffix}"
+      elsif diff_ > HOUR_IN_SECONDS
+        "#{pluralize (diff_ / HOUR_IN_SECONDS).floor, 'hour'} #{suffix}"
+      elsif diff_ > 60
+        "#{pluralize (diff_ / 60).floor, 'minute'} #{suffix}"
+      else
+        'just now'
+      end
+    end
+
     # Font Awesome integration
     def icon(name, text = nil, type: 'fas')
       code = "<i class=\"#{type} fa-#{name}\"></i>"
