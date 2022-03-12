@@ -94,6 +94,7 @@
                 dataType: "json",
                 success: function (response) {
                     if (response.redirect != null) {
+                        console.log("Response", response);
                         window.location = response.redirect;
                     }
                 },

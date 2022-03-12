@@ -223,7 +223,7 @@ DEPENDENCIES
   zoom_rb
 
 RUBY VERSION
-   ruby 3.0.1p64
+   ruby 3.0.3p157
 
 BUNDLED WITH
-   2.3.8
+   2.3.9

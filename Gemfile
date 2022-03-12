@@ -5,7 +5,7 @@ git_source :github do |repo|
   "https://github.com/#{repo}.git"
 end
 
-ruby '3.0.1'
+ruby '3.0.3'
 
 # db
 gem 'sequel'
@@ -56,7 +56,7 @@ group :development, :test do
   gem 'rake'
   gem 'minitest'
   gem 'minitest-autotest'
-  
+
   gem 'rubocop'
   gem 'capybara'
   gem 'cucumber'
