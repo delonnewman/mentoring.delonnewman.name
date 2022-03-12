@@ -37,6 +37,7 @@ gem 'invokable'
 # gem 'websocket-driver'
 gem 'oj'
 gem 'zeitwerk'
+gem 'rake'
 
 git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
@@ -53,7 +54,6 @@ gem 'net-ntp', require: 'net/ntp'
 gem 'timezone'
 
 group :development, :test do
-  gem 'rake'
   gem 'minitest'
   gem 'minitest-autotest'
 
