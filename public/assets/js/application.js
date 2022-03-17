@@ -56,12 +56,12 @@
             // TODO: return price or create a Checkout class and return it's instance
             $elem.on("click", function () {
                 console.log("Creating session for ", price);
-                createCheckoutSession(price.product_id).then(function (data) {
-                    if (data.status === "error") {
-                        throw new Error(data.message);
+                createCheckoutSession(price.product_id).then(function (res) {
+                    if (res.status === "error") {
+                        throw new Error(res.message);
                     } else {
-                        console.log('Redirect to checkout', data)
-                        stripe.redirectToCheckout({ sessionId: data.sessionId }).then(handleResult);
+                        console.log('Redirect to checkout session', res.data.sessionId);
+                        stripe.redirectToCheckout({ sessionId: res.data.sessionId }).then(handleResult);
                     }
                 });
             });
