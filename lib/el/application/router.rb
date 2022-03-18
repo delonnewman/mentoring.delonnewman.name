@@ -73,8 +73,11 @@ module El
         app.logger
       end
 
-      def json
-        @json ||= JSONResponse.new(response)
+      def json(*args)
+        res = JSONResponse.new(response)
+        return res if args.empty?
+
+        res.render(*args)
       end
 
       def response
