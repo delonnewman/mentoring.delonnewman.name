@@ -9,10 +9,6 @@ module Mentoring
   class Application < El::Application::Base
     include El::Authenticable
 
-    find_user do |user_id|
-      users.find_by!(id: user_id)
-    end
-
     use Rack::MiniProfiler
     use Honeybadger::Rack::ErrorNotifier
 

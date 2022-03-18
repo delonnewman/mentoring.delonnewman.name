@@ -3,18 +3,6 @@
 module El
   # Authentication for applications
   module Authenticable
-    def self.included(base)
-      base.extend(ClassMethods)
-    end
-
-    module ClassMethods
-      def find_user(&block)
-        return @find_user unless block
-
-        @find_user = block
-      end
-    end
-
     module RouterMethods
       def current_user
         return @current_user if @current_user
@@ -22,10 +10,7 @@ module El
         user_id = request&.session&.fetch(:current_user_id, nil)
         return unless user_id
 
-        finder = app.class.find_user
-        raise "Don't know how to find a user" unless finder
-
-        @current_user = app.instance_exec(user_id, &finder)
+        @current_user = app.users.find_by!(id: user_id)
       end
 
       def current_user=(user)

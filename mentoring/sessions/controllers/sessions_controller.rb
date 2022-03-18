@@ -25,7 +25,7 @@ module Mentoring
       end
 
       def update
-        session = app.sessions.update!(params[:id], params['session'])
+        session = app.sessions.update!(params[:id], params[:session])
 
         redirect_to app.routes.session_path(session)
       end
