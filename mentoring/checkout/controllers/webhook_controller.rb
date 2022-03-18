@@ -3,7 +3,7 @@
 module Mentoring
   module Checkout
     class WebhookController < El::Controller
-      def create(request)
+      def create
         begin
           construct_stripe_event(request)
         rescue Stripe::SignatureVerificationError, JSON::ParserError => e
@@ -26,7 +26,7 @@ module Mentoring
           sig_header = request[:http_stripe_signature]
           Stripe::Webhook.construct_event(request.body.read, sig_header, webhook_secret)
         else
-          Stripe::Event.construct_from(request.json_body)
+          Stripe::Event.construct_from(request.json)
         end
       end
     end

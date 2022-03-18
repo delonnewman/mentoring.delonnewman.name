@@ -4,16 +4,14 @@ module Mentoring
   module Checkout
     # Create a billing portal
     class BillingPortalController < El::Controller
-      def create(request)
-        data = JSON.parse(request.body.read, symbolize_names: true)
-
-        checkout_session = Stripe::Checkout::Session.retrieve(data[:sessionId])
+      def create
+        checkout_session = Stripe::Checkout::Session.retrieve(params[:sessionId])
         session = Stripe::BillingPortal::Session.create(
           customer: checkout_session['customer'],
           return_url: routes.root_path
         )
 
-        render json: { url: session.url }
+        json url: session.url
       end
     end
   end
