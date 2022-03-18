@@ -54,11 +54,10 @@ module Mentoring
     private
 
     def checkout_success_url(product)
-      # NOTE: The "{CHECKOUT_SESSION_ID}" brackets may get mangled
       if product.subscription?
-        app.routes.products_subscribe_url(product.id, session_id: '{CHECKOUT_SESSION_ID}')
+        "#{app.routes.products_subscribe_url(product.id)}?session_id={CHECKOUT_SESSION_ID}"
       else
-        app.routes.session_new_url(session_id: '{CHECKOUT_SESSION_ID}', product_id: product.id)
+        "#{app.routes.session_new_url(product_id: product.id)}&session_id={CHECKOUT_SESSION_ID}"
       end
     end
 
