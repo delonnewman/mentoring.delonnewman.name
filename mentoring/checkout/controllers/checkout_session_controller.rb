@@ -3,14 +3,18 @@
 module Mentoring
   module Checkout
     # Create a checkout session
-    class CheckoutSessionController < El::Controller
+    class CheckoutSessionController < ApplicationController
       def create
         product = app.products.find_by!(id: params.fetch(:product_id))
         session = app.billing.create_checkout_session!(current_user, product)
 
         json.success(checkout_success_data(product, session))
-      rescue StandardError => e
-        json.error(e.message, status: 500)
+      end
+
+      def subscribe
+        app.products.subscribe(params[:id], current_user)
+
+        redirect_to '/dashboard'
       end
 
       private

@@ -2,14 +2,16 @@
 
 module Mentoring
   module Authentication
-    class SigninController < El::Controller
+    class SigninController < ApplicationController
+      layout :main
+
       def index
         render :login
       end
 
       def create
         user = app.users.find_user_and_authenticate(username: params[:username], password: params[:password])
-        ref  = params[:ref].blank? ? app.routes.dashboard_path : params[:ref]
+        ref  = params[:ref].blank? ? routes.dashboard_path : params[:ref]
 
         if user
           self.current_user = user
@@ -20,12 +22,12 @@ module Mentoring
       end
 
       def remove
-        router.logout!
+        logout!
 
         if request.content_type == 'application/javascript'
-          render json: { redirect: app.routes.root_path }
+          render json: { redirect: routes.root_path }
         else
-          redirect_to app.routes.root_path
+          redirect_to routes.root_path
         end
       end
     end

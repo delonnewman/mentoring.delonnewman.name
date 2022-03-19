@@ -1,6 +1,6 @@
 module Mentoring
   module Main
-    class IndexView < BaseView
+    class IndexView < ApplicationView
       include Helpers
 
       def mentor

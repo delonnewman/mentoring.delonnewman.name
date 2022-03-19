@@ -7,8 +7,6 @@ require 'rack-mini-profiler'
 module Mentoring
   # Represents the application state
   class Application < El::Application::Base
-    include El::Authenticable
-
     use Rack::MiniProfiler
     use Honeybadger::Rack::ErrorNotifier
 

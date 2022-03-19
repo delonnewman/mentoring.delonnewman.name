@@ -2,7 +2,7 @@
 
 module Mentoring
   module Checkout
-    class WebhookController < El::Controller
+    class WebhookController < ApplicationController
       def create
         begin
           construct_stripe_event(request)

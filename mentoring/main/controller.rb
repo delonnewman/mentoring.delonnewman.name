@@ -2,7 +2,7 @@
 
 module Mentoring
   module Main
-    class Controller < El::Controller
+    class Controller < ApplicationController
       def index
         render Main::IndexView
       end

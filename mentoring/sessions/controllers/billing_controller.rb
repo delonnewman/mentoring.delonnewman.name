@@ -1,6 +1,6 @@
 module Mentoring
   module Sessions
-    class BillingController < El::Controller
+    class BillingController < ApplicationController
       def bill_session
         session = app.sessions
                      .find_by!(id: params[:id])
@@ -8,7 +8,7 @@ module Mentoring
 
         app.billing.bill_session!(session)
 
-        redirect_to app.routes.session_path(session)
+        redirect_to routes.session_path(session)
       end
     end
 
@@ -19,7 +19,7 @@ module Mentoring
       if session.nil?
         json.error("Invalid product #{params[:product_id].inspect}")
       else
-        json.success(amount: session.merge(duration: duration).cost.magnitude.to_f.round(2))
+        json.success(amount: session.merge(duration: duration).cost.to_f)
       end
     end
   end

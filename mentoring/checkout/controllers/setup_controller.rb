@@ -3,7 +3,7 @@
 module Mentoring
   module Checkout
     # A controller for handling checkout logic
-    class SetupController < El::Controller
+    class SetupController < ApplicationController
       def show
         render json: setup_data
       end

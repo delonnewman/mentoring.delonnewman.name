@@ -102,11 +102,14 @@ module El
         # dispatch routes
         routers.each do |_name, router|
           res = router.call(env)
-          @request = router.request
           return res unless res[0] == 404
         end
 
         DEFAULT_RESPONSE
+      end
+
+      def request_history
+        @request_history ||= []
       end
 
       def init!

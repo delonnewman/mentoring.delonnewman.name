@@ -3,7 +3,9 @@
 module Mentoring
   module Sessions
     # A controller for creating viewing and ending mentoring sessions
-    class SessionsController < El::Controller
+    class SessionsController < ApplicationController
+      include El::TimeUtils
+
       # start / cancel buttons with some instructions
       def new
         render :new, with: { checkout_session_id: params[:session_id], product_id: params[:product_id] }
@@ -27,7 +29,7 @@ module Mentoring
       def update
         session = app.sessions.update!(params[:id], params[:session])
 
-        redirect_to app.routes.session_path(session)
+        redirect_to routes.session_path(session)
       end
 
       # Set ended_at timestamp for session
@@ -38,7 +40,7 @@ module Mentoring
         session = app.sessions.end!(params[:id])
         app.video_conferencing.delete_meeting!(session)
 
-        redirect_to app.routes.session_path(session)
+        redirect_to routes.session_path(session)
       end
 
       # Activate session & create video conferencing meeting
@@ -48,7 +50,7 @@ module Mentoring
         session = create_session(customer, create_meeting(start_time))
         app.messenger.notify!(session, about: :new_session)
 
-        redirect_to app.routes.session_path(session)
+        redirect_to routes.session_path(session)
       end
 
       private

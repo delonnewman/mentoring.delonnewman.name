@@ -3,7 +3,9 @@
 module Mentoring
   module Authentication
     # A controller for the authentiation module
-    class SignupController < El::Controller
+    class SignupController < ApplicationController
+      layout :main
+
       def index
         render :signup
       end
@@ -14,7 +16,7 @@ module Mentoring
         app.user_registrations.valid?(data) do |user|
           create_registration_and_notify(user)
 
-          redirect_to app.routes.dashboard_path
+          redirect_to routes.dashboard_path
         end
 
         render :signup, with: { errors: app.UserRegistration.errors(data) }

@@ -8,10 +8,10 @@ module El
       StringUtils.underscore(name.split('::').last.sub(/View$/, '')).to_sym
     end
 
-    def initialize(router)
+    def initialize(router, request)
       @router  = router
       @app     = router.app
-      @request = router.request
+      @request = request
     end
 
     def render(code, path)

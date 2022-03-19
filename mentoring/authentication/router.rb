@@ -4,8 +4,6 @@ module Mentoring
   module Authentication
     # Routes for authenticating and creating user accounts
     class Router < Application.Router()
-      layout :main
-
       namespace '/signup', authenticate: false do
         get  '/', SignupController, :index
         post '/', SignupController, :create

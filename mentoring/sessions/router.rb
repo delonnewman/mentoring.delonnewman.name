@@ -6,8 +6,6 @@ module Mentoring
   module Sessions
     # Routes for mentoring sessions
     class Router < Application.Router()
-      include El::TimeUtils
-
       namespace '/session' do
         # session management
         get '/new', SessionsController, :new

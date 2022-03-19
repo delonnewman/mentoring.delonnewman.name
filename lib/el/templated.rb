@@ -3,11 +3,11 @@
 module El
   class Templated
     include Utils
-    include Templatable
 
     class << self
       def canonical_name
-        Utils.underscore(name.split('::').last)
+        parts = name.split('::')
+        Utils.underscore(parts[parts.length - 2])
       end
 
       def layout(value = nil)

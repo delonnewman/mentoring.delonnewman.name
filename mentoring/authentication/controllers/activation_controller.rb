@@ -1,6 +1,8 @@
 module Mentoring
   module Authentication
-    class ActivationController < El::Controller
+    class ActivationController < ApplicationController
+      layout :main
+
       def show
         if (reg = app.user_registrations.find_active_by_id_and_key(params[:id], params[:key]))
           render :account_activated, with: { registration: reg }
@@ -24,7 +26,7 @@ module Mentoring
             app.users.store!(user)
             self.current_user = user
           end
-          redirect_to app.routes.login_path
+          redirect_to routes.login_path
         else
           render :account_activated, { registration: reg }
         end

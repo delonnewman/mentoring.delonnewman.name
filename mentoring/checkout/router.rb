@@ -12,11 +12,7 @@ module Mentoring
       end
 
       # HACK: This should at least be a post, but it's a redirect from Stripe (see billing#checkout_success_url)
-      get '/products/:id/subscribe' do
-        app.products.subscribe(params[:id], current_user)
-
-        redirect_to '/dashboard'
-      end
+      get '/products/:id/subscribe', CheckoutSessionController, :subscribe
     end
   end
 end

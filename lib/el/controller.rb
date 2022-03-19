@@ -1,31 +1,30 @@
 # frozen_string_literal: true
 
-module El
-  class Controller
-    attr_reader :router
+require_relative 'resolved_routes'
 
-    def initialize(router)
+module El
+  class Controller < Templated
+    include Authenticable
+
+    attr_reader :router, :request
+
+    def initialize(router, request)
+      super()
+
       @router = router
+      @request = request
     end
 
     def app
       router.app
     end
 
+    def routes
+      @routes ||= ResolvedRoutes.new(request.base_url, router.app.routes)
+    end
+
     def logger
       app.logger
-    end
-
-    def routes
-      router.routes
-    end
-
-    def request
-      router.request
-    end
-
-    def redirect_to(*args)
-      router.redirect_to(*args)
     end
 
     def response
@@ -33,35 +32,84 @@ module El
     end
 
     def params
-      router.params
+      request.params
     end
 
-    def json
-      router.json
+    def json(*args, **kwargs)
+      router.json(*args, **kwargs)
     end
 
-    def current_user=(user)
-      router.current_user = user
+    def escape_html(*args)
+      CGI.escapeHTML(*args)
     end
+    alias h escape_html
 
-    def current_user
-      router.current_user
-    end
+    def redirect_to(url)
+      r = Rack::Response.new
+      r.redirect(url)
 
-    def authenticated?(**kwargs)
-      router.authenticated?(**kwargs)
-    end
-
-    def logout!
-      router.logout!
-    end
-
-    def render(*args, **kwargs)
-      router.render(*args, **kwargs)
+      router.halt r.finish
     end
 
     def url_for(*args)
-      router.url_for(*args)
+      request.url_for(*args)
+    end
+
+    def render(name = nil, **options)
+      return name if name.is_a?(Rack::Response)
+      return render_view(name, options) unless name.nil?
+
+      render_special_types(options)
+    end
+
+    private
+
+    def render_special_types(options)
+      if (content = options.delete(:json))
+        render_json(content)
+      elsif (content = options.delete(:plain))
+        render_plain(content)
+      elsif (content = options.delete(:js))
+        render_js(content)
+      else
+        raise 'No content to render has been specified'
+      end
+    end
+
+    def render_json(content)
+      response.tap do |res|
+        res.write content.to_json
+        res.set_header 'Content-Type', 'application/json'
+      end
+    end
+
+    def render_plain(content)
+      response.tap do |res|
+        res.write content
+        res.set_header 'Content-Type', 'text/plain'
+      end
+    end
+
+    def render_js(content)
+      response.tap do |res|
+        content = content.to_js if content.respond_to?(:to_js)
+        res.write content
+        res.set_header 'Content-Type', 'application/javascript'
+      end
+    end
+
+    def render_view(name, options)
+      if name.is_a?(Class)
+        view = name.new(self, request)
+        name = name.template_name
+      else
+        view = options.delete(:with) || EMPTY_HASH
+      end
+
+      response.tap do |res|
+        res.write render_template(name, view)
+        res.set_header 'Content-Type', 'text/html'
+      end
     end
   end
 end

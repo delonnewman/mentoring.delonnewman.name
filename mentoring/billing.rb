@@ -4,18 +4,15 @@ module Mentoring
   # A collection of functions for billing customers
   class Billing < Application.Service()
     start do
-      ::Stripe.api_key = app.settings[:stripe_key]
+      Stripe.api_key = app.settings[:stripe_key]
     end
 
     def bill_session!(session)
-      return if session.checkout_session_id.nil?
+      return unless session.checkout_session_id
 
       create_payment!(session)
 
-      data = session.merge(billed_at: Time.now)
-      logger.info "SESSION BILLED: #{data.inspect}"
-
-      app.sessions.update!(session.id, data)
+      app.sessions.update!(session.id, session.merge(billed_at: Time.now))
     end
 
     def create_payment!(session)
@@ -23,7 +20,7 @@ module Mentoring
       intent = Stripe::SetupIntent.retrieve(checkout.setup_intent)
 
       Stripe::PaymentIntent.create(
-        amount: (session.cost.magnitude.to_f.round(2) * 100).to_i,
+        amount: session.cost.in(:cents).to_i,
         currency: 'usd',
         payment_method_types: ['card'],
         customer: checkout.customer,

@@ -3,7 +3,7 @@
 module Mentoring
   module Main
     # A view object that represents a users dashboard
-    class DashboardView < BaseView
+    class DashboardView < ApplicationView
       include Helpers
 
       def session_card
