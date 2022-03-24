@@ -12,6 +12,7 @@ module El
     def initialize(router, request)
       super()
 
+      @__memos__ = {}
       @router = router
       @request = self.class.apply_plugins(app, request)
 
