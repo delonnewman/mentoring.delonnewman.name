@@ -9,4 +9,4 @@ require_relative 'mentoring/application'
 
 # use Rack::Session::Cookie, secret: ENV['MENTORING_SESSION_SECRET']
 
-run Mentoring::Application.rack
+run Mentoring::Application.freeze.rack

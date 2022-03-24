@@ -18,6 +18,7 @@ module El
 
       def self.freeze
         dependencies[:routers].each(&:freeze)
+        self
       end
 
       def self.rack
@@ -185,16 +186,6 @@ module El
           middleware.each do |(middle, options)|
             use middle, options
             run app
-          end
-        end
-      end
-
-      def init_filewatcher!
-        watcher = Filewatcher.new([lib_path, app_path])
-        Thread.new(watcher) do |w| # TODO: use a fiber instead
-          w.watch do |filename|
-            logger.info "Changes found in #{filename}. Reloading..."
-            reload!
           end
         end
       end

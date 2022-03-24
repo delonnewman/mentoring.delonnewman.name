@@ -2,19 +2,15 @@
 
 module Mentoring
   module Main
-    class Controller < ApplicationController
+    class MentorController < ApplicationController
       def index
-        render Main::IndexView
+        render Main::MentorView
       end
 
       def state
         state = { authenticated: authenticated? }
 
         render js: "Mentoring = {}; Mentoring.state = #{state.to_json}"
-      end
-
-      def dashboard
-        render Main::DashboardView
       end
     end
   end

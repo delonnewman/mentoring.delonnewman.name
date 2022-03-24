@@ -7,11 +7,11 @@ module Mentoring
       include Helpers
 
       namespace '/', authenticate: false do
-        get '/', Controller, :index
-        get '/state.js', Controller, :state
+        get '/', MentorController, :index
+        get '/state.js', MentorController, :state
       end
 
-      get '/dashboard', Controller, :dashboard
+      get '/dashboard', DashboardController, :index
     end
   end
 end
