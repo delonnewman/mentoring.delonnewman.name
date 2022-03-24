@@ -14,7 +14,7 @@ module Mentoring
         ref  = params[:ref].blank? ? routes.dashboard_path : params[:ref]
 
         if user
-          self.current_user = user
+          login! user
           redirect_to ref
         else
           render :login, status: 401

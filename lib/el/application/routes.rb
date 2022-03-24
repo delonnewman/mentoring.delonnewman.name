@@ -27,6 +27,11 @@ module El
       def route_helpers
         @helpers.keys
       end
+
+      def define_helper(name, &block)
+        @helpers[name] = block
+        self
+      end
     end
   end
 end

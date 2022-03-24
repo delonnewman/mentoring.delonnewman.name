@@ -1,5 +1,5 @@
 module Mentoring
   class ApplicationController < El::Controller
-    include El::Authenticable
+    plugin El::Authenticable
   end
 end

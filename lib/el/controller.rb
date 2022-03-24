@@ -4,7 +4,8 @@ require_relative 'resolved_routes'
 
 module El
   class Controller < Templated
-    include Authenticable
+    include Memoize
+    extend Pluggable
 
     attr_reader :router, :request
 
@@ -12,15 +13,25 @@ module El
       super()
 
       @router = router
-      @request = request
+      @request = self.class.apply_plugins(app, request)
+
+      freeze
     end
 
     def app
       router.app
     end
 
-    def routes
-      @routes ||= ResolvedRoutes.new(request.base_url, router.app.routes)
+    memoize def routes
+      ResolvedRoutes.new(request.base_url, router.app.routes)
+    end
+
+    memoize def template(name)
+      Template[self, template_path(name)]
+    end
+
+    def render_template(name, view = EMPTY_HASH)
+      template(name)&.call(view)
     end
 
     def logger

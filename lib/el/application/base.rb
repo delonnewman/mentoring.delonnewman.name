@@ -16,6 +16,10 @@ module El
         end
       end
 
+      def self.freeze
+        dependencies[:routers].each(&:freeze)
+      end
+
       def self.rack
         init!.rack_app
       end

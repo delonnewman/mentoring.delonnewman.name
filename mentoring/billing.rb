@@ -11,7 +11,6 @@ module Mentoring
       return unless session.checkout_session_id
 
       create_payment!(session)
-
       app.sessions.update!(session.id, session.merge(billed_at: Time.now))
     end
 
@@ -42,26 +41,19 @@ module Mentoring
       end
     end
 
-    def create_checkout_session!(user, product)
+    def create_checkout_session!(user, product, success_url:, cancel_url:)
       customer = find_or_create_customer!(user)
+      data = checkout_session_data(product, customer, success_url, cancel_url)
 
-      Stripe::Checkout::Session.create(checkout_session_data(product, customer))
+      Stripe::Checkout::Session.create(data)
     end
 
     private
 
-    def checkout_success_url(product)
-      if product.subscription?
-        "#{app.routes.products_subscribe_url(product.id)}?session_id={CHECKOUT_SESSION_ID}"
-      else
-        "#{app.routes.session_new_url(product_id: product.id)}&session_id={CHECKOUT_SESSION_ID}"
-      end
-    end
-
-    def checkout_session_data(product, customer)
+    def checkout_session_data(product, customer, success_url, cancel_url)
       data = {
-        success_url: checkout_success_url(product),
-        cancel_url: app.routes.root_url,
+        success_url: success_url,
+        cancel_url: cancel_url,
         payment_method_types: ['card'],
         mode: product.checkout_mode,
         customer: customer.id

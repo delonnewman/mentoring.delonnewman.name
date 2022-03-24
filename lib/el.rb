@@ -12,8 +12,10 @@ require 'forwardable'
 require 'bundler/setup'
 Bundler.require
 
-# OOP
+# OOP / Meta
 require_relative 'el/trait'
+require_relative 'el/memoize'
+require_relative 'el/pluggable'
 
 # Utility methods
 require_relative 'el/utils'

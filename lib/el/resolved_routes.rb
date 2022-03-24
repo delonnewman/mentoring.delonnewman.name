@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 module El
+  # Application routes resolved to a base url (required for url route helpers)
   class ResolvedRoutes
     attr_reader :base_url, :routes
 
@@ -11,9 +14,9 @@ module El
       helper = routes.helpers[method]
       raise NoMethodError, "undefined method `#{method} for #{self}:#{self.class}" unless helper
 
-      return helper.call(request.base_url, *args) if method.name.end_with?('_url')
+      return instance_exec(request.base_url, *args, &helper) if method.name.end_with?('_url')
 
-      helper.call(*args)
+      instance_exec(*args, &helper)
     end
 
     def respond_to_missing?(method, _include_all)

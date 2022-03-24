@@ -1,5 +1,5 @@
 module Mentoring
   class ApplicationView < El::View
-    include El::Authenticable
+    plugin El::Authenticable
   end
 end
