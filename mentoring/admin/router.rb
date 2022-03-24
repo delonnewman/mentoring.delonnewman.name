@@ -1,6 +1,6 @@
 module Mentoring
   module Admin
-    class Router < Application.Router()
+    class Router
     end
   end
 end
