@@ -2,9 +2,8 @@ module Mentoring
   module Sessions
     class BillingController < ApplicationController
       def bill_session
-        session = app.sessions
-                     .find_by!(id: params[:id])
-                     .merge(cost: Float(params.dig(:session, :amount))) # TODO: improve entity coersion
+        session = app.sessions.find_by!(id: params[:id])
+        session.merge!(cost: params.dig(:session, :amount).to_f) # TODO: improve entity coersion
 
         app.billing.bill_session!(session)
 
@@ -13,14 +12,10 @@ module Mentoring
     end
 
     def session_cost
-      session = app.sessions.find_by(id: params[:id])
-      duration = minutes(Float(params[:duration]))
+      session = app.sessions.find_by!(id: params[:id])
+      duration = params[:duration].to_f.minutes
 
-      if session.nil?
-        json.error("Invalid product #{params[:product_id].inspect}")
-      else
-        json.success(amount: session.merge(duration: duration).cost.to_f)
-      end
+      json.success(amount: session.merge(duration: duration).cost.to_f)
     end
   end
 end
