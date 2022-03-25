@@ -3,9 +3,8 @@
 module El
   # Authentication for applications
   module Authenticable
-    def self.call(app, request, _options)
-      user_id = request.session[:current_user_id]
-      return request unless user_id
+    def self.call(app, request)
+      return request unless (user_id = request.session[:current_user_id])
 
       request.include_params(current_user: app.users.find_by!(id: user_id))
     end

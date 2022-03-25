@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'templatable'
-require_relative 'templated'
+require_relative 'templating'
+require_relative 'templates'
 require_relative 'entity'
 require_relative 'repository'
 

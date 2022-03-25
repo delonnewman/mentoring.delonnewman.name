@@ -3,52 +3,129 @@
 require_relative 'resolved_routes'
 
 module El
-  class Controller < Templated
+  class Controller
     include Memoize
+    include Templating
+
     extend Pluggable
+    extend Forwardable
+
+    class << self
+      alias call_without_processors new
+      alias call new
+
+      def call_with_processors(router, request)
+        request = apply_before_processors(router.app, request) || request
+        new(router, request)
+      end
+
+      def apply_before_processors(app, request)
+        return request unless (procs = processors[:before])
+
+        procs.reduce(request) do |req, p|
+          p.call(app, req) || req
+        end
+      end
+
+      def processors
+        procs = @processors ||= {}
+
+        procs.merge!(superclass.processors) if superclass.respond_to?(:processors)
+
+        procs
+      end
+
+      def freeze
+        processors.freeze
+        self
+      end
+
+      # Class DSL methods
+
+      def before(callable = nil, &block)
+        processors[:before] ||= []
+        processors[:before] << callable || block
+        class << self
+          undef_method :call
+          alias_method :call, :call_with_processors
+        end
+      end
+      alias define_before_processor before
+
+      def around(action, callable = nil, &block)
+        processors[:around] ||= {}
+        processors[:around][action] ||= []
+        processors[:around][action] << callable || block
+        undef_method :call
+        alias_method :call, :call_with_processors
+      end
+      alias define_around_processor around
+
+      def after(action, callable = nil, &block)
+        processors[:after] ||= {}
+        processors[:after][action] ||= []
+        processors[:after][action] << callable || block
+        undef_method :call
+        alias_method :call, :call_with_processors
+      end
+      alias define_after_processor after
+    end
 
     attr_reader :router, :request
 
-    def initialize(router, request)
-      super()
+    def_delegator 'self.class', :processors
 
-      @__memos__ = {}
+    def initialize(router, request)
       @router = router
-      @request = self.class.apply_plugins(app, request)
+      @request = request
+      Memoize.init_memoize_state!(self)
 
       freeze
+    end
+
+    def apply_around_processors(action)
+      procs = processors.fetch(:around, EMPTY_HASH).fetch(action, nil)
+      return request unless procs
+
+      procs.reduce(request) do |req, p|
+        p.call(self, req) || req
+      end
+    end
+
+    def apply_after_processors(action, response)
+      procs = processors.fetch(:around, EMPTY_HASH).fetch(action, nil)
+      return request unless procs
+
+      procs.reduce(response) do |res, p|
+        p.call(self, res) || res
+      end
+    end
+
+    def call_without_processors(action)
+      public_send(action)
+    end
+    alias call call_without_processors
+
+    def call_with_processors(action)
+      @request = apply_around_processors(action)
+      res = public_send(action)
+      apply_after_processors(action, res)
     end
 
     def app
       router.app
     end
 
+    protected
+
+    # Instance DSL Methods
+
+    def_delegators :router, :app, :response, :json
+    def_delegators :request, :params, :url_for
+    def_delegators :app, :logger
+
     memoize def routes
       ResolvedRoutes.new(request.base_url, router.app.routes)
-    end
-
-    memoize def template(name)
-      Template[self, template_path(name)]
-    end
-
-    def render_template(name, view = EMPTY_HASH)
-      template(name)&.call(view)
-    end
-
-    def logger
-      app.logger
-    end
-
-    def response
-      router.response
-    end
-
-    def params
-      request.params
-    end
-
-    def json(*args, **kwargs)
-      router.json(*args, **kwargs)
     end
 
     def escape_html(*args)
@@ -61,10 +138,6 @@ module El
       r.redirect(url)
 
       router.halt r.finish
-    end
-
-    def url_for(*args)
-      request.url_for(*args)
     end
 
     def render(name = nil, **options)
@@ -119,7 +192,7 @@ module El
       end
 
       response.tap do |res|
-        res.write render_template(name, view)
+        res.write templates.render_template(name, view)
         res.set_header 'Content-Type', 'text/html'
       end
     end

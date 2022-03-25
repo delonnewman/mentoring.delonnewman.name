@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module El
-  class Messenger < Templated
+  class Messenger
+    include Templating
     include Invokable
 
     attr_reader :app

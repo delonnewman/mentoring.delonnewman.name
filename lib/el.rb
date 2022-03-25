@@ -12,8 +12,9 @@ require 'forwardable'
 require 'bundler/setup'
 Bundler.require
 
+require 'el/trait'
+
 # OOP / Meta
-require_relative 'el/trait'
 require_relative 'el/memoize'
 require_relative 'el/pluggable'
 
@@ -23,9 +24,9 @@ require_relative 'el/sql_utils'
 
 # Templating
 require_relative 'el/template_helpers'
-require_relative 'el/templatable'
-require_relative 'el/templated'
+require_relative 'el/templates'
 require_relative 'el/template'
+require_relative 'el/templating'
 
 # Messaging
 require_relative 'el/messenger'

@@ -5,7 +5,8 @@
 module El
   module TemplateHelpers
     extend Trait
-    required :app
+
+    requires :app
 
     def url_for(path)
       "#{app.request.url_scheme}://#{File.join(app.settings[:domain], path)}"
