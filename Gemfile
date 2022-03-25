@@ -1,10 +1,5 @@
 source 'https://rubygems.org'
 
-git_source :github do |repo|
-  repo = "delonnewman/#{repo}" unless repo.include?('/')
-  "https://github.com/#{repo}.git"
-end
-
 ruby '3.0.3'
 
 # db
@@ -13,8 +8,7 @@ gem "pg", "~> 1.2"
 
 # application server
 gem 'rack'
-gem 'rack-contrib'
-gem 'puma'
+gem "puma", "~> 5.6"
 
 # security
 gem 'bcrypt'
@@ -32,13 +26,14 @@ gem 'rack-flash3'
 gem 'erubi'
 gem 'inflection'
 gem 'invokable'
-# gem 'concurrent-ruby'
-# gem 'nio4r'
+gem 'concurrent-ruby'
+gem 'nio4r'
 # gem 'websocket-driver'
 gem 'oj'
 gem 'zeitwerk'
 gem 'rake'
 
+#path '../../Personal/el-toolkit' do
 git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
    gem 'el-routing', require: 'el/routable'
@@ -53,18 +48,28 @@ gem 'honeybadger', "~> 4.0"
 gem 'net-ntp', require: 'net/ntp'
 gem 'timezone'
 
-group :development, :test do
-  gem 'minitest'
-  gem 'minitest-autotest'
-
-  gem 'rubocop'
-  gem 'capybara'
-  gem 'cucumber'
-  gem 'faker'
+group :development do
+  gem 'pry'
+  gem 'pry-rake'
+  gem 'pry-gem'
+  gem 'pry-git'
+  gem 'pry-highlight'
+  gem 'pry-inline'
 
   gem 'filewatcher'
 
   gem 'yard'
   gem 'webrick' # for yard documentation server
-  gem 'rack-livereload'
+  gem 'rack-livereload', require: false
+
+  gem 'rubocop'
+end
+
+group :development, :test do
+  gem 'minitest'
+  gem 'minitest-autotest'
+
+  gem 'capybara'
+  gem 'cucumber'
+  gem 'faker'
 end

@@ -3,7 +3,7 @@ App = Mentoring::Application.with_only_settings
 
 desc 'Open project console'
 task :console do
-  sh 'bundle exec irb -Ilib -r./.console.rb'
+  sh 'bundle exec pry -Ilib -r./.console.rb'
 end
 
 desc 'Run development server'
