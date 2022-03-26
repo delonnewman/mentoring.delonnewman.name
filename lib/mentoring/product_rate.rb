@@ -3,10 +3,10 @@
 module Mentoring
   class ProductRate < Application.Entity()
     primary_key :id
-    reference :name, String
+    reference :name, :string
 
-    has :unit, String
-    has :description, String, required: false
+    has :unit, :string
+    has :description, :string, required: false
     has :subscription, :boolean, default: false
 
     alias to_s name

@@ -2,12 +2,12 @@
 
 module Mentoring
   class UserRegistration < Application.Entity()
-    primary_key :id, :uuid, display: { order: 0 }
+    primary_key :id, :uuid
 
-    has :username, String, display: { order: 1 }, unique: { within: User.repository }
-    has :expires_at, Time, display: { order: 4 }, default: -> { Time.now + (5 * 60 * 60) } # expires in 5 hours
+    has :username, :string, unique: { within: User.repository }
+    has :expires_at, :time, default: -> { 5.hours.from_now } # expires in 5 hours
 
-    has :activation_key, String, display: { order: 3 }, default: -> { SecureRandom.urlsafe_base64(256) }
+    has :activation_key, :string, default: -> { SecureRandom.urlsafe_base64(256) }
 
     email display: { order: 2 }
     timestamps

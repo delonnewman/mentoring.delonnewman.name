@@ -13,6 +13,8 @@ require 'bundler/setup'
 Bundler.require
 
 require 'el/trait'
+require 'el/entity'
+require 'el/routable'
 
 # OOP / Meta
 require_relative 'el/memoize'
@@ -30,10 +32,6 @@ require_relative 'el/templating'
 
 # Messaging
 require_relative 'el/messenger'
-
-# Model
-require_relative 'el/entity'
-require_relative 'el/repository'
 
 # Request Dispatch
 require_relative 'el/json_response'

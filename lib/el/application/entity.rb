@@ -1,9 +1,17 @@
 # frozen_string_literal: true
 
+require_relative '../entity/associations'
+require_relative '../entity/repositories'
+require_relative '../entity/types'
+
 module El
   module Application
     class Entity < El::Entity
       include Dependency
+
+      extend Associations
+      extend Repositories
+      extend Types
 
       class << self
         def add_to!(app_class)

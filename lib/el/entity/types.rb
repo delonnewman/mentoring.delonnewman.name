@@ -2,7 +2,7 @@ module El
   class Entity
     module Types
       def timestamp(name)
-        has name, Time, edit: false, default: -> { Time.now }
+        has name, :time, edit: false, default: -> { Time.now }
       end
 
       def timestamps
@@ -12,7 +12,7 @@ module El
 
       def password
         has :encrypted_password,
-            String,
+            :string,
             required: false,
             display: false,
             edit: false,
@@ -28,6 +28,9 @@ module El
 
         :password
       end
+
+      EMAIL_REGEXP = %r{\A[a-zA-Z0-9!#$%&'*+/=?\^_`{|}~\-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?\^_`{|}~\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?$\z}
+      El::Types.define_alias :email, El::Types::RegExpType[EMAIL_REGEXP]
 
       def email(name = :email, **options)
         has name, :email, **options

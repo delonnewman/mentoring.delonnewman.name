@@ -5,12 +5,12 @@ module Mentoring
   class Product < Application.Entity()
     primary_key :id, :uuid
 
-    has :name,         String, display: { order: 0 }
-    has :description,  String
-    has :image_path,   String
-    has :amount,       Integer
-    has :meta,         Hash,    serialize: true, default: EMPTY_HASH
-    has :sort_order,   Integer, default: 0
+    has :name,         :string
+    has :description,  :string
+    has :image_path,   :string
+    has :amount,       :integer
+    has :meta,         :hash,    serialize: true, default: EMPTY_HASH
+    has :sort_order,   :integer, default: 0
     has :type,         %w[instant ongoing].to_set
 
     belongs_to :rate

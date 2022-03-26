@@ -5,12 +5,12 @@ module Mentoring
   class Session < Application.Entity()
     primary_key :id, :uuid
 
-    has :zoom_meeting_id,     Integer
-    has :checkout_session_id, String,   required: false
-    has :started_at,          Time,     default: -> { Time.now }
-    has :ended_at,            Time,     required: false
-    has :paid_at,             Time,     required: false
-    has :billed_at,           Time,     required: false
+    has :zoom_meeting_id,     :integer
+    has :checkout_session_id, :string,  required: false
+    has :started_at,          :time,    default: -> { Time.now }
+    has :ended_at,            :time,    required: false
+    has :paid_at,             :time,    required: false
+    has :billed_at,           :time,    required: false
     has :from_subscription,   :boolean, required: false
 
     belongs_to :mentor,   type: User

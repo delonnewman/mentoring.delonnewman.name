@@ -4,15 +4,15 @@ module Mentoring
   # Represent users of the system
   class User < Application.Entity()
     primary_key :id
-    reference :username, String, unique: true, display: { order: 1 }
-    has :mentor, :boolean, required: false, display: { name: 'Is Mentor' }
+    reference :username, :string, unique: true
+    has :mentor, :boolean, required: false
 
-    has :displayname, String, required: false, display: { name: 'Name', order: 0 }
-    belongs_to :role, display: { order: 3 }
+    has :displayname, :string, required: false
+    belongs_to :role
 
-    has :meta, Hash, serialize: true, default: EMPTY_HASH
+    has :meta, :hash, serialize: true, default: EMPTY_HASH
 
-    email display: { order: 2 }
+    email
     password
 
     timestamps

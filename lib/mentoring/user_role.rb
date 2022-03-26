@@ -3,7 +3,7 @@
 module Mentoring
   class UserRole < Application.Entity()
     primary_key :id
-    reference :name, String
+    reference :name, :string
 
     alias to_s name
   end

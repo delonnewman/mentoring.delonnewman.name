@@ -1,8 +1,11 @@
 GIT
   remote: https://github.com/delonnewman/el-toolkit.git
-  revision: 1d1cdf98a732e52bf64a62323b9d46570ebaff7a
+  revision: 552289e987e3d7ac19266c5dd68e4de3512cd584
   specs:
     el-core (0.1.0)
+    el-modeling (0.1.0)
+      dry-types
+      el-core
     el-routing (0.1.0)
       el-core
       rack
@@ -73,6 +76,24 @@ GEM
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.6)
+    dry-configurable (0.14.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 0.6)
+    dry-container (0.9.0)
+      concurrent-ruby (~> 1.0)
+      dry-configurable (~> 0.13, >= 0.13.0)
+    dry-core (0.7.1)
+      concurrent-ruby (~> 1.0)
+    dry-inflector (0.2.1)
+    dry-logic (1.2.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 0.5, >= 0.5)
+    dry-types (1.5.1)
+      concurrent-ruby (~> 1.0)
+      dry-container (~> 0.3)
+      dry-core (~> 0.5, >= 0.5)
+      dry-inflector (~> 0.1, >= 0.1.2)
+      dry-logic (~> 1.0, >= 1.0.2)
     erubi (1.10.0)
     faker (2.19.0)
       i18n (>= 1.6, < 2)
@@ -214,6 +235,7 @@ DEPENDENCIES
   cucumber
   dotenv
   el-core!
+  el-modeling!
   el-routing!
   erubi
   faker
