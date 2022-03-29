@@ -9,9 +9,9 @@ module El
     class Entity < El::Entity
       include Dependency
 
-      extend Associations
-      extend Repositories
-      extend Types
+      extend Entity::Associations
+      extend Entity::Repositories
+      extend Entity::Types
 
       class << self
         def add_to!(app_class)

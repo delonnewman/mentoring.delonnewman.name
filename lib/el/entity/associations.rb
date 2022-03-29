@@ -39,6 +39,10 @@ module El
       Utils.table_name(attribute.value_class.canonical_name)
     end
 
+    def attribute_reference_key(attribute)
+      Utils.reference_key(attribute.name.name).to_sym
+    end
+
     def component_attributes
       attributes.select(&:component?)
     end

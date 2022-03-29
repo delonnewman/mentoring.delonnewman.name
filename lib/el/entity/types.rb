@@ -10,6 +10,8 @@ module El
         timestamp :updated_at
       end
 
+      El::Types.define_alias(:password, ->(v) { v.is_a?(String) && v.length > 10 || v.is_a?(BCrypt::Password) })
+
       def password
         has :encrypted_password,
             :string,

@@ -9,7 +9,7 @@ module Mentoring
     has :description,  :string
     has :image_path,   :string
     has :amount,       :integer
-    has :meta,         :hash,    serialize: true, default: EMPTY_HASH
+    has :meta,         :hash,    serialize: true, default: El::EMPTY_HASH
     has :sort_order,   :integer, default: 0
     has :type,         %w[instant ongoing].to_set
 

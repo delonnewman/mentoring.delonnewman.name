@@ -23,7 +23,7 @@ module El
     # @return [Array<{ fields: Array<Sequel::SQL::QualifiedIdentifier> table: Sequel::SQL::QualifiedIdentifier, ref: Sequel::SQL::QualifiedIdentifier }]
     def component_attribute_query_info(entity_class, prefix = nil)
       entity_class.component_attributes.flat_map do |attr|
-        table = attr.component_table_name.to_sym
+        table = entity_class.component_table_name(attr).to_sym
         attr_name = prefix ? :"#{prefix}[#{attr.name}]" : attr.name
         table_alias = Sequel[table].as(attr_name)
         value_class = attr.value_class
@@ -37,7 +37,7 @@ module El
 
         results = [{ fields: fields,
                      table: table_alias,
-                     ref: Sequel[ref_scope][attr.reference_key] }]
+                     ref: Sequel[ref_scope][entity_class.attribute_reference_key(attr)] }]
 
         if value_class.component_attributes.empty?
           results
@@ -79,7 +79,7 @@ module El
       comps = attrs.select(&:component?)
 
       comps.each do |attr|
-        id_key = attr.reference_key
+        id_key = entity_class.attributes_reference_key(attr)
 
         if !record.key?(id_key) && (id_val = record[attr.name].id)
           h[id_key] = id_val
@@ -121,7 +121,7 @@ module El
 
     def query_attribute_map(entity_class)
       entity_class.attributes.each_with_object(ATTRIBUTE_MAP.dup) do |attr, hash|
-        attr_name = attr.component? ? attr.reference_key : attr.name
+        attr_name = attr.component? ? entity_class.attribute_reference_key(attr) : attr.name
         if attr.many?
           hash
         else
@@ -162,7 +162,7 @@ module El
         buffer.write " inner join #{ident_quote(db, component_table_name)}"
         buffer.write " as #{ident_quote(db, component_table_alias)}"
         buffer.write ' on '
-        buffer.write ident_quote(db, entity_class.repository_table_name, attr.reference_key)
+        buffer.write ident_quote(db, entity_class.repository_table_name, entity_class.attribute_reference_key(attr))
         buffer.write ' = '
         buffer.write ident_quote(db, component_table_alias, 'id')
       end

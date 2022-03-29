@@ -125,7 +125,7 @@ module El
         end
 
         if attr.component?
-          h[attr.reference_key] = value.fetch(:id)
+          h[entity_class.attribute_reference_key(attr)] = value.fetch(:id)
           next
         end
 
@@ -215,6 +215,8 @@ module El
 
       entity_class.reference_mapping.each do |type, ref|
         return find_by(ref => value) if type.call(value)
+      rescue Dry::Types::ConstraintError
+        next
       end
 
       nil
@@ -266,7 +268,7 @@ module El
       return data if comps.empty?
 
       comps.reduce(data) do |h, comp|
-        h.merge!(comp.reference_key => app.ensure_repository!(comp.value_class).find!(entity.value_for(comp.name)).id)
+        h.merge!(entity.class.attribute_reference_key(comp) => app.ensure_repository!(comp.value_class).find!(entity.value_for(comp.name)).id)
       end
     end
   end

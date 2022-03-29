@@ -10,7 +10,7 @@ module Mentoring
     has :displayname, :string, required: false
     belongs_to :role
 
-    has :meta, :hash, serialize: true, default: EMPTY_HASH
+    has :meta, :hash, serialize: true, default: El::EMPTY_HASH
 
     email
     password
@@ -18,7 +18,7 @@ module Mentoring
     timestamps
 
     def availability_schedule
-      meta.fetch('profile.availability') { EMPTY_HASH }
+      meta.fetch('profile.availability') { El::EMPTY_HASH }
     end
 
     def available?(now: Time.now)
