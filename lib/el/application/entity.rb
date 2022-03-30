@@ -20,48 +20,34 @@ module El
           name = self.name.split('::').last.to_sym
           app_class.add_dependency!(name, self, kind: :entities)
 
-          app_class.define_method(name) do
-            entities.fetch(name)
-          end
-
-          define_repositories_method!
+          app_class.attr_reader :model
         end
 
         def init_app!(app, entity_class)
-          define_repository_accessor!(app, entity_class, init_repository!(app, entity_class))
+          unless app.instance_variable_defined?(:@model)
+            app.instance_variable_set(:@model, El::Model.new(app.database, app))
+          end
+
+          app.model.register_entity(entity_class)
+          define_repository_accessor!(app, entity_class)
+          define_entity_accessor!(app, entity_class)
 
           entity_class
         end
 
         private
 
-        def define_repositories_method!
-          return if app_class.method_defined?(:repositories)
-
-          app_class.define_method :repositories do
-            @repositories ||= {}
-          end
-
-          app_class.define_method :ensure_repository! do |name|
-            repositories.fetch(name)
+        def define_repository_accessor!(app, entity_class)
+          name = El::Modeling::Utils.repository_name(entity_class.name).to_sym
+          app.define_singleton_method name do
+            model.repository(name)
           end
         end
 
-        def init_repository!(app, entity_class)
-          app.repositories[entity_class] = entity_class.repository_class.new(
-            app,
-            entity_class
-          )
-        end
-
-        def define_repository_accessor!(app, entity_class, repository)
-          method_name = Inflection.plural(Utils.underscore(entity_class.name.split('::').last))
-          var_name = "@#{method_name}"
-
-          app.instance_variable_set(var_name, repository)
-
-          app.define_singleton_method method_name do
-            app.instance_variable_get(var_name)
+        def define_entity_accessor!(app, entity_class)
+          entity_name = El::Modeling::Utils.entity_name(entity_class.name.split('::').last).to_sym
+          app.define_singleton_method entity_name do
+            model.entity_class(entity_name)
           end
         end
       end

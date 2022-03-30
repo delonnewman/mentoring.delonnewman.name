@@ -21,7 +21,7 @@ module El
         def add_to!(app_class)
           super(app_class)
 
-          name = Utils.underscore(self.name.split('::').last).to_sym
+          name = StringUtils.underscore(self.name.split('::').last).to_sym
           app_class.add_dependency!(name, self, kind: :services)
 
           app_class.define_method(name) do

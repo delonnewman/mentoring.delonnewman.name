@@ -80,7 +80,7 @@ module El
 
       def app_name
         parts = self.class.name.split('::')
-        Utils.underscore(parts[parts.length - 2])
+        StringUtils.underscore(parts[parts.length - 2])
       end
 
       def app_path

@@ -2,7 +2,6 @@
 
 require_relative 'templating'
 require_relative 'templates'
-require_relative 'repository'
 
 require_relative 'application/dependency'
 require_relative 'application/servicable'

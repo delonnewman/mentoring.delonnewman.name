@@ -12,17 +12,16 @@ require 'forwardable'
 require 'bundler/setup'
 Bundler.require
 
-require 'el/trait'
 require 'el/entity'
+require 'el/repository'
+require 'el/model'
+
+require 'el/trait'
 require 'el/routable'
 
 # OOP / Meta
 require_relative 'el/memoize'
 require_relative 'el/pluggable'
-
-# Utility methods
-require_relative 'el/utils'
-require_relative 'el/sql_utils'
 
 # Templating
 require_relative 'el/template_helpers'

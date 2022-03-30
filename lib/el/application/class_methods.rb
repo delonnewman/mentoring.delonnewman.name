@@ -44,7 +44,7 @@ module El
       end
 
       def resolve_class_symbol(symbol)
-        app_module.const_get(Utils.camelcase(symbol.name))
+        app_module.const_get(StringUtils.camelcase(symbol.name))
       end
 
       def middleware

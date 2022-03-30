@@ -2,7 +2,7 @@ module El
   class Entity
     module Types
       def timestamp(name)
-        has name, :time, edit: false, default: -> { Time.now }
+        define_attribute(name, :time, default: -> { Time.now })
       end
 
       def timestamps
@@ -13,20 +13,11 @@ module El
       El::Types.define_alias(:password, ->(v) { v.is_a?(String) && v.length > 10 || v.is_a?(BCrypt::Password) })
 
       def password
-        has :encrypted_password,
-            :string,
-            required: false,
-            display: false,
-            edit: false,
-            default: -> { BCrypt::Password.create(password) }
+        meta = { required: false, default: -> { BCrypt::Password.create(password) } }
+        define_attribute(:encrypted_password, :string, **meta)
 
-        has :password,
-            :password,
-            required: false,
-            display: false,
-            default: -> { BCrypt::Password.new(encrypted_password) }
-
-        exclude_for_storage << :password
+        meta.merge!(exclude_for_storage: true, default: -> { BCrypt::Password.new(encrypted_password) })
+        define_attribute(:password, :password, **meta)
 
         :password
       end
@@ -35,7 +26,7 @@ module El
       El::Types.define_alias :email, El::Types::RegExpType[EMAIL_REGEXP]
 
       def email(name = :email, **options)
-        has name, :email, **options
+        define_attribute(name, :email, **options)
       end
     end
   end

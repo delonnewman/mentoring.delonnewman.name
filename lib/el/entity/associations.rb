@@ -6,81 +6,63 @@ module El
     end
 
     def has_many(name, **options)
-      type = Utils.entity_name(name)
-      has name, type, **{ required: false }.merge!(options.merge(many: true))
+      type = El::Modeling::Utils.entity_name(name)
+      meta = { required: false }.merge!(options.merge(cardinality: :one_to_many, exclude_for_storage: true))
+      define_attribute(name, type, **meta)
+      name
+    end
 
-      attr = attribute(name)
-
-      define_method name do
-        attr
-          .join_table
-          .join(name, id: attr.reference_key)
-          .where(attr.entity.reference_key => id)
-          .map { |record| attr.value_class[record] }
-      end
-
-      define_method Inflection.plural(attr.reference_key.name) do
-        ref = attr.entity.reference_key
-        attr.join_table.where(ref => id).select_map(attr.reference_key)
-      end
-
-      exclude_for_storage << name
+    def has_and_belongs_to_many(name, **options)
+      type = El::Modeling::Utils.entity_name(name)
+      meta = { required: false }.merge!(options.merge(cardinality: :many_to_many, exclude_for_storage: true))
+      define_attribute(name, type, **meta)
       name
     end
 
     def belongs_to(name, **options)
-      type = Utils.entity_name("#{self}_#{name}")
-      has name, type, **options.merge(component: true)
-      exclude_for_storage << name
+      type = El::Modeling::Utils.entity_name("#{self}_#{name}")
+      define_attribute(name, type, **options.merge(cardinality: :many_to_one, exclude_for_storage: true))
       name
     end
 
-    def component_table_name(attribute)
-      Utils.table_name(attribute.value_class.canonical_name)
-    end
-
-    def attribute_reference_key(attribute)
-      Utils.reference_key(attribute.name.name).to_sym
-    end
-
-    def component_attributes
-      attributes.select(&:component?)
+    def has_one(name, **options)
+      type = El::Modeling::Utils.entity_name(name)
+      define_attribute(name, type, **options.merge(cardinality: :one_to_one, exclude_for_storage: true))
+      name
     end
 
     def reference(name, type, **options)
-      has name, type, **options.merge(reference: true)
+      define_attribute(name, type, **options.merge(reference: true, unique: true, index: true))
     end
+    alias define_reference reference
 
     def reference_mapping
-      attributes.select { |a| a[:reference] }.reduce({}) { |h, a| h.merge(a.type_predicate => a.name) }
+      attributes.select(&:reference?).reduce({}) do |h, a|
+        h.merge!(a.type_predicate => a.name)
+      end
     end
 
     def primary_key(name = :id, type = :integer, **options)
-      opts = {
-        required: false,
-        unique: true,
-        index: true,
-        primary_key: true,
-        display: false,
-        edit: false
-      }
-
-      opts.merge!(options)
+      options = options.merge(required: false, unique: true, index: true, primary_key: true)
 
       if type == :uuid
-        opts[:default] = -> { SecureRandom.uuid }
-        opts[:required] = true
+        options[:default] = -> { SecureRandom.uuid }
+        options[:required] = true
       end
 
-      reference name, type, **opts
-    end
-
-    def exclude_for_storage
-      @exclude_for_storage ||= Set.new
+      define_reference(name, type, **options)
     end
 
     def storable_attributes
-      attributes.reject { |attr| exclude_for_storage.include?(attr.name) }
+      attributes.reject(&:exclude_for_storage?)
+    end
+
+    def component_attributes
+      attributes.select { |a| a.cardinality == :many_to_one }
+    end
+
+    def exclude_for_storage
+      attributes.select(&:exclude_for_storage?).map(&:name)
     end
   end
 end
