@@ -14,9 +14,9 @@ module El
       alias call_without_processors new
       alias call new
 
-      def call_with_processors(router, request)
-        request = apply_before_processors(router.app, request) || request
-        new(router, request)
+      def call_with_processors(app, request)
+        request = apply_before_processors(app, request) || request
+        new(app, request)
       end
 
       def apply_before_processors(app, request)
@@ -71,12 +71,12 @@ module El
       alias define_after_processor after
     end
 
-    attr_reader :router, :request
+    attr_reader :app, :request
 
     def_delegator 'self.class', :processors
 
-    def initialize(router, request)
-      @router = router
+    def initialize(app, request)
+      @app = app
       @request = request
       Memoize.init_memoize_state!(self)
 
@@ -112,20 +112,15 @@ module El
       apply_after_processors(action, res)
     end
 
-    def app
-      router.app
-    end
-
     protected
 
     # Instance DSL Methods
 
-    def_delegators :router, :app, :response, :json
     def_delegators :request, :params, :url_for
     def_delegators :app, :logger
 
     memoize def routes
-      ResolvedRoutes.new(request.base_url, router.app.routes)
+      ResolvedRoutes.new(request.base_url, app.routes)
     end
 
     def escape_html(*args)
@@ -138,6 +133,17 @@ module El
       r.redirect(url)
 
       router.halt r.finish
+    end
+
+    def json(*args)
+      res = JSONResponse.new(response)
+      return res if args.empty?
+
+      res.render(*args)
+    end
+
+    def response
+      Rack::Response.new
     end
 
     def render(name = nil, **options)
