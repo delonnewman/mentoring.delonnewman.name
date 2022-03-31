@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-require_relative '../entity/associations'
-require_relative '../entity/repositories'
-require_relative '../entity/types'
+require 'el/entity/associations'
+require 'el/entity/repositories'
+require 'el/entity/email'
+require 'el/entity/passwords'
+require 'el/entity/timestamps'
 
 module El
   module Application
@@ -11,7 +13,9 @@ module El
 
       extend Entity::Associations
       extend Entity::Repositories
-      extend Entity::Types
+      extend Entity::Email
+      extend Entity::Passwords
+      extend Entity::Timestamps
 
       class << self
         def add_to!(app_class)
