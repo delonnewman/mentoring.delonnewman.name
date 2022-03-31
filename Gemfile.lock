@@ -1,7 +1,11 @@
 GIT
   remote: https://github.com/delonnewman/el-toolkit.git
-  revision: aacb12e3c8b7a78d46c8af5111b1bdc9f10d7993
+  revision: 32588278a0dfd6a0b400425288dcf65be05eacfc
   specs:
+    el-application (0.1.0)
+      el-core
+      el-modeling
+      el-routing
     el-core (0.1.0)
     el-modeling (0.1.0)
       dry-types
@@ -169,7 +173,7 @@ GEM
     pry-rake (0.0.3)
       pry
     public_suffix (4.0.6)
-    puma (5.6.4)
+    puma (5.6.2)
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.3)
@@ -234,6 +238,7 @@ DEPENDENCIES
   concurrent-ruby
   cucumber
   dotenv
+  el-application!
   el-core!
   el-modeling!
   el-routing!
@@ -258,7 +263,7 @@ DEPENDENCIES
   pry-highlight
   pry-inline
   pry-rake
-  puma (~> 5.6)
+  puma (= 5.6.2)
   rack
   rack-flash3
   rack-livereload

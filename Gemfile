@@ -8,7 +8,7 @@ gem "pg", "~> 1.2"
 
 # application server
 gem 'rack'
-gem "puma", "~> 5.6"
+gem 'puma', '5.6.2'
 
 # security
 gem 'bcrypt'
@@ -36,8 +36,9 @@ gem 'rake'
 # path '../../Personal/el-toolkit' do
 git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
-   gem 'el-routing'
-   gem 'el-modeling'
+   gem 'el-routing', require: false
+   gem 'el-modeling', require: false
+   gem 'el-application', require: 'el/application'
 end
 
 # vendor

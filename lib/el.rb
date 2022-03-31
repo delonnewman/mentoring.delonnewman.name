@@ -12,12 +12,13 @@ require 'forwardable'
 require 'bundler/setup'
 Bundler.require
 
+require 'el/trait'
+require 'el/routable'
+
 require 'el/entity'
 require 'el/repository'
 require 'el/model'
-
-require 'el/trait'
-require 'el/routable'
+require 'el/application'
 
 # OOP / Meta
 require_relative 'el/memoize'
@@ -38,6 +39,3 @@ require_relative 'el/json_response'
 require_relative 'el/authenticable'
 require_relative 'el/controller'
 require_relative 'el/view'
-
-# Application State & DI
-require_relative 'el/application'
