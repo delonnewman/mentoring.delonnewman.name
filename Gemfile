@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.0.3'
+ruby '3.0.4'
 
 # db
 gem 'sequel'
@@ -8,7 +8,7 @@ gem "pg", "~> 1.2"
 
 # application server
 gem 'rack'
-gem 'puma', '5.6.2'
+gem "falcon", "~> 0.39.2"
 
 # security
 gem 'bcrypt'
