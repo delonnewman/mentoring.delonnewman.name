@@ -48,7 +48,7 @@
                                         <% end %>
                                     </p>
                                     <div class="d-flex justify-content-end">
-                                        <a class="card-link" href="/session/<%= session.id %>">View</a>
+                                        <%= link_to routes.session_path(session), 'View', class: 'card-link'  %>
                                     </div>
                                 </div>
                             </div>

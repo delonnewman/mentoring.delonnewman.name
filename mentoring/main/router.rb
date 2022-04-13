@@ -15,7 +15,7 @@ module Mentoring
 
       namespace '/', authenticate: false do
         get '/', MentorController, :index
-        get '/state.js', MentorController, :state
+        get '/state.js', MentorController, :state, as: :client_state
       end
 
       get '/dashboard', DashboardController, :index

@@ -1,0 +1,14 @@
+<div class="d-flex justify-content-between align-items-center mb-3"> 
+  <div class="d-flex justify-content-start align-items-center">
+    <%= link_to '/admin', icon('arrow-left', 'Back'), escape: false, class: 'btn btn-link btn-sm' %>
+    <h1 style="font-size: 1.5em" class="mb-0 text-muted">Entities</h1>
+  </div>
+</div>
+
+<ul class="list-group">
+<% entities.each do |entity| %>
+  <li class="list-group-item">
+    <%= link_to "/admin/entities/#{entity.canonical_name}", entity.canonical_name.to_s %>
+  </li>
+<% end %>
+</ul>

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'resolved_routes'
+require 'el/route_helpers'
 
 module El
   class Controller
@@ -117,22 +117,21 @@ module El
     # Instance DSL Methods
 
     def_delegators :request, :params, :url_for
-    def_delegators :app, :logger
-
-    memoize def routes
-      ResolvedRoutes.new(request.base_url, app.routes)
-    end
+    def_delegators :app, :logger, :routes
 
     def escape_html(*args)
       CGI.escapeHTML(*args)
     end
     alias h escape_html
 
-    def redirect_to(url)
+    def redirect(url)
       r = Rack::Response.new
       r.redirect(url)
+      r.finish
+    end
 
-      router.halt r.finish
+    def redirect_to(path)
+      redirect(request.url_for(path))
     end
 
     def json(*args)
@@ -191,7 +190,7 @@ module El
 
     def render_view(name, options)
       if name.is_a?(Class)
-        view = name.new(self, request)
+        view = name.new(app, request)
         name = name.template_name
       else
         view = options.delete(:with) || EMPTY_HASH

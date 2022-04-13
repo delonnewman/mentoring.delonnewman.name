@@ -1,0 +1,33 @@
+<div class="d-flex justify-content-between align-items-center mb-3"> 
+  <div class="d-flex justify-content-start align-items-center">
+    <%= link_to '/admin/entities', icon('arrow-left', 'Back'), escape: false, class: 'btn btn-link btn-sm' %>
+    <h1 style="font-size: 1.5em" class="mb-0 text-muted"><%= entity_class.canonical_name %></h1>
+  </div>
+  <%= link_to "/admin/entities/#{entity_class.canonical_name}/new", icon('plus', "Add #{entity_class.canonical_name}"), escape: false, class: 'btn btn-sm btn-primary' %>
+</div>
+<table class="table table-striped table-sm" style="font-size: 0.9em">
+  <thead>
+    <% entity_class.attributes.each do |attr| %>
+      <th scope="col"><%= attr.name %></th>
+    <% end %>
+    <th scope="col"></th>
+  </thead>
+  <tbody>
+    <% repository.each do |entity| %>
+      <tr>
+	      <% entity_class.attributes.each do |attr| %>
+          <% if attr.entity? %>
+            <% value = entity.send(attr.name) %>
+            <td><%= link_to "/admin/entities/#{attr.value_class.canonical_name}/#{value.id}", value.to_s %>
+          <% else %>
+	          <td><%= entity.value_for(attr.name) %></td>
+          <% end %>
+	      <% end %>
+	      <td>
+	        <%= link_to "/admin/entities/#{entity_class.canonical_name}/#{entity.id}", 'View', class: "btn btn-link btn-sm" %>
+	        <%= link_to "/admin/entities/#{entity_class.canonical_name}/#{entity.id}/edit", 'Edit', class: "btn btn-link btn-sm" %>
+	      </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

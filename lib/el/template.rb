@@ -19,7 +19,7 @@ module El
       def [](templated, path)
         tmpl = new(templated, path, layout_path(templated))
 
-        # templated.app.production? ? tmpl.memoize : tmpl
+        templated.app.settings[:template_caching] ? tmpl.memoize : tmpl
       end
     end
 
@@ -47,7 +47,7 @@ module El
     end
 
     def code
-      return @code if app.env == :production && @code
+      return @code if app.settings[:template_caching] && @code
 
       @code = Erubi::Engine.new(path.read).src
     end
@@ -67,6 +67,7 @@ module El
     private
 
     def eval_hash_view(view, scope)
+      scope.local_variable_set(:view, view)
       view.each_pair { |key, value| scope.local_variable_set(key, value) }
       scope.eval(code, path.to_s)
     end

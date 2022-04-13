@@ -24,7 +24,7 @@ class ApplicationContainer
 
     @server = nil
     Thread.new do
-      Rack::Handler::WEBrick.run(@app.rack_app, **options) do |s|
+      Rack::Handler::WEBrick.run(@app.rack, **options) do |s|
         @server = s
       end
     end

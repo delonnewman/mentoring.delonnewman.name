@@ -1,29 +1,43 @@
-<% attributes = entity_class.attributes.sort_by(&:display_order).reject { |a| a[:display] == false } %>
-<div class="d-flex justify-content-between align-items-center mb-3"> 
-  <div class="d-flex justify-content-start align-items-center">
-    <%= link_to '/admin', icon('arrow-left', 'Back'), escape: false, class: 'btn btn-link btn-sm' %>
-    <h1 style="font-size: 1.5em" class="mb-0 text-muted"><%= titlecase controller_name %></h1>
-  </div>
-  <%= link_to "/admin/#{controller_name}/new", icon('plus', "Add #{titlecase entity_class.canonical_name}"), escape: false, class: 'btn btn-sm btn-primary' %>
-</div>
-<table class="table table-striped table-sm" style="font-size: 0.9em">
-  <thead>
-    <% attributes.each do |attr| %>
-      <th scope="col"><%= attr.display_name %></th>
+<div class="row">
+<div class="col-7">
+<h3>Session</h3>
+<table class="mb-3 table">
+    <% request.session.each do |key, value| %>
+        <tr>
+            <th><%= key %><th>
+            <td><%= value %></td>
+        </tr>
     <% end %>
-    <th scope="col"></th>
-  </thead>
-  <tbody>
-    <% entity_repository.each do |entity| %>
-      <tr>
-	<% attributes.each do |attr| %>
-	  <td><%= entity.send(attr.name) %></td>
-	<% end %>
-	<td>
-	  <%= link_to "/admin/#{controller_name}/#{entity.id}", 'View', class: "btn btn-link btn-sm" %>
-	  <%= link_to "/admin/#{controller_name}/#{entity.id}/edit", 'Edit', class: "btn btn-link btn-sm" %>
-	</td>
-      </tr>
-    <% end %>
-  </tbody>
 </table>
+
+<h3>Routes</h3>
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>Path</th>
+            <th>Alias</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% routes_list.each do |route| %>
+            <tr>
+                <td><%= route.method.name.upcase %></td>
+                <td><%= link_to route.path, route.path %></td>
+                <td><%= route.route_alias %></td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
+</div>
+    <div class="col-5">
+        <table>
+            <% request.each_header do |header, value| %>
+                <tr>
+                    <th><%= header %></th>
+                    <td><%=h value.to_s %></td>
+                </tr>
+            <% end %>
+        </table>
+    </div>
+</div>

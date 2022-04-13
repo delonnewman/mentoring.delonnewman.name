@@ -1,9 +1,9 @@
 module El
   class View
     include TemplateHelpers
+    include Memoize
     extend Pluggable
-
-    attr_reader :request
+    extend Forwardable
 
     class << self
       alias call_without_processors new
@@ -52,13 +52,15 @@ module El
       StringUtils.underscore(name.split('::').last.sub(/View$/, '')).to_sym
     end
 
-    def initialize(router, request)
-      @router  = router
-      @request = request
-    end
+    attr_reader :request, :app
 
-    def app
-      @router.app
+    def_delegators :request, :url_for, :params, :options, :session
+    def_delegators :app, :routes
+
+    def initialize(app, request)
+      @app = app
+      @request = request
+      Memoize.init_memoize_state!(self)
     end
 
     def render(code, path)

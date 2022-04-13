@@ -20,7 +20,7 @@ module Mentoring
 
         if (reg = app.user_registrations.find_active_by_id_and_key(params[:id], params[:key])).nil?
           render :activation_invalid
-        elsif User.errors(data).empty?
+        elsif User.valid?(data)
           User[data].tap do |user|
             logger.info "Storing user: #{user.inspect}"
             app.users.store!(user)

@@ -40,7 +40,7 @@ module Mentoring
         if product.subscription?
           "#{routes.products_subscribe_url(product.id)}?session_id={CHECKOUT_SESSION_ID}"
         else
-          "#{routes.session_new_url(product_id: product.id)}&session_id={CHECKOUT_SESSION_ID}"
+          "#{routes.new_session_url(product_id: product.id)}&session_id={CHECKOUT_SESSION_ID}"
         end
       end
     end

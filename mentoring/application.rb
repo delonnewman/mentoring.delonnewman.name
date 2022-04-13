@@ -10,9 +10,12 @@ module Mentoring
     use Rack::MiniProfiler
     use Honeybadger::Rack::ErrorNotifier
 
+    disable :livereload
+
     env_vars :database_url,
-             :database_name,
-             :domain,
+             :database_name, # FIXME: parse database url for this
+             :domain, # FIXME: I don't think we need this
+             # FIXME: these would be better in named yaml or ini config files
              :stripe_key,
              :stripe_pub_key,
              :session_secret,
@@ -23,6 +26,6 @@ module Mentoring
              :zulip_api_key,
              :zoom_api_key,
              :zoom_api_secret,
-             :default_mentor_username
+             :default_mentor_username # FIXME: this would probably be better in a user config file
   end
 end

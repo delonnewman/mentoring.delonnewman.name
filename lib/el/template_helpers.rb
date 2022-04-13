@@ -4,13 +4,7 @@
 
 module El
   module TemplateHelpers
-    extend Trait
-
-    requires :app
-
-    def url_for(path)
-      "#{app.request.url_scheme}://#{File.join(app.settings[:domain], path)}"
-    end
+    include CGI::Util
 
     def link_to(path, content = nil, escape: true, title: nil, **options)
       raise 'Content is required for a link' if !block_given? && content.nil?
@@ -65,12 +59,7 @@ module El
     end
 
     def input_field(name, value = params[name.to_s], type: 'text')
-      if (errors = view.dig(:errors, name.to_sym))
-        "<input type=\"#{type}\" class=\"form-control is-invalid\" id=\"#{name}\" name=\"#{name}\" value=\"#{value}\">
-            <div class=\"invalid-feedback\">#{errors.join(', ')}</div>"
-      else
-        "<input type=\"#{type}\" class=\"form-control\" id=\"#{name}\" name=\"#{name}\" value=\"#{value}\">"
-      end
+      "<input type=\"#{type}\" class=\"form-control\" id=\"#{name}\" name=\"#{name}\" value=\"#{value}\">"
     end
     alias text_field input_field
 

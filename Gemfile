@@ -51,13 +51,6 @@ gem 'net-ntp', require: 'net/ntp'
 gem 'timezone'
 
 group :development do
-  gem 'pry'
-  gem 'pry-rake'
-  gem 'pry-gem'
-  gem 'pry-git'
-  gem 'pry-highlight'
-  gem 'pry-inline'
-
   gem 'filewatcher'
 
   gem 'yard'

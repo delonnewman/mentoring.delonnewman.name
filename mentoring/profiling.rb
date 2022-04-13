@@ -5,7 +5,7 @@ module Mentoring
   class Profiling < Application.Service()
     start do
       require 'rack-mini-profiler'
-      Rack::MiniProfiler.config.authorization_mode = app.production? ? :allow_authorized : :allow_all
+      Rack::MiniProfiler.config.authorization_mode = app.environment.production? ? :allow_authorized : :allow_all
     end
   end
 end

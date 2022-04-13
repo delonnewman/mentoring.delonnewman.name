@@ -60,7 +60,7 @@ module Mentoring
       end
 
       def product_price(product, subscriber: false, size: nil)
-        return '<div></div>' if app.production?
+        return '<div></div>' if app.environment.production?
 
         discount = subscriber ? product.discounted_price : product.price
         product_size = size.nil? ? '1.3em' : '0.9em'
@@ -87,7 +87,7 @@ module Mentoring
       end
 
       def product_button(product, size: nil)
-        disabled = 'disabled' if app.production? || product.disabled
+        disabled = 'disabled' if app.environment.production? || product.disabled
         btn_class = size.nil? ? nil : "btn-#{size}"
 
         <<~HTML
