@@ -1,1 +1,1 @@
-web: bundle exec falcon -p $PORT
+web: bundle exec puma config.ru -p $PORT
