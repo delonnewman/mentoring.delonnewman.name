@@ -4,11 +4,12 @@ module El
   # Authentication for applications
   module Authenticable
     module ApplicationInstanceMethods
+      NOT_AUTHORIZED = [401, {}, ['Not Authorized']].freeze
+
       def dispatch_request(request)
         auth = request.options[:authenticate]
         if auth.nil? || auth == true and request.session.nil? || request.session[:current_user_id].nil?
-          # not authorized
-          [401, {}, ['Not Authorized']]
+          NOT_AUTHORIZED
         elsif request.session && (user_id = request.session[:current_user_id])
           super(request.include_params(current_user: users.find_by!(id: user_id)))
         else

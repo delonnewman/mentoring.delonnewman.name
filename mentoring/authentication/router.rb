@@ -14,7 +14,7 @@ module Mentoring
         post '/:id', ActivationController, :update
       end
 
-      namespace '/login' do
+      namespace '/login', authenticate: false do
         get  '/', SigninController, :index
         post '/', SigninController, :create
       end
