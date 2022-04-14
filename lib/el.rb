@@ -14,6 +14,7 @@ Bundler.require
 
 require 'el/trait'
 require 'el/routable'
+require 'el/pluggable'
 
 require 'el/entity'
 require 'el/repository'
@@ -22,7 +23,6 @@ require 'el/application'
 
 # OOP / Meta
 require_relative 'el/memoize'
-require_relative 'el/pluggable'
 
 # Templating
 require_relative 'el/template_helpers'

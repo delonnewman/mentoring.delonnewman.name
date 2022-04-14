@@ -2,8 +2,8 @@ module El
   class View
     include TemplateHelpers
     include Memoize
-    extend Pluggable
-    extend Forwardable
+    extend  Pluggable
+    extend  Forwardable
 
     class << self
       alias call_without_processors new

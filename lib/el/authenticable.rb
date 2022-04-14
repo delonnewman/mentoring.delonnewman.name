@@ -3,23 +3,33 @@
 module El
   # Authentication for applications
   module Authenticable
-    def self.call(app, request)
-      return request unless (user_id = request.session[:current_user_id])
-
-      request.include_params(current_user: app.users.find_by!(id: user_id))
+    module ApplicationInstanceMethods
+      def dispatch_request(request)
+        auth = request.options[:authenticate]
+        if auth.nil? || auth == true and request.session.nil? || request.session[:current_user_id].nil?
+          # not authorized
+          [401, {}, ['Not Authorized']]
+        elsif request.session && (user_id = request.session[:current_user_id])
+          super(request.include_params(current_user: users.find_by!(id: user_id)))
+        else
+          super(request)
+        end
+      end
     end
 
-    module InstanceMethods
+    module Helpers
       def current_user
         request.params[:current_user]
       end
 
       def login!(user)
         request.session[:current_user_id] = user.id
+        request.params[:current_user] = user
       end
 
       def logout!
         request.session.delete(:current_user_id)
+        request.params.delete(:current_user)
       end
 
       # If no arguments are given return true if a user is authenticated
@@ -37,5 +47,8 @@ module El
         current_user&.role?(as)
       end
     end
+
+    ControllerInstanceMethods = Helpers
+    ViewInstanceMethods = Helpers
   end
 end

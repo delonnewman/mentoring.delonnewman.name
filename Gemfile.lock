@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/delonnewman/el-toolkit.git
-  revision: c09f2e07a9d8e7c828f6e1b353936e89d4d0998b
+  revision: 4908ec43b0610263f2c01bf55644a5c3646366b6
   specs:
     el-application (0.1.0)
       el-core (~> 0.1.0)
@@ -266,7 +266,7 @@ DEPENDENCIES
   nokogiri (~> 1.13.4)
   oj
   pg (~> 1.2)
-  puma (~> 5.6.2)
+  puma
   rack
   rack-flash3
   rack-livereload

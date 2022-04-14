@@ -4,8 +4,6 @@ module Mentoring
   module Main
     # Routes for the landing page of the site
     class Router < Application.Router()
-      include Helpers
-
       def error(err)
         app.logger.error(err.message)
         app.logger.error(err.backtrace)
@@ -18,7 +16,7 @@ module Mentoring
         get '/state.js', MentorController, :state, as: :client_state
       end
 
-      get '/dashboard', DashboardController, :index
+      get '/dashboard', DashboardController, :index, authenticate: true
     end
   end
 end

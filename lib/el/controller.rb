@@ -6,9 +6,8 @@ module El
   class Controller
     include Memoize
     include Templating
-
-    extend Pluggable
-    extend Forwardable
+    extend  Pluggable
+    extend  Forwardable
 
     class << self
       alias call_without_processors new

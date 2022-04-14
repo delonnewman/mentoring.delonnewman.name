@@ -9,7 +9,7 @@ gem "pg", "~> 1.2"
 # application server
 gem 'rack'
 gem "falcon", "~> 0.39.2"
-gem "puma", "~> 5.6.2"
+gem "puma"
 
 # security
 gem 'bcrypt'

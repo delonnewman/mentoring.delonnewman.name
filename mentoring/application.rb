@@ -10,6 +10,8 @@ module Mentoring
     use Rack::MiniProfiler
     use Honeybadger::Rack::ErrorNotifier
 
+    plugin El::Authenticable
+
     disable :livereload
 
     env_vars :database_url,
