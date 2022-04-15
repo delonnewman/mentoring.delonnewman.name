@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'el/route_helpers'
-
 module El
   class Controller
     include Memoize
@@ -123,9 +121,9 @@ module El
     end
     alias h escape_html
 
-    def redirect(url)
+    def redirect(url, status: 302)
       r = Rack::Response.new
-      r.redirect(url)
+      r.redirect(url, status)
       r.finish
     end
 
