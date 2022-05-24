@@ -33,7 +33,7 @@ gem 'nio4r'
 gem 'oj'
 gem 'zeitwerk'
 gem 'rake'
-gem 'nokogiri', '~> 1.13.4'
+gem 'nokogiri', '~> 1.13.6'
 
 # path '../../Personal/el-toolkit' do
 git 'https://github.com/delonnewman/el-toolkit.git' do
