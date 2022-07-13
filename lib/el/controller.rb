@@ -12,8 +12,7 @@ module El
       alias call new
 
       def call_with_processors(app, request)
-        request = apply_before_processors(app, request) || request
-        new(app, request)
+        new(app, apply_before_processors(app, request))
       end
 
       def apply_before_processors(app, request)
@@ -70,7 +69,7 @@ module El
 
     attr_reader :app, :request
 
-    def_delegator 'self.class', :processors
+    def_delegators 'self.class', :processors, :layout, :module_name
 
     def initialize(app, request)
       @app = app
@@ -113,7 +112,7 @@ module El
 
     # Instance DSL Methods
 
-    def_delegators :request, :params, :url_for
+    def_delegators :request, :params, :url_for, :options, :session
     def_delegators :app, :logger, :routes
 
     def escape_html(*args)
@@ -151,6 +150,8 @@ module El
 
     private
 
+    # TODO: Make this extensible
+
     def render_special_types(options)
       if (content = options.delete(:json))
         render_json(content)
@@ -165,37 +166,39 @@ module El
 
     def render_json(content)
       response.tap do |res|
-        res.write content.to_json
-        res.set_header 'Content-Type', 'application/json'
+        res.write(content.to_json)
+        res.set_header('Content-Type', 'application/json')
       end
     end
 
     def render_plain(content)
       response.tap do |res|
-        res.write content
-        res.set_header 'Content-Type', 'text/plain'
+        res.write(content)
+        res.set_header('Content-Type', 'text/plain')
       end
     end
 
     def render_js(content)
       response.tap do |res|
         content = content.to_js if content.respond_to?(:to_js)
-        res.write content
-        res.set_header 'Content-Type', 'application/javascript'
+        res.write(content)
+        res.set_header('Content-Type', 'application/javascript')
       end
     end
 
-    def render_view(name, options)
-      if name.is_a?(Class)
-        view = name.new(app, request)
-        name = name.template_name
-      else
-        view = options.delete(:with) || EMPTY_HASH
-      end
-
+    def render_view(view, options)
       response.tap do |res|
-        res.write templates.render_template(name, view)
-        res.set_header 'Content-Type', 'text/html'
+        res.write(init_view(view, options).render)
+        res.set_header('Content-Type', 'text/html')
+      end
+    end
+
+    def init_view(view, options)
+      if view.is_a?(Symbol)
+        data = options.delete(:with) || EMPTY_HASH
+        HashView.new(self, view, data)
+      else
+        view.new(self)
       end
     end
   end

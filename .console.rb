@@ -58,6 +58,7 @@ def app(env = ENV.fetch('RACK_ENV', 'development').to_sym)
   @apps ||= {}
   @apps[env] ||= ApplicationContainer.create(env)
 end
+app.init!
 
 def request_for(path, **options)
   app.routes.match(Rack::MockRequest.env_for(path, options))
@@ -70,5 +71,13 @@ end
 %i[get post delete link put unlink].each do |verb|
   define_singleton_method verb do |*args, **kwargs|
     request(*args, **kwargs.merge(method: verb))
+  end
+end
+
+def method_query(object:, output:, args: [])
+  object.methods.select do |m|
+    object.dup.public_send(m, *args) == output
+  rescue StandardError => _e
+    nil
   end
 end

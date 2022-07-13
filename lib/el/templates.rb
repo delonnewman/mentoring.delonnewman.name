@@ -26,10 +26,10 @@ module El
     end
 
     memoize def template(name)
-      Template[templated, template_path(name)]
+      Template.new(templated, template_path(name))
     end
 
-    def render_template(name, view = EMPTY_HASH)
+    def render_template(name, view)
       template(name)&.call(view)
     end
 

@@ -8,7 +8,7 @@ end
 
 desc 'Run development server'
 task :server do
-  sh 'bundle exec puma -b tcp://0.0.0.0 -p 3000'
+  sh 'bundle exec puma -w 4 -b tcp://0.0.0.0 -p 3000 config.ru'
 end
 
 namespace :db do

@@ -187,7 +187,7 @@ pp users
 
 app.users.store_all!(users) if app.users.empty?
 
-if app.development? || app.test?
+if app.env == :development || app.env == :test
   customers = %w[the-man-in-black june-carter]
 
   sessions = 6.times.map do

@@ -16,7 +16,7 @@ module Mentoring
 
     def create_payment!(session)
       checkout = Stripe::Checkout::Session.retrieve(checkout_id)
-      intent = Stripe::SetupIntent.retrieve(checkout.setup_intent)
+      intent   = Stripe::SetupIntent.retrieve(checkout.setup_intent)
 
       Stripe::PaymentIntent.create(
         amount: session.cost.in(:cents).to_i,

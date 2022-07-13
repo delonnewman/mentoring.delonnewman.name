@@ -6,6 +6,8 @@ module El
     module ApplicationInstanceMethods
       NOT_AUTHORIZED = [401, {}, ['Not Authorized']].freeze
 
+      # TODO: Generalize this perhaps the notion of a request interceptor could be useful.
+      # (see https://github.com/macourtney/Conjure/wiki/How-to-create-a-controller-interceptor)
       def dispatch_request(request)
         auth = request.options[:authenticate]
         if auth.nil? || auth == true and request.session.nil? || request.session[:current_user_id].nil?
