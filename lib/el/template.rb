@@ -18,8 +18,8 @@ module El
       @code = Erubi::Engine.new(path.read).src
     end
 
-    def eval(binding, &block)
-      binding.eval(code, path.to_s, &block)
+    def eval(binding)
+      binding.eval(code, path.to_s)
     end
   end
 end

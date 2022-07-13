@@ -29,6 +29,10 @@ module El
       Template.new(templated, template_path(name))
     end
 
+    memoize def layout_template(name)
+      Template.new(templated, layout_path(name))
+    end
+
     def render_template(name, view)
       template(name)&.call(view)
     end
@@ -37,6 +41,12 @@ module El
       return Pathname.new(name) if !name.is_a?(Symbol) && File.exist?(name)
 
       app.app_path.join(module_name, 'templates', "#{name}.html.erb")
+    end
+
+    def layout_path(name)
+      return Pathname.new(name) if !name.is_a?(Symbol) && File.exist?(name)
+
+      app.app_path.join('layouts', "#{name}.html.erb")
     end
   end
 end
