@@ -198,7 +198,7 @@ module El
         data = options.delete(:with) || EMPTY_HASH
         HashView.new(self, view, data)
       else
-        view.new(self)
+        view.new(self, options)
       end
     end
   end
