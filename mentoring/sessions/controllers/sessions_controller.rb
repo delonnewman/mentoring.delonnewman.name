@@ -4,7 +4,7 @@ module Mentoring
   module Sessions
     # A controller for creating viewing and ending mentoring sessions
     class SessionsController < ApplicationController
-      include El::TimeUtils
+      # include El::TimeUtils
 
       # start / cancel buttons with some instructions
       def new

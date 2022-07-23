@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'el/time_utils'
-
 module Mentoring
   module Sessions
     # Routes for mentoring sessions

@@ -18,7 +18,7 @@ module El
   #       render HomePageView, layout: :index # can override layout here
   #     end
   #   end
-  class PageView < View
+  class PageView < TemplateView
     def render
       return super() unless layout
 

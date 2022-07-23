@@ -2,10 +2,8 @@
 
 module El
   class View
-    include TemplateHelpers
-    include Memoize
-    extend  Pluggable
-    extend  Forwardable
+    extend Pluggable
+    extend Forwardable
 
     attr_reader :controller, :options
 
@@ -16,19 +14,10 @@ module El
     def initialize(controller, options)
       @controller = controller
       @options    = options
-      Memoize.init_memoize_state!(self)
-    end
-
-    def template_name
-      StringUtils.underscore(self.class.name.split('::').last.sub(/View$/, '')).to_sym
-    end
-
-    memoize def templates
-      Templates.new(self)
     end
 
     def render
-      templates.template(template_name).eval(binding)
+      raise NotImplementedError, "#{self.class}##{__method__} has not been implemented"
     end
   end
 end
