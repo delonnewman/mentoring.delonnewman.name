@@ -1,11 +1,6 @@
 GIT
-  remote: https://github.com/delonnewman/wonder-llama.git
-  revision: f80a10acae6e8f7de1235480572d728d4e1d4c29
-  specs:
-    wonder-llama (0.0.1)
-
-PATH
-  remote: ../../Personal/el-toolkit
+  remote: https://github.com/delonnewman/el-toolkit.git
+  revision: 73b6c9d32c4ee779ca35ded0098418d3811b88aa
   specs:
     el-application (0.1.0)
       el-core (~> 0.1.0)
@@ -17,6 +12,12 @@ PATH
     el-routing (0.1.0)
       el-core
       rack
+
+GIT
+  remote: https://github.com/delonnewman/wonder-llama.git
+  revision: f80a10acae6e8f7de1235480572d728d4e1d4c29
+  specs:
+    wonder-llama (0.0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -155,7 +156,7 @@ GEM
     net-ntp (2.1.3)
     netrc (0.11.0)
     nio4r (2.5.8)
-    nokogiri (1.13.4)
+    nokogiri (1.13.8)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     oj (3.13.1)
@@ -177,7 +178,7 @@ GEM
       protocol-http (~> 0.18)
     public_suffix (4.0.6)
     racc (1.6.0)
-    rack (2.2.3)
+    rack (2.2.4)
     rack-flash3 (1.0.5)
       rack
     rack-livereload (0.3.17)
