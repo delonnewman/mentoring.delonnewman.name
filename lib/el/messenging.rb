@@ -1,25 +1,16 @@
 # frozen_string_literal: true
 
 module El
-  class Messenger
+  class Messenging < Advice
+    advises Application, as: :app, delegating: %i[logger]
+    advised_by Templates, delegating: %i[render_template]
+
     include Templating
     include Invokable
 
-    attr_reader :app
-
-    def initialize(app)
-      @app = app
+    def deliver!(message, *args)
+      public_send(message, *args).wait!
     end
-
-    def logger
-      app.logger
-    end
-
-    def notify!(*args, about:)
-      public_send(about, *args).wait!
-    end
-
-    protected
 
     DEFAULT_FROM = 'contact@delonnewman.name'
 
@@ -31,9 +22,9 @@ module El
           'Email' => from,
           'Name' => 'Delon R. Newman Mentoring Bot'
         },
-               'To' => [{ 'Email' => to.email, 'Name' => to.username }],
-               'Subject' => subject,
-               'HTMLPart' => content
+        'To' => [{ 'Email' => to.email, 'Name' => to.username }],
+        'Subject' => subject,
+        'HTMLPart' => content
       }]
 
       logger.info "Sending message: #{msg.inspect}"

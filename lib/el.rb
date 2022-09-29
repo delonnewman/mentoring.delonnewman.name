@@ -23,6 +23,8 @@ require 'el/application'
 
 # OOP / Meta
 require_relative 'el/memoize'
+require_relative 'el/advice'
+require_relative 'el/advising'
 
 # Templating
 require_relative 'el/template_helpers'
@@ -31,7 +33,7 @@ require_relative 'el/template'
 require_relative 'el/templating'
 
 # Messaging
-require_relative 'el/messenger'
+require_relative 'el/messenging'
 
 # Request Dispatch
 require_relative 'el/json_response'

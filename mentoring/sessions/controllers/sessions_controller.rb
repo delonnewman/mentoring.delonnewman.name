@@ -48,7 +48,7 @@ module Mentoring
         customer = app.users.find_by!(id: params[:customer_id])
 
         session = create_session(customer, create_meeting(start_time))
-        app.messenger.notify!(session, about: :new_session)
+        app.mailings.deliver!(:new_session, session)
 
         redirect_to routes.session_path(session)
       end

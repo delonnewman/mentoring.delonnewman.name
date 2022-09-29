@@ -1,28 +1,16 @@
 # frozen_string_literal: true
 
 module El
-  class Templates
+  class Templates < Advice
+    advises :templated, delegating: %i[app layout module_name]
+
     include Memoize
 
-    attr_reader :templated
-
     def initialize(templated)
-      @templated = templated
+      super(templated)
       Memoize.init_memoize_state!(self)
 
       freeze
-    end
-
-    def app
-      templated.app
-    end
-
-    def layout
-      templated.layout
-    end
-
-    def module_name
-      templated.module_name
     end
 
     memoize def template(name)

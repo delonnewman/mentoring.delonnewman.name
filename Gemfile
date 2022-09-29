@@ -35,8 +35,8 @@ gem 'zeitwerk'
 gem 'rake'
 gem 'nokogiri', '~> 1.13.4'
 
-# path '../../Personal/el-toolkit' do
-git 'https://github.com/delonnewman/el-toolkit.git' do
+path '../../Personal/el-toolkit' do
+# git 'https://github.com/delonnewman/el-toolkit.git' do
    gem 'el-core', require: 'el/core_ext/all'
    gem 'el-routing', require: false
    gem 'el-modeling', require: false
