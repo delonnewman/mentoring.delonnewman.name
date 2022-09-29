@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 module El
-  class Messenging < Advice
+  class Messenger < Advice
     advises Application, as: :app, delegating: %i[logger]
-    advised_by Templates, delegating: %i[render_template]
 
     include Templating
-    include Invokable
 
     def deliver!(message, *args)
       public_send(message, *args).wait!
@@ -30,9 +28,9 @@ module El
       logger.info "Sending message: #{msg.inspect}"
 
       Concurrent::Promises.future do
-        res = Mailjet::Send.create(messages: msg)
-        logger.info "Mailjet response: #{res.inspect}"
-        res
+        Mailjet::Send.create(messages: msg).tap do |res|
+          logger.info "Mailjet response: #{res.inspect}"
+        end
       end
     end
   end
