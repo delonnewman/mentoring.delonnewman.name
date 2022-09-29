@@ -1,11 +1,6 @@
 GIT
-  remote: https://github.com/delonnewman/wonder-llama.git
-  revision: f80a10acae6e8f7de1235480572d728d4e1d4c29
-  specs:
-    wonder-llama (0.0.1)
-
-PATH
-  remote: ../../Personal/el-toolkit
+  remote: https://github.com/delonnewman/el-toolkit.git
+  revision: 020e690c943dedc6da7b454cfcbf6c8f4acdf6f9
   specs:
     el-application (0.1.0)
       el-core (~> 0.1.0)
@@ -17,6 +12,12 @@ PATH
     el-routing (0.1.0)
       el-core
       rack
+
+GIT
+  remote: https://github.com/delonnewman/wonder-llama.git
+  revision: f80a10acae6e8f7de1235480572d728d4e1d4c29
+  specs:
+    wonder-llama (0.0.1)
 
 GEM
   remote: https://rubygems.org/
