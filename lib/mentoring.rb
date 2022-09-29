@@ -24,23 +24,23 @@ require 'el/application'
 # OOP / Meta
 require 'el/advice'
 require 'el/advising'
-require_relative 'el/memoize'
+require 'el/memoize'
 
 # Templating
-require_relative 'el/template_helpers'
-require_relative 'el/templates'
-require_relative 'el/template'
-require_relative 'el/templating'
+require 'el/template_helpers'
+require 'el/templates'
+require 'el/template'
+require 'el/templating'
 
 # Messaging
-require_relative 'el/messenger'
+require 'el/messenger'
 
 # Request Dispatch
-require_relative 'el/json_response'
+require 'el/json_response'
 
-require_relative 'el/authenticable'
-require_relative 'el/controller'
-require_relative 'el/view'
-require_relative 'el/template_view'
-require_relative 'el/page_view'
-require_relative 'el/hash_view'
+require 'el/authenticable'
+require 'el/controller'
+require 'el/view'
+require 'el/template_view'
+require 'el/page_view'
+require 'el/hash_view'

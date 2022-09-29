@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../lib/el'
+require 'mentoring'
 require 'rack-mini-profiler'
 
 # A mentoring website (see https://mentoring.delonnewman.name)
