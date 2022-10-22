@@ -3,7 +3,7 @@
 module Mentoring
   module Sessions
     # Manage email communication for the application
-    class Messenger < El::Messenger
+    class Messenger < El::MailController
       layout :mailer
 
       def new_session(session)

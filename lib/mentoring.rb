@@ -33,7 +33,7 @@ require 'el/template'
 require 'el/templating'
 
 # Messaging
-require 'el/messenger'
+require 'el/mail_controller'
 
 # Request Dispatch
 require 'el/json_response'
@@ -43,4 +43,4 @@ require 'el/controller'
 require 'el/view'
 require 'el/template_view'
 require 'el/page_view'
-require 'el/hash_view'
+require 'el/data_view'

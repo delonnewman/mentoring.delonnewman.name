@@ -46,10 +46,9 @@ module Mentoring
       # Activate session & create video conferencing meeting
       def create
         customer = app.users.find_by!(id: params[:customer_id])
+        session  = create_session(customer, create_meeting(start_time))
 
-        session = create_session(customer, create_meeting(start_time))
-        app.mailings.deliver!(:new_session, session)
-
+        deliver! :new_session, session, with: Sessions::Messenger
         redirect_to routes.session_path(session)
       end
 

@@ -1,3 +1,4 @@
+$:.unshift "#{__dir__}/lib"
 require_relative 'mentoring/application'
 App = Mentoring::Application.with_only_settings
 
